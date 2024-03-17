@@ -1,0 +1,43 @@
+@startuml
+'https://plantuml.com/use-case-diagram
+
+left to right direction
+
+actor "Player" as P
+actor "Game" as G
+
+rectangle System {
+    usecase "Draw programming cards" as uc1
+    usecase "Place programming cards" as uc2
+    usecase "Buy upgrade cards" as uc3
+    usecase "Activate upgrade cards" as uc4
+    usecase "Fall" as uc5
+    usecase "Get checkpoint token" as uc6
+    usecase "Win game" as uc7
+    usecase "Take damage" as uc8
+    usecase "Reboot robot" as uc9
+
+    usecase "Determine player order" as uc10
+    usecase "Shuffle programming cards" as uc11
+    usecase "Replenish shop" as uc12
+    usecase "Move robot" as uc13
+    usecase "Activate board elements" as uc14
+    }
+
+P --> uc1
+P --> uc2
+P --> uc3
+P --> uc4
+P --> uc5
+P --> uc6
+P --> uc7
+P --> uc8
+P --> uc9
+
+G -up-> uc10
+G -up-> uc11
+G -up-> uc12
+G -up-> uc13
+G -up-> uc14
+
+@enduml
