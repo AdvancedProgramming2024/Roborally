@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -59,11 +60,11 @@ public class GameController {
         }
         board.getCurrentPlayer().setSpace(space);
 
-        Player nextPlayer = board.getPlayer(
-                (board.getPlayerNumber(board.getCurrentPlayer())+1) % board.getPlayersNumber());
-        board.setCurrentPlayer(nextPlayer);
-
-        board.setStep(board.getStep()+1);
+//        Player nextPlayer = board.getPlayer(
+//                (board.getPlayerNumber(board.getCurrentPlayer())+1) % board.getPlayersNumber());
+//        board.setCurrentPlayer(nextPlayer);
+//
+//        board.setStep(board.getStep()+1);
     }
 
     // XXX: implemented in the current version
@@ -217,23 +218,58 @@ public class GameController {
     }
 
     // TODO Task2
+
+    /**
+     * @author Jonathan (s235115)
+     * @param player
+     */
     public void moveForward(@NotNull Player player) {
-
+        Player p = board.getCurrentPlayer();
+        Space s = p.getSpace();
+        Pair<Integer,Integer> coor = p.getHeading().directionVector();
+        Space space = board.getSpace(s.x+ coor.getKey(), s.y+coor.getValue());
+        moveCurrentPlayerToSpace(space);
     }
 
     // TODO Task2
+
+    /**
+     * @author Jonathan (s235115)
+     * @param player
+     */
     public void fastForward(@NotNull Player player) {
-
+//        Player p = board.getCurrentPlayer();
+//        Space s = p.getSpace();
+//        Pair<Integer,Integer> coor = p.getHeading().directionVector();
+//        Pair<Integer,Integer> newCoor = new Pair<>(coor.getKey()*2, coor.getValue()*2);
+//        Space space = board.getSpace(s.x+ newCoor.getKey(), s.y+newCoor.getValue());
+//        moveCurrentPlayerToSpace(space);
+        moveForward(player);
+        moveForward(player);
     }
 
     // TODO Task2
+
+    /**
+     * @author Jonathan (s235115)
+     * @param player
+     */
     public void turnRight(@NotNull Player player) {
-
+        Player p =board.getCurrentPlayer();
+        p.setHeading(p.getHeading().next());
+        moveCurrentPlayerToSpace(p.getSpace());
     }
 
     // TODO Task2
-    public void turnLeft(@NotNull Player player) {
 
+    /**
+     * @author Jonathan (s235115)
+     * @param player
+     */
+    public void turnLeft(@NotNull Player player) {
+        Player p =board.getCurrentPlayer();
+        p.setHeading(p.getHeading().prev());
+        moveCurrentPlayerToSpace(p.getSpace());
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
