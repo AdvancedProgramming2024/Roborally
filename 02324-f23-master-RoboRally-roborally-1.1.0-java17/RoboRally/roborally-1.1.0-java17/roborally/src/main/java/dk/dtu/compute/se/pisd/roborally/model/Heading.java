@@ -21,6 +21,8 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import javafx.util.Pair;
+
 /**
  * ...
  *
@@ -37,5 +39,15 @@ public enum Heading {
 
     public Heading prev() {
         return values()[(this.ordinal() + values().length - 1) % values().length];
+    }
+
+    public Pair<Integer, Integer> directionVector() {
+        return switch (this.ordinal()) {
+            case 0 -> new Pair<>(0, 1);
+            case 1 -> new Pair<>(-1, 0);
+            case 2 -> new Pair<>(0, -1);
+            case 3 -> new Pair<>(1, 0);
+            default -> null;
+        };
     }
 }
