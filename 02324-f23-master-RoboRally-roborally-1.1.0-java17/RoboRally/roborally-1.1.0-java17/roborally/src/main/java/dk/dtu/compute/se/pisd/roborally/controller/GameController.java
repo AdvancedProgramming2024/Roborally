@@ -97,7 +97,17 @@ public class GameController {
     }
 
     // XXX: implemented in the current version
+
+    /**
+     * @author Jonathan (s235115)
+     */
     public void finishProgrammingPhase() {
+        for (int j = 0; j < board.getPlayersNumber(); j++) {
+            Player player = board.getPlayer(j);
+            for (int i = 0; i < Player.NO_REGISTERS; i++) {
+                if (player.getProgramField(i).getCard() == null) return;
+            }
+        }
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
         board.setPhase(Phase.ACTIVATION);

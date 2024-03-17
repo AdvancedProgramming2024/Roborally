@@ -1,0 +1,17 @@
+@startuml upgradephase
+start
+:Upgrade shop refreshes;
+repeat :Determine player with priority;
+if (Player with priority wants to buy upgrade) then (True)
+    if (Player has enough energy cubes) then (True)
+        :Player receives upgrade;
+        if (Player has more than 3 upgrades of the same type) then (True)
+            :Discard an upgrade of the same type;
+        endif
+    else (False)
+        :Player cannot buy upgrade;
+    endif
+endif
+repeat while (Player have not had turn yet) is (True) not (False)
+end
+@enduml
