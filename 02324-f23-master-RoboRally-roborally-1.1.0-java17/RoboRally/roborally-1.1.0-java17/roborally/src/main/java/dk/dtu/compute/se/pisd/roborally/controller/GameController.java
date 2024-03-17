@@ -42,6 +42,7 @@ public class GameController {
      * This is just some dummy controller operation to make a simple move to see something
      * happening on the board. This method should eventually be deleted!
      *
+     * @author Jonathan (s235115)
      * @param space the space to which the current player should move
      */
     public void moveCurrentPlayerToSpace(@NotNull Space space)  {
@@ -53,6 +54,16 @@ public class GameController {
         //   - the counter of moves in the game should be increased by one
         //     if the player is moved
 
+        if (space.getPlayer() != null) {
+            return;
+        }
+        board.getCurrentPlayer().setSpace(space);
+
+        Player nextPlayer = board.getPlayer(
+                (board.getPlayerNumber(board.getCurrentPlayer())+1) % board.getPlayersNumber());
+        board.setCurrentPlayer(nextPlayer);
+
+        board.setStep(board.getStep()+1);
     }
 
     // XXX: implemented in the current version

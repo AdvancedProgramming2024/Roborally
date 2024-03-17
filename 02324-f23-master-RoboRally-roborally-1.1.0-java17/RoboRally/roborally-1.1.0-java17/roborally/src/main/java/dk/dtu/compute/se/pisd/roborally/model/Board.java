@@ -212,7 +212,7 @@ public class Board extends Subject {
         //      status line should show the current player and the number
         //      of the current move!
         return "Phase: " + getPhase().name() +
-                ", Player = " + getCurrentPlayer().getName() +
+                ", Current Player = " + getCurrentPlayer().getName() +
                 ", Step: " + getStep();
 
         // TODO Task1: add a counter along with a getter and a setter, so the
