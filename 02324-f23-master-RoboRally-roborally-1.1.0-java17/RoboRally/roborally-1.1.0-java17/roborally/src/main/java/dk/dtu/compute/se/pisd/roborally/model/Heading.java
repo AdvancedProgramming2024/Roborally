@@ -42,12 +42,13 @@ public enum Heading {
     }
 
     public Pair<Integer, Integer> directionVector() {
-        return switch (this.ordinal()) {
+        return new Pair<>((this.ordinal()-2)%2, (1-this.ordinal())%2);
+        /*return switch (this.ordinal()) {
             case 0 -> new Pair<>(0, 1);
             case 1 -> new Pair<>(-1, 0);
             case 2 -> new Pair<>(0, -1);
             case 3 -> new Pair<>(1, 0);
             default -> null;
-        };
+        };*/
     }
 }
