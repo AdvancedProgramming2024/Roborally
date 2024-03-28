@@ -60,11 +60,18 @@ public class GameController {
         }
         board.getCurrentPlayer().setSpace(space);
 
-//        Player nextPlayer = board.getPlayer(
-//                (board.getPlayerNumber(board.getCurrentPlayer())+1) % board.getPlayersNumber());
-//        board.setCurrentPlayer(nextPlayer);
-//
-//        board.setStep(board.getStep()+1);
+        Player nextPlayer = board.getPlayer(
+                (board.getPlayerNumber(board.getCurrentPlayer())+1) % board.getPlayersNumber());
+        board.setCurrentPlayer(nextPlayer);
+
+        board.setStep(board.getStep()+1);
+    }
+
+    public void moveToSpace(@NotNull Space space)  {
+        if (space.getPlayer() != null) {
+            return;
+        }
+        board.getCurrentPlayer().setSpace(space);
     }
 
     // XXX: implemented in the current version
@@ -193,7 +200,7 @@ public class GameController {
 
     // XXX: implemented in the current version
     private void executeCommand(@NotNull Player player, Command command) {
-        if (player != null && player.board == board && command != null) {
+        if (player.board == board && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
             //     (this concerns the way cards are modelled as well as the way they are executed).
@@ -221,21 +228,21 @@ public class GameController {
 
     /**
      * @author Jonathan (s235115)
-     * @param player
+     * @param player The Player that should move is given as parameter
      */
     public void moveForward(@NotNull Player player) {
         Player p = board.getCurrentPlayer();
         Space s = p.getSpace();
         Pair<Integer,Integer> coor = p.getHeading().directionVector();
         Space space = board.getSpace(s.x+ coor.getKey(), s.y+coor.getValue());
-        moveCurrentPlayerToSpace(space);
+        moveToSpace(space);
     }
 
     // TODO Task2
 
     /**
      * @author Jonathan (s235115)
-     * @param player
+     * @param player The Player that should move is given as parameter
      */
     public void fastForward(@NotNull Player player) {
 //        Player p = board.getCurrentPlayer();
@@ -252,24 +259,24 @@ public class GameController {
 
     /**
      * @author Jonathan (s235115)
-     * @param player
+     * @param player The Player that should move is given as parameter
      */
     public void turnRight(@NotNull Player player) {
         Player p =board.getCurrentPlayer();
         p.setHeading(p.getHeading().next());
-        moveCurrentPlayerToSpace(p.getSpace());
+        moveToSpace(p.getSpace()); // This is done to call NotifyChange
     }
 
     // TODO Task2
 
     /**
      * @author Jonathan (s235115)
-     * @param player
+     * @param player The Player that should move is given as parameter
      */
     public void turnLeft(@NotNull Player player) {
         Player p =board.getCurrentPlayer();
         p.setHeading(p.getHeading().prev());
-        moveCurrentPlayerToSpace(p.getSpace());
+        moveToSpace(p.getSpace()); // This is done to call NotifyChange
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
