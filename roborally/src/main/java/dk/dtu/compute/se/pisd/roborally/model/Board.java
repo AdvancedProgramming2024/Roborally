@@ -211,7 +211,8 @@ public class Board extends Subject {
     }
 
     public String getStatusMessage() {
-
-        return "";
+        return "Phase: " + getPhase().name() +
+                ", Current Player = " + getCurrentPlayer().getName() +
+                ", Step: " + getStep();
     }
 }
