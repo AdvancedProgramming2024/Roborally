@@ -47,7 +47,24 @@ public class ConveyorBelt extends FieldAction {
 
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
-        // TODO needs to be implemented
+        Player player = space.getPlayer();
+        if (player == null) return false; // TODO: Remove if doAction is only called when a player is on a conveyor belt
+
+        if (player.board == gameController.board) {
+            Heading heading = player.getHeading();
+
+            Space target = gameController.board.getNeighbour(space, heading);
+            if (target != null) {
+                try {
+                    gameController.moveToSpace(player, target, heading);
+                    return true;
+                } catch (GameController.ImpossibleMoveException e) {
+                    // we don't do anything here  for now; we just catch the
+                    // exception so that we do not pass it on to the caller
+                    // (which would be very bad style).
+                }
+            }
+        }
         return false;
     }
 
