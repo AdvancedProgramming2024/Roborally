@@ -38,8 +38,6 @@ public class GameController {
         this.board = board;
     }
 
-
-
     public void moveForward(@NotNull Player player) {
         if (player.board == board) {
             Space space = player.getSpace();
@@ -51,7 +49,7 @@ public class GameController {
                     moveToSpace(player, target, heading);
                 } catch (ImpossibleMoveException e) {
                     // we don't do anything here  for now; we just catch the
-                    // exception so that we do no pass it on to the caller
+                    // exception so that we do not pass it on to the caller
                     // (which would be very bad style).
                 }
             }
@@ -60,17 +58,18 @@ public class GameController {
 
     // TODO Assignment A3
     public void fastForward(@NotNull Player player) {
-
+        moveForward(player);
+        moveForward(player);
     }
 
     // TODO Assignment A3
     public void turnRight(@NotNull Player player) {
-
+        player.setHeading(player.getHeading().next());
     }
 
     // TODO Assignment A3
     public void turnLeft(@NotNull Player player) {
-
+        player.setHeading(player.getHeading().prev());
     }
 
     void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
@@ -97,6 +96,16 @@ public class GameController {
 
     public void moveCurrentPlayerToSpace(Space space) {
         // TODO: Import or Implement this method. This method is only for debugging purposes. Not useful for the game.
+        if (space.getPlayer() != null) {
+            return;
+        }
+        board.getCurrentPlayer().setSpace(space);
+
+        Player nextPlayer = board.getPlayer(
+                (board.getPlayerNumber(board.getCurrentPlayer())+1) % board.getPlayersNumber());
+        board.setCurrentPlayer(nextPlayer);
+
+        board.setStep(board.getStep()+1);
     }
 
     private void makeProgramFieldsVisible(int register) {
@@ -119,7 +128,16 @@ public class GameController {
         }
     }
 
+    /**
+     * @author Jonathan (s235115)
+     */
     public void finishProgrammingPhase() {
+        for (int j = 0; j < board.getPlayersNumber(); j++) {
+            Player player = board.getPlayer(j);
+            for (int i = 0; i < Player.NO_REGISTERS; i++) {
+                if (player.getProgramField(i).getCard() == null) return;
+            }
+        }
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
         board.setPhase(Phase.ACTIVATION);
