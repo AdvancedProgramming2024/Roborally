@@ -33,15 +33,20 @@ import org.jetbrains.annotations.NotNull;
 public class GameController {
 
     final public Board board;
+    final public CommandCardController commandCardController;
 
-    public GameController(Board board) {
+    public GameController(Board board, CommandCardController commandCardController) {
         this.board = board;
+        this.commandCardController = commandCardController;
     }
 
     public void moveForward(@NotNull Player player) {
+        moveInDirection(player, player.getHeading());
+    }
+
+    public void moveInDirection(@NotNull Player player, @NotNull Heading heading) {
         if (player.board == board) {
             Space space = player.getSpace();
-            Heading heading = player.getHeading();
 
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
@@ -55,13 +60,6 @@ public class GameController {
             }
         }
     }
-
-    // TODO Assignment A3
-    public void fastForward(@NotNull Player player) {
-        moveForward(player);
-        moveForward(player);
-    }
-
     // TODO Assignment A3
     public void turnRight(@NotNull Player player) {
         player.setHeading(player.getHeading().next());
@@ -70,6 +68,13 @@ public class GameController {
     // TODO Assignment A3
     public void turnLeft(@NotNull Player player) {
         player.setHeading(player.getHeading().prev());
+    }
+    public void turn(@NotNull Player player, int timesClockwise) {
+        Heading playerHeading = player.getHeading();
+        for (int i = 0; i < timesClockwise; i++) {
+            playerHeading = playerHeading.next();
+        }
+        player.setHeading(playerHeading);
     }
 
     void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
@@ -169,7 +174,7 @@ public class GameController {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
-                    executeCommand(currentPlayer, command);
+                    commandCardController.executeCommand(this, currentPlayer, command);
                 }
                 int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
@@ -191,31 +196,6 @@ public class GameController {
         } else {
             // this should not happen
             assert false;
-        }
-    }
-
-    private void executeCommand(@NotNull Player player, Command command) {
-        if (player != null && player.board == board && command != null) {
-            // XXX This is a very simplistic way of dealing with some basic cards and
-            //     their execution. This should eventually be done in a more elegant way
-            //     (this concerns the way cards are modelled as well as the way they are executed).
-
-            switch (command) {
-                case FORWARD:
-                    this.moveForward(player);
-                    break;
-                case RIGHT:
-                    this.turnRight(player);
-                    break;
-                case LEFT:
-                    this.turnLeft(player);
-                    break;
-                case FAST_FORWARD:
-                    this.fastForward(player);
-                    break;
-                default:
-                    // DO NOTHING (for now)
-            }
         }
     }
 
@@ -247,17 +227,11 @@ public class GameController {
                 }
                 for (int j = 0; j < Player.NO_CARDS; j++) {
                     CommandCardField field = player.getCardField(j);
-                    field.setCard(generateRandomCommandCard());
+                    field.setCard(player.drawCommandCard());
                     field.setVisible(true);
                 }
             }
         }
-    }
-
-    private CommandCard generateRandomCommandCard() {
-        Command[] commands = Command.values();
-        int random = (int) (Math.random() * commands.length);
-        return new CommandCard(commands[random]);
     }
 
     /**
