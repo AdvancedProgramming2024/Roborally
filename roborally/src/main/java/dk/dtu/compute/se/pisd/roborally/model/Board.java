@@ -50,6 +50,8 @@ public class Board extends Subject {
     private Player current;
 
     private Phase phase = INITIALISATION;
+    private Space antenna;
+    private Heading antennaHeading;
 
     private int step = 0;
 
@@ -89,6 +91,50 @@ public class Board extends Subject {
         } else {
             return null;
         }
+    }
+
+    public double getDistanceToAntenna(Space space) {
+        if (antenna == null) {
+            return -1;
+        }
+        int dx = space.x - antenna.x;
+        int dy = space.y - antenna.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public double getAngleToAntenna(Space space) {
+        if (antenna == null) {
+            return -1;
+        }
+        int dx = space.x - antenna.x;
+        int dy = space.y - antenna.y;
+
+        double n = Math.toDegrees(Math.atan2(dx, -dy));
+        double e = Math.toDegrees(Math.atan2(dy, dx));
+        double s = Math.toDegrees(Math.atan2(-dx, dy));
+        double w = Math.toDegrees(Math.atan2(-dy, -dx));
+
+        // This calculates the angle between the antenna and the space
+        double angle = switch (antennaHeading) {
+            case NORTH -> Math.atan2(dx, -dy);
+            case EAST -> Math.atan2(dy, dx);
+            case SOUTH -> Math.atan2(-dx, dy);
+            case WEST -> Math.atan2(-dy, -dx);
+        };
+
+        if (angle < 0) {
+            angle += 2 * Math.PI;
+        }
+        return angle;
+    }
+
+    public Space getAntenna() {
+        return antenna;
+    }
+
+    public void setAntenna(int x, int y, Heading heading) {
+        antenna = getSpace(x, y);
+        antennaHeading = heading;
     }
 
     public int getPlayersNumber() {
@@ -203,7 +249,7 @@ public class Board extends Subject {
         Heading reverse = heading.next().next();
         Space result = getSpace(x, y);
         if (result != null) {
-            if (result.getWalls().contains(reverse)) {
+            if (result.getWalls().contains(reverse) || result == antenna) {
                 return null;
             }
         }
