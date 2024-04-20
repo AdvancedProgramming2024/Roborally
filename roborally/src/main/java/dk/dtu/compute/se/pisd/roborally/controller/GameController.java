@@ -24,6 +24,9 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ...
  *
@@ -34,6 +37,7 @@ public class GameController {
 
     final public Board board;
     final public CommandCardController commandCardController;
+    private List<Player> playerOrder;
 
     public GameController(Board board) {
         this.board = board;
@@ -146,8 +150,36 @@ public class GameController {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
         board.setPhase(Phase.ACTIVATION);
-        board.setCurrentPlayer(board.getPlayer(0));
+
+        board.setCurrentPlayer(playerOrder.get(0));
         board.setStep(0);
+    }
+
+    public List<Player> getPlayerOrder() {
+        return playerOrder;
+    }
+
+    public void determinePlayerOrder() {
+        playerOrder = new ArrayList<>();
+        for (int i = 0; i < board.getPlayersNumber(); i++) {
+            for (int j = 0; j < playerOrder.size(); j++) {
+                if (board.getDistanceToAntenna(board.getPlayer(i).getSpace()) <
+                        board.getDistanceToAntenna(playerOrder.get(j).getSpace())) {
+                    playerOrder.add(j, board.getPlayer(i));
+                    break;
+                }
+                if (board.getDistanceToAntenna(board.getPlayer(i).getSpace()) ==
+                        board.getDistanceToAntenna(playerOrder.get(j).getSpace())) {
+                    if (board.getAngleToAntenna(board.getPlayer(i).getSpace()) <
+                            board.getAngleToAntenna(playerOrder.get(j).getSpace())) {
+                        playerOrder.add(j, board.getPlayer(i));
+                        break;
+                    }
+                }
+            }
+            if (!playerOrder.contains(board.getPlayer(i)))
+                playerOrder.add(playerOrder.size(), board.getPlayer(i));
+        }
     }
 
     public void executePrograms() {
@@ -176,17 +208,24 @@ public class GameController {
                     Command command = card.command;
                     commandCardController.executeCommand(this, currentPlayer, command);
                 }
-                int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+                int nextPlayerNumber = playerOrder.indexOf(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
-                    board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+                    board.setCurrentPlayer(playerOrder.get(nextPlayerNumber));
                 } else {
                     step++;
 
                     // TODO: Activate special fields and lasers
+                    for (int i = 0; i < board.getPlayersNumber(); i++) {
+                        Space space = board.getPlayer(i).getSpace();
+                        for (FieldAction action : space.getActions()) {
+                            action.doAction(this, space);
+                        }
+                    }
+
                     if (step < Player.NO_REGISTERS) {
                         makeProgramFieldsVisible(step);
                         board.setStep(step);
-                        board.setCurrentPlayer(board.getPlayer(0));
+                        board.setCurrentPlayer(playerOrder.get(0));
                     } else {
                         startProgrammingPhase();
                     }
@@ -216,7 +255,8 @@ public class GameController {
 
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
-        board.setCurrentPlayer(board.getPlayer(0));
+        determinePlayerOrder();
+        board.setCurrentPlayer(playerOrder.get(0));
         board.setStep(0);
 
         for (int i = 0; i < board.getPlayersNumber(); i++) {

@@ -22,11 +22,14 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -65,6 +68,10 @@ public class SpaceView extends StackPane implements ViewObserver {
             this.setStyle("-fx-background-color: black;");
         }
 
+        if (space == space.board.getAntenna()) {
+            this.setStyle("-fx-background-color: red;");
+        }
+
         // updatePlayer();
 
         // This space view should listen to changes of the space
@@ -74,6 +81,16 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     private void updatePlayer() {
         this.getChildren().clear();
+
+        // TODO: Remove this later and replace with images for space backgrounds
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof Checkpoint) {
+                this.setStyle("-fx-background-color: yellow;");
+                Label label = new Label(Integer.toString(((Checkpoint)action).getId()));
+                this.getChildren().add(label);
+                break;
+            }
+        }
 
         Player player = space.getPlayer();
         if (player != null) {

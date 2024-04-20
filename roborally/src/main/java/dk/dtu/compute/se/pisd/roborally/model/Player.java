@@ -49,7 +49,9 @@ public class Player extends Subject {
     private Heading heading = SOUTH;
 
     private List<CommandCard> drawPile;
-    private List<CommandCard> discardPile;
+    private List<CommandCard> discardPile
+      
+    private int checkpoints = 0;
 
     private CommandCardField[] program;
     private CommandCardField[] cards;
@@ -83,7 +85,7 @@ public class Player extends Subject {
         }
     }
 
-    void shuffleDrawPile() {
+    public void shuffleDrawPile() {
         for (int i = 0; i < drawPile.size(); i++) {
             int r = (int) (Math.random() * drawPile.size());
             CommandCard tmp = drawPile.get(i);
@@ -102,6 +104,15 @@ public class Player extends Subject {
         drawPile.remove(0);
         discardPile.add(card); // TODO: Change later to add to discard after use of card
         return card;
+    }
+      
+    public int getCheckpoints() {
+        return checkpoints;
+    }
+
+    public void reachCheckpoint() {
+        checkpoints++;
+        notifyChange();
     }
 
     public String getName() {

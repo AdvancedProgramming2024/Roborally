@@ -90,4 +90,21 @@ class GameControllerTest {
         Assertions.assertEquals(Heading.EAST, current.getHeading(), "Player 0 should be heading EAST!");
     }
 
+    /**
+     * @author Jonathan (s235115)
+     */
+    @Test
+    void determinePlayerOrder() {
+        Board board = gameController.board;
+        board.setAntenna(0, 3, Heading.EAST);
+
+        gameController.determinePlayerOrder();
+
+        Assertions.assertEquals(board.getPlayer(1), gameController.getPlayerOrder().get(0), "1. player should be " + board.getPlayer(2).getName());
+        Assertions.assertEquals(board.getPlayer(2), gameController.getPlayerOrder().get(1), "1. player should be " + board.getPlayer(2).getName());
+        Assertions.assertEquals(board.getPlayer(3), gameController.getPlayerOrder().get(2), "1. player should be " + board.getPlayer(2).getName());
+        Assertions.assertEquals(board.getPlayer(0), gameController.getPlayerOrder().get(3), "1. player should be " + board.getPlayer(2).getName());
+        Assertions.assertEquals(board.getPlayer(4), gameController.getPlayerOrder().get(4), "1. player should be " + board.getPlayer(2).getName());
+        Assertions.assertEquals(board.getPlayer(5), gameController.getPlayerOrder().get(5), "1. player should be " + board.getPlayer(2).getName());
+    }
 }
