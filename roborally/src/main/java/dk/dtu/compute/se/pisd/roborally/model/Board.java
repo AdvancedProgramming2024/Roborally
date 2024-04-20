@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -53,6 +54,8 @@ public class Board extends Subject {
     private Space antenna;
     private Heading antennaHeading;
 
+    private int checkPoints = 0;
+
     private int step = 0;
 
     private boolean stepMode;
@@ -82,6 +85,15 @@ public class Board extends Subject {
                 throw new IllegalStateException("A game with a set id may not be assigned a new id!");
             }
         }
+    }
+
+    public int getCheckPoints() {
+        return checkPoints;
+    }
+
+    public void addCheckPoint(int x, int y) {
+        checkPoints++;
+        getSpace(x, y).addAction(new Checkpoint(checkPoints));
     }
 
     public Space getSpace(int x, int y) {
