@@ -49,7 +49,7 @@ public class Player extends Subject {
     private Heading heading = SOUTH;
 
     private List<CommandCard> drawPile;
-    private List<CommandCard> discardPile
+    private List<CommandCard> discardPile;
       
     private int checkpoints = 0;
 
