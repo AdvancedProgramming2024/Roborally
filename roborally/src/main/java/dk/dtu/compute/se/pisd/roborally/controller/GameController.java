@@ -35,9 +35,9 @@ public class GameController {
     final public Board board;
     final public CommandCardController commandCardController;
 
-    public GameController(Board board, CommandCardController commandCardController) {
+    public GameController(Board board) {
         this.board = board;
-        this.commandCardController = commandCardController;
+        commandCardController = new CommandCardController();
     }
 
     public void moveForward(@NotNull Player player) {
