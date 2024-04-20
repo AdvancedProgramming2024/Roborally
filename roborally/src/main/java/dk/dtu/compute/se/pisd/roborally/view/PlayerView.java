@@ -28,6 +28,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +48,7 @@ public class PlayerView extends Tab implements ViewObserver {
     private Label programLabel;
     private GridPane programPane;
     private Label cardsLabel;
+    private Label checkPointLabel;
     private GridPane cardsPane;
 
     private CardFieldView[] programCardViews;
@@ -77,6 +79,11 @@ public class PlayerView extends Tab implements ViewObserver {
         programPane = new GridPane();
         programPane.setVgap(2.0);
         programPane.setHgap(2.0);
+
+        checkPointLabel = new Label("Checkpoint\n" + player.getCheckpoints());
+
+        programPane.add(checkPointLabel, Player.NO_REGISTERS+1, 0);
+
         programCardViews = new CardFieldView[Player.NO_REGISTERS];
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
             CommandCardField cardField = player.getProgramField(i);
@@ -135,6 +142,7 @@ public class PlayerView extends Tab implements ViewObserver {
     @Override
     public void updateView(Subject subject) {
         if (subject == player.board) {
+            checkPointLabel.setText("Checkpoint\n" + player.getCheckpoints());
             for (int i = 0; i < Player.NO_REGISTERS; i++) {
                 CardFieldView cardFieldView = programCardViews[i];
                 if (cardFieldView != null) {
