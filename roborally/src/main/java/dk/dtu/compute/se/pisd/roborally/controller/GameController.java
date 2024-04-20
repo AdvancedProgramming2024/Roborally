@@ -150,6 +150,10 @@ public class GameController {
         board.setStep(0);
     }
 
+    public List<Player> getPlayerOrder() {
+        return playerOrder;
+    }
+
     public void determinePlayerOrder() {
         playerOrder = new ArrayList<>();
         for (int i = 0; i < board.getPlayersNumber(); i++) {
