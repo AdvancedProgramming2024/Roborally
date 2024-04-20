@@ -216,7 +216,8 @@ public class GameController {
 
                     // TODO: Activate special fields and lasers
                     for (int i = 0; i < board.getPlayersNumber(); i++) {
-                        Space space = board.getPlayer(i).getSpace();
+                        board.setCurrentPlayer(board.getPlayer(i));
+                        Space space = board.getCurrentPlayer().getSpace();
                         for (FieldAction action : space.getActions()) {
                             action.doAction(this, space);
                         }
