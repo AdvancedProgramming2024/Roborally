@@ -24,6 +24,9 @@ package dk.dtu.compute.se.pisd.roborally.model;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
 /**
@@ -45,6 +48,9 @@ public class Player extends Subject {
     private Space space;
     private Heading heading = SOUTH;
 
+    private List<CommandCard> drawPile;
+    private List<CommandCard> discardPile
+      
     private int checkpoints = 0;
 
     private CommandCardField[] program;
@@ -57,6 +63,17 @@ public class Player extends Subject {
 
         this.space = null;
 
+
+        Command[] commands = Command.values();
+        drawPile = new ArrayList<CommandCard>();
+        discardPile = new ArrayList<CommandCard>();
+        int[] commandValues = {0, 0, 0, 0, 1, 1, 1, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 6, 7, 8};
+        for (int commandValue : commandValues) {
+            drawPile.add(new CommandCard(commands[commandValue]));
+        }
+
+        shuffleDrawPile();
+
         program = new CommandCardField[NO_REGISTERS];
         for (int i = 0; i < program.length; i++) {
             program[i] = new CommandCardField(this);
@@ -68,6 +85,27 @@ public class Player extends Subject {
         }
     }
 
+    public void shuffleDrawPile() {
+        for (int i = 0; i < drawPile.size(); i++) {
+            int r = (int) (Math.random() * drawPile.size());
+            CommandCard tmp = drawPile.get(i);
+            drawPile.set(i, drawPile.get(r));
+            drawPile.set(r, tmp);
+        }
+    }
+
+    public CommandCard drawCommandCard() {
+        if (drawPile.isEmpty()) {
+            drawPile = discardPile;
+            discardPile = new ArrayList<CommandCard>();
+            shuffleDrawPile();
+        }
+        CommandCard card = drawPile.get(0);
+        drawPile.remove(0);
+        discardPile.add(card); // TODO: Change later to add to discard after use of card
+        return card;
+    }
+      
     public int getCheckpoints() {
         return checkpoints;
     }
