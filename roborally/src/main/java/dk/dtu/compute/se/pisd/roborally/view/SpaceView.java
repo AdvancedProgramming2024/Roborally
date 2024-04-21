@@ -32,6 +32,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
@@ -112,6 +113,30 @@ public class SpaceView extends StackPane implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == this.space) {
             updatePlayer();
+            drawWalls();
+        }
+    }
+
+    private void drawWalls() {
+        for (Heading wall : space.getWalls()) {
+            Line line;
+            switch (wall) {
+                case NORTH:
+                    line = new Line(0, 0, this.getWidth(), 0);
+                    break;
+                case SOUTH:
+                    line = new Line(0, this.getHeight(), this.getWidth(), this.getHeight());
+                    break;
+                case EAST:
+                    line = new Line(this.getWidth(), 0, this.getWidth(), this.getHeight());
+                    break;
+                case WEST:
+                    line = new Line(0, 0, 0, this.getHeight());
+                    break;
+                default:
+                    continue;
+            }
+            this.getChildren().add(line);
         }
     }
 
