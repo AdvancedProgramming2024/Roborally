@@ -228,11 +228,11 @@ public class Board extends Subject {
      *
      * @param space the space for which the neighbour should be computed
      * @param heading the heading of the neighbour
-     * @return the space in the given direction; null if there is no (reachable) neighbour
+     * @return the space in the given direction; null if neighbor is off the board or a hole; the same space if movement is blocked by wall or antenna
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
         if (space.getWalls().contains(heading)) {
-            return null;
+            return space;
         }
         // TODO needs to be implemented based on the actual spaces
         //      and obstacles and walls placed there. For now it,
@@ -260,9 +260,10 @@ public class Board extends Subject {
         }
         Heading reverse = heading.next().next();
         Space result = getSpace(x, y);
+        // TODO: Id space is hole, return null
         if (result != null) {
             if (result.getWalls().contains(reverse) || result == antenna) {
-                return null;
+                return space;
             }
         }
         return result;

@@ -61,6 +61,9 @@ public class GameController {
                     // exception so that we do not pass it on to the caller
                     // (which would be very bad style).
                 }
+            } else {
+                // TODO: Reboot player
+                System.out.println("Player fell off the board and reboots...");
             }
         }
     }
@@ -84,7 +87,7 @@ public class GameController {
     void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
         Player other = space.getPlayer();
-        if (other != null){
+        if (other != null && other != player) {
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
                 // XXX Note that there might be additional problems with
