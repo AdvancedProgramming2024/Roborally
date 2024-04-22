@@ -102,8 +102,11 @@ public class Player extends Subject {
         }
         CommandCard card = drawPile.get(0);
         drawPile.remove(0);
-        discardPile.add(card); // TODO: Change later to add to discard after use of card
         return card;
+    }
+
+    public void discardCommandCard(CommandCard card) {
+        discardPile.add(card);
     }
       
     public int getCheckpoints() {

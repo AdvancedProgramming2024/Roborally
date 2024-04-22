@@ -150,6 +150,13 @@ public class GameController {
                 if (player.getProgramField(i).getCard() == null) return;
             }
         }
+        for (int j = 0; j < board.getPlayersNumber(); j++) {
+            Player player = board.getPlayer(j);
+            for (int i = 0; i < Player.NO_CARDS; i++) {
+                CommandCard card = player.getCardField(i).getCard();
+                if (card != null) player.discardCommandCard(card);
+            }
+        }
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
         board.setPhase(Phase.ACTIVATION);
@@ -210,6 +217,9 @@ public class GameController {
                 if (card != null) {
                     Command command = card.command;
                     commandCardController.executeCommand(this, currentPlayer, command);
+                    if (command.ordinal() < Command.SPAM.ordinal() || command.ordinal() > Command.WORM.ordinal()) {
+                        currentPlayer.discardCommandCard(card);
+                    }
                 }
                 int nextPlayerNumber = playerOrder.indexOf(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
