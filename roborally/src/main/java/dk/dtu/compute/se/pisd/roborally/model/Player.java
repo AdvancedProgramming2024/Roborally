@@ -186,7 +186,8 @@ public class Player extends Subject {
         rebooting = true;
         addCommandCard(new CommandCard(Command.SPAM));
         addCommandCard(new CommandCard(Command.SPAM));
-        // TODO: Go to reboot space
+
+        setSpace(board.getSpace(8,8));// TODO: Go to reboot space
     }
 
     public boolean isRebooting() {
