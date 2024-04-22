@@ -52,9 +52,11 @@ public class Player extends Subject {
     private List<CommandCard> discardPile;
       
     private int checkpoints = 0;
-
+    public int eneregyBank = 0;
     private CommandCardField[] program;
     private CommandCardField[] cards;
+
+
 
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
@@ -113,6 +115,23 @@ public class Player extends Subject {
     public void reachCheckpoint() {
         checkpoints++;
         notifyChange();
+    }
+
+    //energy cube functions
+    public int getEnergyCubes() {
+        return eneregyBank;
+    }
+
+    public void setEnergyCubes(int energyCubes) {
+        this.eneregyBank = energyCubes;
+    }
+
+    public void addEnergyCubes(int energyCubes) {
+        this.eneregyBank += energyCubes;
+    }
+
+    public void removeEnergyCubes(int energyCubes) {
+        this.eneregyBank -= energyCubes;
     }
 
     public String getName() {
