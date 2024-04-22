@@ -73,7 +73,7 @@ public class CommandCardController {
                     gameController.board.getCurrentPlayer().addCommandCard(new CommandCard(Command.SPAM));
                     return false;
                 case WORM:
-                    // Reboot
+                    gameController.board.getCurrentPlayer().reboot();
                     return false;
                 default:
                     // DO NOTHING (for now)
