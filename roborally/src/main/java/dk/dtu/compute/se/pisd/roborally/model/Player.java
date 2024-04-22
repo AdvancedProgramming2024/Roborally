@@ -56,6 +56,8 @@ public class Player extends Subject {
     private CommandCardField[] program;
     private CommandCardField[] cards;
 
+    boolean rebooting = false;
+
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
         this.name = name;
@@ -105,6 +107,10 @@ public class Player extends Subject {
         return card;
     }
 
+    public void addCommandCard(CommandCard card) {
+        discardPile.add(card);
+    }
+
     public void discardCommandCard(CommandCard card) {
         discardPile.add(card);
     }
@@ -150,8 +156,7 @@ public class Player extends Subject {
 
     public void setSpace(Space space) {
         Space oldSpace = this.space;
-        if (space != oldSpace &&
-                (space == null || space.board == this.board)) {
+        if (space == null || space.board == this.board) {
             this.space = space;
             if (oldSpace != null) {
                 oldSpace.setPlayer(null);
@@ -175,6 +180,21 @@ public class Player extends Subject {
                 space.playerChanged();
             }
         }
+    }
+
+    public void reboot() {
+        rebooting = true;
+        addCommandCard(new CommandCard(Command.SPAM));
+        addCommandCard(new CommandCard(Command.SPAM));
+        // TODO: Go to reboot space
+    }
+
+    public boolean isRebooting() {
+        return rebooting;
+    }
+
+    public void stopRebooting() {
+        rebooting = false;
     }
 
     public CommandCardField getProgramField(int i) {
