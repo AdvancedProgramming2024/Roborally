@@ -66,6 +66,15 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
+        if (space.getActions().isEmpty()) {
+           ImageView spaceImageView = new ImageView();
+           Image spaceImage = new Image("images/empty.png");
+           spaceImageView.setImage(spaceImage);
+           spaceImageView.setFitHeight(SPACE_HEIGHT);
+           spaceImageView.setFitWidth(SPACE_WIDTH);
+           this.getChildren().add(spaceImageView);
+        }
+
         if (!space.getWalls().isEmpty()) {
             for (Heading wall : space.getWalls()) {
                 ImageView wallImageView = new ImageView();
@@ -93,12 +102,6 @@ public class SpaceView extends StackPane implements ViewObserver {
                 }
                 this.getChildren().add(wallImageView);
             }
-        }
-
-        if ((space.x + space.y) % 2 == 0) {
-            this.setStyle("-fx-background-color: white;");
-        } else {
-            this.setStyle("-fx-background-color: black;");
         }
 
         if (space == space.board.getAntenna()) {
