@@ -259,6 +259,12 @@ public class Board extends Subject {
     }
 
     public Space getLOS(@NotNull Space space, @NotNull Heading heading) {
+        Player player = space.getPlayer();
+        if (player != null) {
+            //hit.getPLayer().doloadsofdamage()
+            return space;
+        }
+
         Space neighbour = space.board.getNeighbour(space, heading);
 
         // Check if neighbour is null or has a wall in the opposite direction

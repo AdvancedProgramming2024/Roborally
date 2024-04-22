@@ -21,7 +21,10 @@ public class Laser extends FieldAction {
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         Player player = space.getPlayer();
-        if (player == null) {return false;}
+        if (player != null) {
+            //hit.getPLayer().doloadsofdamage()
+            return true;
+        }
 
         Space hit = space.board.getLOS(space, heading);
         if (hit.getPlayer() != null) {
@@ -31,8 +34,6 @@ public class Laser extends FieldAction {
                 System.out.println("Player " + hit.getPlayer().getName() + "  got hit with a lazer");
             }
 
-
-            return true;
         }
         return false;
     }

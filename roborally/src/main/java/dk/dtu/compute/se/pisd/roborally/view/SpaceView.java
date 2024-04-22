@@ -23,6 +23,9 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.controller.Gear;
+import dk.dtu.compute.se.pisd.roborally.controller.Laser;
+import dk.dtu.compute.se.pisd.roborally.controller.PushPanel;
 import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
@@ -85,6 +88,24 @@ public class SpaceView extends StackPane implements ViewObserver {
             if (action instanceof ConveyorBelt) {
                 this.setStyle("-fx-background-color: purple;");
                 Label label = new Label(((ConveyorBelt)action).getHeading().toString());
+                this.getChildren().add(label);
+                break;
+            }
+            if (action instanceof Gear) {
+                this.setStyle("-fx-background-color: grey;");
+                Label label = new Label(((Gear)action).getHeading().toString());
+                this.getChildren().add(label);
+                break;
+            }
+            if (action instanceof PushPanel) {
+                this.setStyle("-fx-background-color: blue;");
+                Label label = new Label(((PushPanel)action).getHeading().toString());
+                this.getChildren().add(label);
+                break;
+            }
+            if (action instanceof Laser) {
+                this.setStyle("-fx-background-color: red;");
+                Label label = new Label(((Laser)action).getHeading().toString());
                 this.getChildren().add(label);
                 break;
             }

@@ -8,6 +8,10 @@ import org.jetbrains.annotations.NotNull;
 public class Gear extends FieldAction {
     private Heading heading;
 
+    public Heading getHeading() {return heading;}
+
+    public void setHeading(Heading heading) {this.heading = heading;}
+
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         Player player = space.getPlayer();
