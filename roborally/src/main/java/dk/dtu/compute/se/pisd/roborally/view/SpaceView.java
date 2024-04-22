@@ -66,15 +66,32 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
+        ImageView spaceImageView = new ImageView();
+        Image spaceImage;
+        spaceImageView.setFitHeight(SPACE_HEIGHT);
+        spaceImageView.setFitWidth(SPACE_WIDTH);
         if (space.getActions().isEmpty()) {
-           ImageView spaceImageView = new ImageView();
-           Image spaceImage = new Image("images/empty.png");
-           spaceImageView.setImage(spaceImage);
-           spaceImageView.setFitHeight(SPACE_HEIGHT);
-           spaceImageView.setFitWidth(SPACE_WIDTH);
-           this.getChildren().add(spaceImageView);
+            spaceImage = new Image("images/empty.png");
+            spaceImageView.setImage(spaceImage);
+        } else if (containsConveyorBelt()) {
+            spaceImage = new Image("images/greenConveyor.png");
+            spaceImageView.setImage(spaceImage);
+            switch (((ConveyorBelt)space.getActions().get(0)).getHeading()) {
+                case NORTH:
+                    spaceImageView.setRotate(0);
+                    break;
+                case SOUTH:
+                    spaceImageView.setRotate(180);
+                    break;
+                case EAST:
+                    spaceImageView.setRotate(90);
+                    break;
+                case WEST:
+                    spaceImageView.setRotate(270);
+                    break;
+            }
         }
-
+        this.getChildren().add(spaceImageView);
         if (!space.getWalls().isEmpty()) {
             for (Heading wall : space.getWalls()) {
                 ImageView wallImageView = new ImageView();
@@ -116,12 +133,6 @@ public class SpaceView extends StackPane implements ViewObserver {
                 this.getChildren().add(label);
                 break;
             }
-            if (action instanceof ConveyorBelt) {
-                this.setStyle("-fx-background-color: purple;");
-                Label label = new Label(((ConveyorBelt)action).getHeading().toString());
-                this.getChildren().add(label);
-                break;
-            }
         }
         // updatePlayer();
 
@@ -154,5 +165,16 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (subject == this.space) {
             updatePlayer();
         }
+    }
+    private boolean containsConveyorBelt() {
+        if (space.getActions().isEmpty()) {
+            return false;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof ConveyorBelt) {
+                return true;
+            }
+        }
+        return false;
     }
 }
