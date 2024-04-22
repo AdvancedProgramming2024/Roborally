@@ -8,9 +8,13 @@ import org.jetbrains.annotations.NotNull;
 public class PushPanel extends FieldAction {
     private Heading heading;
 
+    public void setHeading(Heading heading) {this.heading = heading;}
+
+    public Heading getHeading() {return heading;}
+
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
-        Player player = space.board.getNeighbour(space, heading).getPlayer();
+        Player player = space.getPlayer();
         if (player == null) return false;
 
         gameController.moveInDirection(player, heading);

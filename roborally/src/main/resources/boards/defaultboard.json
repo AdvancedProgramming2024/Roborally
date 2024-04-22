@@ -18,6 +18,20 @@
       "y": 0
     },
     {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt",
+          "INSTANCE": {
+            "heading": "EAST",
+            "lazer": 1
+          }
+        }
+      ],
+      "x": 0,
+      "y": 6
+    },
+    {
       "walls": [
         "NORTH"
       ],
