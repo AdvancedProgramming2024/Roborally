@@ -34,6 +34,7 @@ import java.util.List;
 public enum Command {
 
     // This is a very simplistic way of realizing different commands.
+    // Basic programming commands
     MOVE_1("Move 1"),
     MOVE_2("Move 2"),
     MOVE_3("Move 3"),
@@ -43,6 +44,14 @@ public enum Command {
     MOVE_BACK("Move Back"),
     POWER_UP("Power Up"),
     AGAIN("Again (repeat action)"),
+
+    // Damage commands
+    SPAM("Spam"),
+    TROJAN_HORSE("Trojan Horse"),
+    VIRUS("Virus"),
+    WORM("Worm"),
+
+    // Special programming commands
     OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
 
     final public String displayName;

@@ -62,7 +62,7 @@ public class GameController {
                     // (which would be very bad style).
                 }
             } else {
-                // TODO: Reboot player
+                player.reboot();
                 System.out.println("Player fell off the board and reboots...");
             }
         }
@@ -84,6 +84,7 @@ public class GameController {
         player.setHeading(playerHeading);
     }
 
+    // TODO Add reboot according to the rules of pushing
     void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
         Player other = space.getPlayer();
@@ -214,9 +215,13 @@ public class GameController {
             int step = board.getStep();
             if (step >= 0 && step < Player.NO_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
-                if (card != null) {
+                if (card != null && !currentPlayer.isRebooting()) {
                     Command command = card.command;
-                    commandCardController.executeCommand(this, currentPlayer, command);
+                    while (!commandCardController.executeCommand(this, currentPlayer, command)) {
+                        CommandCardField field = currentPlayer.getProgramField(step);
+                        field.setCard(currentPlayer.drawCommandCard());
+                    }
+
                     if (command.ordinal() < Command.SPAM.ordinal() || command.ordinal() > Command.WORM.ordinal()) {
                         currentPlayer.discardCommandCard(card);
                     }
@@ -276,6 +281,7 @@ public class GameController {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
+                player.stopRebooting();
                 for (int j = 0; j < Player.NO_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
                     field.setCard(null);

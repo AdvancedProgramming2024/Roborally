@@ -1,11 +1,21 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Command;
+import dk.dtu.compute.se.pisd.roborally.model.CommandCard;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandCardController {
-    public void executeCommand(GameController gameController, @NotNull Player player, Command command) {
+    /**
+     * Execute command boolean.
+     *
+     * @param gameController
+     * @param player
+     * @param command
+     * @return whether the command was executed (true) or a new card needs to be drawn (false)
+     */
+    public boolean executeCommand(GameController gameController, @NotNull Player player, Command command) {
         if (player.board == gameController.board && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
@@ -30,9 +40,6 @@ public class CommandCardController {
                 case LEFT:
                     gameController.turn(player, 3);
                     break;
-                case OPTION_LEFT_RIGHT:
-                    // TODO: Do something here
-                    break;
                 case U_TURN:
                     gameController.turn(player, 2);
                     break;
@@ -44,14 +51,34 @@ public class CommandCardController {
                     break;
                 case AGAIN:
                     int i = gameController.board.getStep()-1;
-                    if (i < 0 ) return;
+                    if (i < 0 ) return true;
                     Command c = gameController.board.getCurrentPlayer().
                             getProgramField(i).getCard().command;
                     executeCommand(gameController, player, c);
                     break;
+                case SPAM:
+                    return false;
+                case VIRUS:
+                    Board board = gameController.board;
+                    for (int j = 0; j < board.getPlayersNumber(); j++) {
+                        int distance = Math.abs(player.getSpace().x - board.getPlayer(j).getSpace().x) +
+                                Math.abs(player.getSpace().y - board.getPlayer(j).getSpace().y);
+                        if (board.getPlayer(j) != player && distance <= 6) {
+                            board.getPlayer(j).addCommandCard(new CommandCard(Command.VIRUS));
+                        }
+                    }
+                    return false;
+                case TROJAN_HORSE:
+                    gameController.board.getCurrentPlayer().addCommandCard(new CommandCard(Command.SPAM));
+                    gameController.board.getCurrentPlayer().addCommandCard(new CommandCard(Command.SPAM));
+                    return false;
+                case WORM:
+                    // Reboot
+                    return false;
                 default:
                     // DO NOTHING (for now)
             }
         }
+        return true;
     }
 }
