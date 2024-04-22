@@ -31,6 +31,8 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -63,6 +65,35 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setPrefHeight(SPACE_HEIGHT);
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
+
+        if (!space.getWalls().isEmpty()) {
+            for (Heading wall : space.getWalls()) {
+                ImageView wallImageView = new ImageView();
+                Image wallImage = new Image("images/wall.png");
+                wallImageView.setImage(wallImage);
+                wallImageView.setFitHeight(SPACE_HEIGHT);
+                wallImageView.setFitWidth(SPACE_HEIGHT/6);
+                switch (wall) {
+                    case NORTH:
+                        wallImageView.setRotate(90);
+                        wallImageView.setTranslateY((-SPACE_HEIGHT/2)+wallImageView.getFitWidth()/2);
+                        break;
+                    case SOUTH:
+                        wallImageView.setRotate(90);
+                        wallImageView.setTranslateY((SPACE_HEIGHT/2)-wallImageView.getFitWidth()/2);
+                        break;
+                    case EAST:
+                        wallImageView.setTranslateX((SPACE_WIDTH/2)-wallImageView.getFitWidth()/2);
+                        break;
+                    case WEST:
+                        wallImageView.setTranslateX((-SPACE_WIDTH/2)+wallImageView.getFitWidth()/2);
+                        break;
+                    default:
+                        continue;
+                }
+                this.getChildren().add(wallImageView);
+            }
+        }
 
         if ((space.x + space.y) % 2 == 0) {
             this.setStyle("-fx-background-color: white;");
@@ -119,31 +150,6 @@ public class SpaceView extends StackPane implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == this.space) {
             updatePlayer();
-            drawWalls();
         }
     }
-
-    private void drawWalls() {
-        for (Heading wall : space.getWalls()) {
-            Line line;
-            switch (wall) {
-                case NORTH:
-                    line = new Line(0, 0, this.getWidth(), 0);
-                    break;
-                case SOUTH:
-                    line = new Line(0, this.getHeight(), this.getWidth(), this.getHeight());
-                    break;
-                case EAST:
-                    line = new Line(this.getWidth(), 0, this.getWidth(), this.getHeight());
-                    break;
-                case WEST:
-                    line = new Line(0, 0, 0, this.getHeight());
-                    break;
-                default:
-                    continue;
-            }
-            this.getChildren().add(line);
-        }
-    }
-
 }
