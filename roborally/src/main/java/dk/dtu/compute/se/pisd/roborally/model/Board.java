@@ -54,8 +54,6 @@ public class Board extends Subject {
     private Space antenna;
     private Heading antennaHeading;
 
-    private int checkPoints = 0;
-
     private int step = 0;
 
     private boolean stepMode;
@@ -85,15 +83,6 @@ public class Board extends Subject {
                 throw new IllegalStateException("A game with a set id may not be assigned a new id!");
             }
         }
-    }
-
-    public int getCheckPoints() {
-        return checkPoints;
-    }
-
-    public void addCheckPoint(int x, int y) {
-        checkPoints++;
-        getSpace(x, y).addAction(new Checkpoint(checkPoints));
     }
 
     public Space getSpace(int x, int y) {
