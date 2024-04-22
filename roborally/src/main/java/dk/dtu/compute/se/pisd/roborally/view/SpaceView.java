@@ -90,8 +90,22 @@ public class SpaceView extends StackPane implements ViewObserver {
                     spaceImageView.setRotate(270);
                     break;
             }
+        } else if (space == space.board.getAntenna()) {
+            spaceImage = new Image("images/antenna.png");
+            spaceImageView.setImage(spaceImage);
+        } else if (getCheckpoint() != null) {
+            spaceImage = switch (getCheckpoint().getId()) {
+                case 2 -> new Image("images/checkpoint2.png");
+                case 3 -> new Image("images/checkpoint3.png");
+                case 4 -> new Image("images/checkpoint4.png");
+                case 5 -> new Image("images/checkpoint5.png");
+                case 6 -> new Image("images/checkpoint6.png");
+                default -> new Image("images/checkpoint1.png");
+            };
+            spaceImageView.setImage(spaceImage);
         }
         this.getChildren().add(spaceImageView);
+
         if (!space.getWalls().isEmpty()) {
             for (Heading wall : space.getWalls()) {
                 ImageView wallImageView = new ImageView();
@@ -120,21 +134,6 @@ public class SpaceView extends StackPane implements ViewObserver {
                 this.getChildren().add(wallImageView);
             }
         }
-
-        if (space == space.board.getAntenna()) {
-            this.setStyle("-fx-background-color: red;");
-        }
-
-        // TODO: Remove this later and replace with images for space backgrounds
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof Checkpoint) {
-                this.setStyle("-fx-background-color: yellow;");
-                Label label = new Label(Integer.toString(((Checkpoint)action).getId()));
-                this.getChildren().add(label);
-                break;
-            }
-        }
-        // updatePlayer();
 
         // This space view should listen to changes of the space
         space.attach(this);
@@ -176,5 +175,17 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
         }
         return false;
+    }
+
+    private Checkpoint getCheckpoint() {
+        if (space.getActions().isEmpty()) {
+            return null;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof Checkpoint) {
+                return (Checkpoint) action;
+            }
+        }
+        return null;
     }
 }
