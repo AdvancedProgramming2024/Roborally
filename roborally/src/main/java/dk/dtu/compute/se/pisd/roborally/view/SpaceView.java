@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -73,16 +74,6 @@ public class SpaceView extends StackPane implements ViewObserver {
             this.setStyle("-fx-background-color: red;");
         }
 
-        // updatePlayer();
-
-        // This space view should listen to changes of the space
-        space.attach(this);
-        update(space);
-    }
-
-    private void updatePlayer() {
-        this.getChildren().clear();
-
         // TODO: Remove this later and replace with images for space backgrounds
         for (FieldAction action : space.getActions()) {
             if (action instanceof Checkpoint) {
@@ -91,7 +82,22 @@ public class SpaceView extends StackPane implements ViewObserver {
                 this.getChildren().add(label);
                 break;
             }
+            if (action instanceof ConveyorBelt) {
+                this.setStyle("-fx-background-color: purple;");
+                Label label = new Label(((ConveyorBelt)action).getHeading().toString());
+                this.getChildren().add(label);
+                break;
+            }
         }
+        // updatePlayer();
+
+        // This space view should listen to changes of the space
+        space.attach(this);
+        update(space);
+    }
+
+    private void updatePlayer() {
+        this.getChildren().removeIf(node -> node instanceof Polygon);
 
         Player player = space.getPlayer();
         if (player != null) {
