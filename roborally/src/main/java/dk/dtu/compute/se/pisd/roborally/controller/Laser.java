@@ -19,10 +19,17 @@ public class Laser extends FieldAction {
     public void setLazer(int lazer) {this.lazer = lazer;}
 
     @Override
+    public String getActionType() {
+        return super.getActionType();
+    }
+
+    @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         Player player = space.getPlayer();
         if (player != null) {
             //hit.getPLayer().doloadsofdamage()
+            System.out.println("HEADSHOT! player was not null");
+            System.out.println("Player " + space.getPlayer().getName() + "  got hit with a lazer");
             return true;
         }
 
