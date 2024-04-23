@@ -218,6 +218,7 @@ public class GameController {
                         command = card.command;
                     }
                     // Another card is always chosen, so the damage card is removed while the new card is discarded properly
+                    currentPlayer.discardCommandCard(card);
 
                 } else if (currentPlayer.isRebooting()) {
                     currentPlayer.discardCommandCard(card);
