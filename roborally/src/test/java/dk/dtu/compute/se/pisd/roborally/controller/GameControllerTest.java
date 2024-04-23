@@ -93,4 +93,21 @@ class GameControllerTest {
         Assertions.assertEquals(board.getPlayer(4), gameController.getPlayerOrder().get(4), "1. player should be " + board.getPlayer(2).getName());
         Assertions.assertEquals(board.getPlayer(5), gameController.getPlayerOrder().get(5), "1. player should be " + board.getPlayer(2).getName());
     }
+
+    /**
+     * @author Jonathan (s235115)
+     */
+    @Test
+    void fallInVoid() {
+        Board board = gameController.board;
+        board.setRebootStation(0, 3, Heading.EAST);
+        Player current = board.getCurrentPlayer();
+
+        gameController.moveInDirection(current, Heading.NORTH);
+
+        Assertions.assertEquals(current.getSpace(), board.getSpace(0, 3), "Player 0 should be at the reboot station!");
+        Assertions.assertTrue(current.isRebooting(), "Player 0 should be rebooting!");
+    }
+
+
 }
