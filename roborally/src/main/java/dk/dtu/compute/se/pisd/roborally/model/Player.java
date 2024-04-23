@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -199,12 +200,16 @@ public class Player extends Subject {
         }
     }
 
-    public void reboot() {
+    public void reboot(GameController gameController) {
         rebooting = true;
         addCommandCard(new CommandCard(Command.SPAM));
         addCommandCard(new CommandCard(Command.SPAM));
 
-        setSpace(board.getRebootStation());
+
+        if (!gameController.forceMoveToSpace(this, board.getRebootStation(), board.getRebootStationHeading())) {
+            // TODO: What to do if the reboot station is blocked? Move to start space?
+        }
+        // TODO: Player should choose heading
     }
 
     public boolean isRebooting() {

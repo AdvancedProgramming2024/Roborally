@@ -62,7 +62,7 @@ public class GameController {
                     // (which would be very bad style).
                 }
             } else {
-                player.reboot();
+                player.reboot(this);
                 System.out.println("Player fell off the board and reboots...");
             }
         }
@@ -84,9 +84,16 @@ public class GameController {
         player.setHeading(playerHeading);
     }
 
-    // TODO Add reboot according to the rules of pushing
-    void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
-        assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
+    public boolean forceMoveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) {
+        try {
+            moveToSpace(player, space, heading);
+        } catch (GameController.ImpossibleMoveException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         Player other = space.getPlayer();
         if (other != null && other != player) {
             Space target = board.getNeighbour(space, heading);
