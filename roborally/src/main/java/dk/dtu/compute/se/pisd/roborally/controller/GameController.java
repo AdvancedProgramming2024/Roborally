@@ -220,11 +220,13 @@ public class GameController {
                     while (!commandCardController.executeCommand(this, currentPlayer, command)) {
                         CommandCardField field = currentPlayer.getProgramField(step);
                         field.setCard(currentPlayer.drawCommandCard());
+                        card = field.getCard();
+                        command = card.command;
                     }
+                    // Another card is always chosen, so the damage card is removed while the new card is discarded properly
 
-                    if (command.ordinal() < Command.SPAM.ordinal() || command.ordinal() > Command.WORM.ordinal()) {
-                        currentPlayer.discardCommandCard(card);
-                    }
+                } else if (currentPlayer.isRebooting()) {
+                    currentPlayer.discardCommandCard(card);
                 }
                 int nextPlayerNumber = playerOrder.indexOf(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
