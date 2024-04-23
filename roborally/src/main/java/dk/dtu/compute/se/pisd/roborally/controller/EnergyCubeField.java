@@ -4,7 +4,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.jetbrains.annotations.NotNull;
 
-public class EnergyCubeField {
+public class EnergyCubeField extends FieldAction {
 
     //picks up an energy cube and adds it to the player's energy bank
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {

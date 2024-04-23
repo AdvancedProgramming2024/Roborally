@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.view;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
+import dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -66,6 +67,88 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
+        drawBoard();
+
+        // This space view should listen to changes of the space
+        space.attach(this);
+        update(space);
+    }
+
+    private void updatePlayer() {
+        this.getChildren().removeIf(node -> node instanceof Polygon);
+
+        Player player = space.getPlayer();
+        if (player != null) {
+            Polygon arrow = new Polygon(0.0, 0.0,
+                    10.0, 20.0,
+                    20.0, 0.0 );
+            try {
+                arrow.setFill(Color.valueOf(player.getColor()));
+            } catch (Exception e) {
+                arrow.setFill(Color.MEDIUMPURPLE);
+            }
+
+            arrow.setRotate((90*player.getHeading().ordinal())%360);
+            this.getChildren().add(arrow);
+        }
+    }
+
+    @Override
+    public void updateView(Subject subject) {
+        if (subject == this.space) {
+            updatePlayer();
+        }
+    }
+    /**
+     * @author Kresten (s235103)
+     * @return true if the space contains a conveyor belt, false otherwise
+     */
+    private boolean containsConveyorBelt() {
+        if (space.getActions().isEmpty()) {
+            return false;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof ConveyorBelt) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * @author Kresten (s235103)
+     * @return the checkpoint on the space, null if there is none
+    */
+    private Checkpoint getCheckpoint() {
+        if (space.getActions().isEmpty()) {
+            return null;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof Checkpoint) {
+                return (Checkpoint) action;
+            }
+        }
+        return null;
+    }
+    /**
+     * @athor Kresten (s235103)
+     * @return true if the space contains an energy cube field, false otherwise
+     */
+    private boolean containsEnergyCubeField() {
+        if (space.getActions().isEmpty()) {
+            return false;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof EnergyCubeField) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Draws the spaces and their content
+     * @author Kresten (s235103)
+     */
+    private void drawBoard() {
         ImageView spaceImageView = new ImageView();
         Image spaceImage;
         spaceImageView.setFitHeight(SPACE_HEIGHT);
@@ -100,7 +183,10 @@ public class SpaceView extends StackPane implements ViewObserver {
                 default -> new Image("images/checkpoint1.png");
             };
             spaceImageView.setImage(spaceImage);
-        }  else if (space.getActions().isEmpty()) {
+        } else if (containsEnergyCubeField()) {
+            spaceImage = new Image("images/energyField.png");
+            spaceImageView.setImage(spaceImage);
+        } else if (space.getActions().isEmpty()) {
             spaceImage = new Image("images/empty.png");
             spaceImageView.setImage(spaceImage);
         }
@@ -134,58 +220,5 @@ public class SpaceView extends StackPane implements ViewObserver {
                 this.getChildren().add(wallImageView);
             }
         }
-
-        // This space view should listen to changes of the space
-        space.attach(this);
-        update(space);
-    }
-
-    private void updatePlayer() {
-        this.getChildren().removeIf(node -> node instanceof Polygon);
-
-        Player player = space.getPlayer();
-        if (player != null) {
-            Polygon arrow = new Polygon(0.0, 0.0,
-                    10.0, 20.0,
-                    20.0, 0.0 );
-            try {
-                arrow.setFill(Color.valueOf(player.getColor()));
-            } catch (Exception e) {
-                arrow.setFill(Color.MEDIUMPURPLE);
-            }
-
-            arrow.setRotate((90*player.getHeading().ordinal())%360);
-            this.getChildren().add(arrow);
-        }
-    }
-
-    @Override
-    public void updateView(Subject subject) {
-        if (subject == this.space) {
-            updatePlayer();
-        }
-    }
-    private boolean containsConveyorBelt() {
-        if (space.getActions().isEmpty()) {
-            return false;
-        }
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof ConveyorBelt) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Checkpoint getCheckpoint() {
-        if (space.getActions().isEmpty()) {
-            return null;
-        }
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof Checkpoint) {
-                return (Checkpoint) action;
-            }
-        }
-        return null;
     }
 }

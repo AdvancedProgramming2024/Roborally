@@ -136,6 +136,72 @@
       "actions": [],
       "x": 9,
       "y": 6
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField",
+            "INSTANCE": {}
+        }
+      ],
+      "x": 12,
+      "y": 0
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField",
+          "INSTANCE": {}
+        }
+      ],
+      "x": 5,
+      "y": 2
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField",
+          "INSTANCE": {}
+        }
+      ],
+      "x": 8,
+      "y": 4
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField",
+          "INSTANCE": {}
+        }
+      ],
+      "x": 7,
+      "y": 5
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField",
+          "INSTANCE": {}
+        }
+      ],
+      "x": 10,
+      "y": 7
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField",
+          "INSTANCE": {}
+        }
+      ],
+      "x": 3,
+      "y": 9
     }
   ]
 }
