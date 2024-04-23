@@ -102,7 +102,7 @@ public class Board extends Subject {
         }
         int dx = space.x - antenna.x;
         int dy = space.y - antenna.y;
-        return Math.sqrt(dx * dx + dy * dy);
+        return Math.abs(dx) + Math.abs(dy);
     }
 
     public double getAngleToAntenna(Space space) {
