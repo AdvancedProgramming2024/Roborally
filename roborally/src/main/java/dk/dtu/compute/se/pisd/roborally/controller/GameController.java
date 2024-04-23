@@ -252,7 +252,7 @@ public class GameController {
                         board.setCurrentPlayer(board.getPlayer(i));
                         Space space = board.getCurrentPlayer().getSpace();
                         for (FieldAction action : space.getActions()) {
-                            if (!action.getActionType().equals("Laser")) {
+                            if (!(action instanceof Laser)) {
                                 action.doAction(this, space);
                             }
                         }
@@ -263,7 +263,7 @@ public class GameController {
                         for (int y = 0; y < board.height; y++) {
                             Space space = board.getSpace(x, y);
                             for (FieldAction action : space.getActions()) {
-                                if (action.getActionType().equals(("Laser"))) {
+                                if (action instanceof Laser) {
                                     action.doAction(this, space);
                                 }
                             }
