@@ -261,17 +261,43 @@ public class Board extends Subject {
     public Space getLOS(@NotNull Space space, @NotNull Heading heading) {
         Player player = space.getPlayer();
         if (player != null) {
-            //hit.getPLayer().doloadsofdamage()
+            return space;
+        }
+        if (space.getWalls().contains(heading)) {
             return space;
         }
 
-        Space neighbour = space.board.getNeighbour(space, heading);
+        //Implement the same way neighbour is made, just with no null checks
+        int x = space.x;
+        int y = space.y;
+        switch (heading) {
+            case SOUTH:
+                y++;
+                break;
+            case WEST:
+                x--;
+                break;
+            case NORTH:
+                y--;
+                break;
+            case EAST:
+                x++;
+                break;
+        }
 
-        // Check if neighbour is null or has a wall in the opposite direction
-        if (neighbour == null || neighbour.getWalls().contains(heading.next().next())) {
+        if (x >= space.board.width || x < 0 || y >= space.board.height || y < 0 ) {
+            return null;
+        }
+        Space neighbour = getSpace(x,y);
+
+        if (space.getWalls().contains(heading)) {
+            return space;
+        }
+        // Check if neighbour has a wall in the opposite direction
+        if (neighbour.getWalls().contains(heading.next().next())) {
             return null;  // LOS is obstructed
         }
-        //getNeighbour should already check for walls, so we only check for players
+        //Check for player at neighbours neighbours neighbour...
         if (neighbour.getPlayer() != null) {
             return neighbour;
         }

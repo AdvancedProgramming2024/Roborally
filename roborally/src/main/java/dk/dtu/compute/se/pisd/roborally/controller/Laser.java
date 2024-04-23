@@ -34,6 +34,10 @@ public class Laser extends FieldAction {
         }
 
         Space hit = space.board.getLOS(space, heading);
+        //If we reach out of bounds do nothing
+        if (hit == null) {
+            return false;
+        }
         if (hit.getPlayer() != null) {
             for (int i = 0; i < lazer; i++) {
                 //hit.getPLayer().doloadsofdamage() , TODO: Implement damage
