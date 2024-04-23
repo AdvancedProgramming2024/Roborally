@@ -264,8 +264,9 @@ public class Board extends Subject {
             return space;
         }
         if (space.getWalls().contains(heading)) {
-            return space;
+            return null;
         }
+
 
         //Implement the same way neighbour is made, just with no null checks
         int x = space.x;
@@ -290,17 +291,19 @@ public class Board extends Subject {
         }
         Space neighbour = getSpace(x,y);
 
-        if (space.getWalls().contains(heading)) {
-            return space;
+        Heading reverse = heading.next().next();
+        if (neighbour.getWalls().contains(reverse)) {
+            return null;
         }
-        // Check if neighbour has a wall in the opposite direction
-        if (neighbour.getWalls().contains(heading.next().next())) {
-            return null;  // LOS is obstructed
-        }
-        //Check for player at neighbours neighbours neighbour...
         if (neighbour.getPlayer() != null) {
             return neighbour;
         }
+        // Check if neighbour has a wall in the opposite direction
+        if (neighbour.getWalls().contains(heading)) {
+            return null;  // LOS is obstructed
+        }
+        //Check for player at neighbours neighbours neighbour...
+
         return getLOS(neighbour, heading);
     }
 

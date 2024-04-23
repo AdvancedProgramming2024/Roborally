@@ -223,8 +223,6 @@ public class GameController {
                         Space space = board.getCurrentPlayer().getSpace();
                         for (FieldAction action : space.getActions()) {
                             if (!action.getActionType().equals("Laser")) {
-                                System.out.println(action.getActionType().equals("Laser"));
-                                System.out.println(action.getActionType());
                                 action.doAction(this, space);
                             }
                         }
@@ -236,7 +234,6 @@ public class GameController {
                             Space space = board.getSpace(x, y);
                             for (FieldAction action : space.getActions()) {
                                 if (action.getActionType().equals(("Laser"))) {
-                                    System.out.println("Pew Pew");
                                     action.doAction(this, space);
                                 }
                             }
