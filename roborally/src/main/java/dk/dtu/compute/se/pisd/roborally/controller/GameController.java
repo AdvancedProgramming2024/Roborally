@@ -113,12 +113,6 @@ public class GameController {
             return;
         }
         board.getCurrentPlayer().setSpace(space);
-
-        Player nextPlayer = board.getPlayer(
-                (board.getPlayerNumber(board.getCurrentPlayer())+1) % board.getPlayersNumber());
-        board.setCurrentPlayer(nextPlayer);
-
-        board.setStep(board.getStep()+1);
     }
 
     private void makeProgramFieldsVisible(int register) {
