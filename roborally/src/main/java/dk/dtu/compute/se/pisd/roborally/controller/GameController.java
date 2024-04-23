@@ -55,14 +55,14 @@ public class GameController {
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
                 try {
-                    moveToSpace(player, target, heading);
+                    move(player, target, heading);
                 } catch (ImpossibleMoveException e) {
                     // we don't do anything here  for now; we just catch the
                     // exception so that we do not pass it on to the caller
                     // (which would be very bad style).
                 }
             } else {
-                player.reboot();
+                player.reboot(this);
                 System.out.println("Player fell off the board and reboots...");
             }
         }
@@ -84,8 +84,26 @@ public class GameController {
         player.setHeading(playerHeading);
     }
 
-    // TODO Add reboot according to the rules of pushing
-    void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
+    public boolean moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) {
+        Player other = space.getPlayer();
+        if (other != null && other != player) {
+            Space target = board.getNeighbour(space, heading);
+            if (target != null) {
+                try {
+                    move(other, target, heading);
+                } catch (ImpossibleMoveException e) {
+                    return false;
+                }
+                assert space.getPlayer() == null : target; // make sure target is free now
+            } else {
+                return false;
+            }
+        }
+        player.setSpace(space);
+        return true;
+    }
+
+    private void move(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
         Player other = space.getPlayer();
         if (other != null && other != player) {
@@ -94,7 +112,7 @@ public class GameController {
                 // XXX Note that there might be additional problems with
                 //     infinite recursion here (in some special cases)!
                 //     We will come back to that!
-                moveToSpace(other, target, heading);
+                move(other, target, heading);
 
                 // Note that we do NOT embed the above statement in a try catch block, since
                 // the thrown exception is supposed to be passed on to the caller

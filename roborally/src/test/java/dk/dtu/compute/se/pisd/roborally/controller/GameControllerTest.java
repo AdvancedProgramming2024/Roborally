@@ -93,4 +93,45 @@ class GameControllerTest {
         Assertions.assertEquals(board.getPlayer(4), gameController.getPlayerOrder().get(4), "1. player should be " + board.getPlayer(2).getName());
         Assertions.assertEquals(board.getPlayer(5), gameController.getPlayerOrder().get(5), "1. player should be " + board.getPlayer(2).getName());
     }
+
+    /**
+     * @author Jonathan (s235115)
+     */
+    @Test
+    void fallInVoid() {
+        Board board = gameController.board;
+        board.setRebootStation(0, 3, Heading.EAST);
+        Player current = board.getCurrentPlayer();
+
+        gameController.moveInDirection(current, Heading.NORTH);
+
+        Assertions.assertEquals(current.getSpace(), board.getSpace(0, 3), "Player 0 should be at the reboot station!");
+        Assertions.assertTrue(current.isRebooting(), "Player 0 should be rebooting!");
+    }
+
+    /**
+     * @author Jonathan (s235115)
+     */
+    @Test
+    void multipleFallInVoid() {
+        Board board = gameController.board;
+        board.setRebootStation(0, 3, Heading.EAST);
+        Player player1 = board.getPlayer(0);
+        Player player2 = board.getPlayer(1);
+
+        gameController.moveInDirection(player1, Heading.NORTH);
+
+        Assertions.assertEquals(player1.getSpace(), board.getSpace(0, 3), "Player 0 should be at the reboot station!");
+        Assertions.assertTrue(player1.isRebooting(), "Player 0 should be rebooting!");
+
+        gameController.moveInDirection(player2, Heading.NORTH);
+        gameController.moveInDirection(player2, Heading.NORTH);
+
+        Assertions.assertTrue(player1.isRebooting(), "Player 0 should be rebooting!");
+        Assertions.assertTrue(player2.isRebooting(), "Player 1 should be rebooting!");
+        Assertions.assertEquals(player1.getSpace(), board.getSpace(1, 3), "Player 0 should be at the reboot station!");
+        Assertions.assertEquals(player2.getSpace(), board.getSpace(0, 3), "Player 1 should be at the reboot station!");
+    }
+
+
 }

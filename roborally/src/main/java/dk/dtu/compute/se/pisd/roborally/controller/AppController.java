@@ -83,7 +83,7 @@ public class AppController implements Observer {
             //     here we just create an empty board with the required number of players.
             Board board = loadBoard(/*"defaultboard"*/"dizzy_highway");
             board.setAntenna(0,4, Heading.EAST);
-            board.setRebootStation(6,8);
+            board.setRebootStation(6,8, Heading.NORTH);
 
             gameController = new GameController(board);
             int no = result.get();
