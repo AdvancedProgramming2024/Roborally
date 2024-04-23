@@ -62,7 +62,7 @@ public class GameController {
                     // (which would be very bad style).
                 }
             } else {
-                // TODO: Reboot player
+                player.reboot();
                 System.out.println("Player fell off the board and reboots...");
             }
         }
@@ -84,6 +84,7 @@ public class GameController {
         player.setHeading(playerHeading);
     }
 
+    // TODO Add reboot according to the rules of pushing
     void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
         Player other = space.getPlayer();
@@ -150,6 +151,13 @@ public class GameController {
                 if (player.getProgramField(i).getCard() == null) return;
             }
         }
+        for (int j = 0; j < board.getPlayersNumber(); j++) {
+            Player player = board.getPlayer(j);
+            for (int i = 0; i < Player.NO_CARDS; i++) {
+                CommandCard card = player.getCardField(i).getCard();
+                if (card != null) player.discardCommandCard(card);
+            }
+        }
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
         board.setPhase(Phase.ACTIVATION);
@@ -207,9 +215,18 @@ public class GameController {
             int step = board.getStep();
             if (step >= 0 && step < Player.NO_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
-                if (card != null) {
+                if (card != null && !currentPlayer.isRebooting()) {
                     Command command = card.command;
-                    commandCardController.executeCommand(this, currentPlayer, command);
+                    while (!commandCardController.executeCommand(this, currentPlayer, command)) {
+                        CommandCardField field = currentPlayer.getProgramField(step);
+                        field.setCard(currentPlayer.drawCommandCard());
+                        card = field.getCard();
+                        command = card.command;
+                    }
+                    // Another card is always chosen, so the damage card is removed while the new card is discarded properly
+
+                } else if (currentPlayer.isRebooting()) {
+                    currentPlayer.discardCommandCard(card);
                 }
                 int nextPlayerNumber = playerOrder.indexOf(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
@@ -266,6 +283,7 @@ public class GameController {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
+                player.stopRebooting();
                 for (int j = 0; j < Player.NO_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
                     field.setCard(null);

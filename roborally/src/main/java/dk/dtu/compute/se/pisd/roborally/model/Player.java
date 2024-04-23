@@ -56,7 +56,7 @@ public class Player extends Subject {
     private CommandCardField[] program;
     private CommandCardField[] cards;
 
-
+    boolean rebooting = false;
 
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
@@ -104,8 +104,15 @@ public class Player extends Subject {
         }
         CommandCard card = drawPile.get(0);
         drawPile.remove(0);
-        discardPile.add(card); // TODO: Change later to add to discard after use of card
         return card;
+    }
+
+    public void addCommandCard(CommandCard card) {
+        discardPile.add(card);
+    }
+
+    public void discardCommandCard(CommandCard card) {
+        discardPile.add(card);
     }
       
     public int getCheckpoints() {
@@ -166,8 +173,7 @@ public class Player extends Subject {
 
     public void setSpace(Space space) {
         Space oldSpace = this.space;
-        if (space != oldSpace &&
-                (space == null || space.board == this.board)) {
+        if (space == null || space.board == this.board) {
             this.space = space;
             if (oldSpace != null) {
                 oldSpace.setPlayer(null);
@@ -191,6 +197,22 @@ public class Player extends Subject {
                 space.playerChanged();
             }
         }
+    }
+
+    public void reboot() {
+        rebooting = true;
+        addCommandCard(new CommandCard(Command.SPAM));
+        addCommandCard(new CommandCard(Command.SPAM));
+
+        setSpace(board.getSpace(7,7));// TODO: Go to reboot space and prevent multiple on same spot and alternative reboot space
+    }
+
+    public boolean isRebooting() {
+        return rebooting;
+    }
+
+    public void stopRebooting() {
+        rebooting = false;
     }
 
     public CommandCardField getProgramField(int i) {
