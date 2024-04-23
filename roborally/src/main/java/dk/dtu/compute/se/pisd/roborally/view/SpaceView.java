@@ -130,7 +130,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         return null;
     }
     /**
-     * @athor Kresten (s235103)
+     * @author Kresten (s235103)
      * @return true if the space contains an energy cube field, false otherwise
      */
     private boolean containsEnergyCubeField() {
@@ -145,7 +145,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         return false;
     }
     /**
-     * Draws the spaces and their content
+     * @Description Draws the spaces and their content
      * @author Kresten (s235103)
      */
     private void drawBoard() {
@@ -186,6 +186,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         } else if (containsEnergyCubeField()) {
             spaceImage = new Image("images/energyField.png");
             spaceImageView.setImage(spaceImage);
+            /*@TODO indicate if energy has been taken*/
         } else if (space.getActions().isEmpty()) {
             spaceImage = new Image("images/empty.png");
             spaceImageView.setImage(spaceImage);
