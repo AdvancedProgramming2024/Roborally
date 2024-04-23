@@ -52,6 +52,7 @@ public class Board extends Subject {
 
     private Phase phase = INITIALISATION;
     private Space antenna;
+    private Space rebootStation;
     private Heading antennaHeading;
 
     private int step = 0;
@@ -136,6 +137,14 @@ public class Board extends Subject {
     public void setAntenna(int x, int y, Heading heading) {
         antenna = getSpace(x, y);
         antennaHeading = heading;
+    }
+
+    public Space getRebootStation() {
+        return rebootStation;
+    }
+
+    public void setRebootStation(int x, int y) {
+        rebootStation = getSpace(x, y);
     }
 
     public int getPlayersNumber() {

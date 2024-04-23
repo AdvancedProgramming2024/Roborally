@@ -156,6 +156,9 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (space == space.board.getAntenna()) {
             spaceImage = new Image("images/antenna.png");
             spaceImageView.setImage(spaceImage);
+        } else if (space == space.board.getRebootStation()) {
+            spaceImage = new Image("images/reboot.png");
+            spaceImageView.setImage(spaceImage);
         } else if (containsConveyorBelt()) {
             spaceImage = new Image("images/greenConveyor.png");
             spaceImageView.setImage(spaceImage);

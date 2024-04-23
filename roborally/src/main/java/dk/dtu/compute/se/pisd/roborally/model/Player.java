@@ -204,7 +204,7 @@ public class Player extends Subject {
         addCommandCard(new CommandCard(Command.SPAM));
         addCommandCard(new CommandCard(Command.SPAM));
 
-        setSpace(board.getSpace(7,7));// TODO: Go to reboot space and prevent multiple on same spot and alternative reboot space
+        setSpace(board.getRebootStation());
     }
 
     public boolean isRebooting() {
