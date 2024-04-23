@@ -267,6 +267,55 @@ public class Board extends Subject {
         return result;
     }
 
+    public Space getLOS(@NotNull Space space, @NotNull Heading heading) {
+        Player player = space.getPlayer();
+        if (player != null) {
+            return space;
+        }
+        if (space.getWalls().contains(heading)) {
+            return null;
+        }
+
+
+        //Implement the same way neighbour is made, just with no null checks
+        int x = space.x;
+        int y = space.y;
+        switch (heading) {
+            case SOUTH:
+                y++;
+                break;
+            case WEST:
+                x--;
+                break;
+            case NORTH:
+                y--;
+                break;
+            case EAST:
+                x++;
+                break;
+        }
+
+        if (x >= space.board.width || x < 0 || y >= space.board.height || y < 0 ) {
+            return null;
+        }
+        Space neighbour = getSpace(x,y);
+
+        Heading reverse = heading.next().next();
+        if (neighbour.getWalls().contains(reverse)) {
+            return null;
+        }
+        if (neighbour.getPlayer() != null) {
+            return neighbour;
+        }
+        // Check if neighbour has a wall in the opposite direction
+        if (neighbour.getWalls().contains(heading)) {
+            return null;  // LOS is obstructed
+        }
+        //Check for player at neighbours neighbours neighbour...
+
+        return getLOS(neighbour, heading);
+    }
+
     public String getStatusMessage() {
         return "Phase: " + getPhase().name() +
                 ", Current Player = " + getCurrentPlayer().getName() +

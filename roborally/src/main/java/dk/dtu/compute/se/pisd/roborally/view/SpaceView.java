@@ -23,6 +23,9 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.controller.Gear;
+import dk.dtu.compute.se.pisd.roborally.controller.Laser;
+import dk.dtu.compute.se.pisd.roborally.controller.PushPanel;
 import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
@@ -67,7 +70,42 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
+
         drawBoard();
+
+        if ((space.x + space.y) % 2 == 0) {
+            this.setStyle("-fx-background-color: white;");
+        } else {
+            this.setStyle("-fx-background-color: black;");
+        }
+
+        if (space == space.board.getAntenna()) {
+            this.setStyle("-fx-background-color: red;");
+        }
+
+        // TODO: Remove this later and replace with images for space backgrounds
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof Gear) {
+                this.setStyle("-fx-background-color: grey;");
+                Label label = new Label(((Gear)action).getHeading().toString());
+                this.getChildren().add(label);
+                break;
+            }
+            if (action instanceof PushPanel) {
+                this.setStyle("-fx-background-color: blue;");
+                Label label = new Label(((PushPanel)action).getHeading().toString());
+                this.getChildren().add(label);
+                break;
+            }
+            if (action instanceof Laser) {
+                this.setStyle("-fx-background-color: red;");
+                Label label = new Label(((Laser)action).getHeading().toString());
+                this.getChildren().add(label);
+                break;
+            }
+        }
+        // updatePlayer();
+
 
         // This space view should listen to changes of the space
         space.attach(this);
