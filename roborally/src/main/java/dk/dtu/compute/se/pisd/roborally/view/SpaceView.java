@@ -70,8 +70,8 @@ public class SpaceView extends StackPane implements ViewObserver {
         Image spaceImage;
         spaceImageView.setFitHeight(SPACE_HEIGHT);
         spaceImageView.setFitWidth(SPACE_WIDTH);
-        if (space.getActions().isEmpty()) {
-            spaceImage = new Image("images/empty.png");
+        if (space == space.board.getAntenna()) {
+            spaceImage = new Image("images/antenna.png");
             spaceImageView.setImage(spaceImage);
         } else if (containsConveyorBelt()) {
             spaceImage = new Image("images/greenConveyor.png");
@@ -90,9 +90,6 @@ public class SpaceView extends StackPane implements ViewObserver {
                     spaceImageView.setRotate(270);
                     break;
             }
-        } else if (space == space.board.getAntenna()) {
-            spaceImage = new Image("images/antenna.png");
-            spaceImageView.setImage(spaceImage);
         } else if (getCheckpoint() != null) {
             spaceImage = switch (getCheckpoint().getId()) {
                 case 2 -> new Image("images/checkpoint2.png");
@@ -102,6 +99,9 @@ public class SpaceView extends StackPane implements ViewObserver {
                 case 6 -> new Image("images/checkpoint6.png");
                 default -> new Image("images/checkpoint1.png");
             };
+            spaceImageView.setImage(spaceImage);
+        }  else if (space.getActions().isEmpty()) {
+            spaceImage = new Image("images/empty.png");
             spaceImageView.setImage(spaceImage);
         }
         this.getChildren().add(spaceImageView);
