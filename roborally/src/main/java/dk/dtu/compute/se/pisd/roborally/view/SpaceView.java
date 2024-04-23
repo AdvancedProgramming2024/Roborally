@@ -31,6 +31,8 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -64,32 +66,74 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-        if ((space.x + space.y) % 2 == 0) {
-            this.setStyle("-fx-background-color: white;");
-        } else {
-            this.setStyle("-fx-background-color: black;");
-        }
-
-        if (space == space.board.getAntenna()) {
-            this.setStyle("-fx-background-color: red;");
-        }
-
-        // TODO: Remove this later and replace with images for space backgrounds
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof Checkpoint) {
-                this.setStyle("-fx-background-color: yellow;");
-                Label label = new Label(Integer.toString(((Checkpoint)action).getId()));
-                this.getChildren().add(label);
-                break;
+        ImageView spaceImageView = new ImageView();
+        Image spaceImage;
+        spaceImageView.setFitHeight(SPACE_HEIGHT);
+        spaceImageView.setFitWidth(SPACE_WIDTH);
+        if (space.getActions().isEmpty()) {
+            spaceImage = new Image("images/empty.png");
+            spaceImageView.setImage(spaceImage);
+        } else if (containsConveyorBelt()) {
+            spaceImage = new Image("images/greenConveyor.png");
+            spaceImageView.setImage(spaceImage);
+            switch (((ConveyorBelt)space.getActions().get(0)).getHeading()) {
+                case NORTH:
+                    spaceImageView.setRotate(0);
+                    break;
+                case SOUTH:
+                    spaceImageView.setRotate(180);
+                    break;
+                case EAST:
+                    spaceImageView.setRotate(90);
+                    break;
+                case WEST:
+                    spaceImageView.setRotate(270);
+                    break;
             }
-            if (action instanceof ConveyorBelt) {
-                this.setStyle("-fx-background-color: purple;");
-                Label label = new Label(((ConveyorBelt)action).getHeading().toString());
-                this.getChildren().add(label);
-                break;
+        } else if (space == space.board.getAntenna()) {
+            spaceImage = new Image("images/antenna.png");
+            spaceImageView.setImage(spaceImage);
+        } else if (getCheckpoint() != null) {
+            spaceImage = switch (getCheckpoint().getId()) {
+                case 2 -> new Image("images/checkpoint2.png");
+                case 3 -> new Image("images/checkpoint3.png");
+                case 4 -> new Image("images/checkpoint4.png");
+                case 5 -> new Image("images/checkpoint5.png");
+                case 6 -> new Image("images/checkpoint6.png");
+                default -> new Image("images/checkpoint1.png");
+            };
+            spaceImageView.setImage(spaceImage);
+        }
+        this.getChildren().add(spaceImageView);
+
+        if (!space.getWalls().isEmpty()) {
+            for (Heading wall : space.getWalls()) {
+                ImageView wallImageView = new ImageView();
+                Image wallImage = new Image("images/wall.png");
+                wallImageView.setImage(wallImage);
+                wallImageView.setFitHeight(SPACE_HEIGHT);
+                wallImageView.setFitWidth(SPACE_HEIGHT/6);
+                switch (wall) {
+                    case NORTH:
+                        wallImageView.setRotate(90);
+                        wallImageView.setTranslateY((-SPACE_HEIGHT/2)+wallImageView.getFitWidth()/2);
+                        break;
+                    case SOUTH:
+                        wallImageView.setRotate(90);
+                        wallImageView.setTranslateY((SPACE_HEIGHT/2)-wallImageView.getFitWidth()/2);
+                        break;
+                    case EAST:
+                        wallImageView.setTranslateX((SPACE_WIDTH/2)-wallImageView.getFitWidth()/2);
+                        break;
+                    case WEST:
+                        wallImageView.setTranslateX((-SPACE_WIDTH/2)+wallImageView.getFitWidth()/2);
+                        break;
+                    default:
+                        continue;
+                }
+                this.getChildren().add(wallImageView);
             }
         }
-        // updatePlayer();
 
         // This space view should listen to changes of the space
         space.attach(this);
@@ -119,31 +163,29 @@ public class SpaceView extends StackPane implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == this.space) {
             updatePlayer();
-            drawWalls();
         }
     }
-
-    private void drawWalls() {
-        for (Heading wall : space.getWalls()) {
-            Line line;
-            switch (wall) {
-                case NORTH:
-                    line = new Line(0, 0, this.getWidth(), 0);
-                    break;
-                case SOUTH:
-                    line = new Line(0, this.getHeight(), this.getWidth(), this.getHeight());
-                    break;
-                case EAST:
-                    line = new Line(this.getWidth(), 0, this.getWidth(), this.getHeight());
-                    break;
-                case WEST:
-                    line = new Line(0, 0, 0, this.getHeight());
-                    break;
-                default:
-                    continue;
+    private boolean containsConveyorBelt() {
+        if (space.getActions().isEmpty()) {
+            return false;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof ConveyorBelt) {
+                return true;
             }
-            this.getChildren().add(line);
         }
+        return false;
     }
 
+    private Checkpoint getCheckpoint() {
+        if (space.getActions().isEmpty()) {
+            return null;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof Checkpoint) {
+                return (Checkpoint) action;
+            }
+        }
+        return null;
+    }
 }
