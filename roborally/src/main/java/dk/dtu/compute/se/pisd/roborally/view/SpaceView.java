@@ -75,12 +75,6 @@ public class SpaceView extends StackPane implements ViewObserver {
 
         // TODO: Remove this later and replace with images for space backgrounds
         for (FieldAction action : space.getActions()) {
-            if (action instanceof Gear) {
-                this.setStyle("-fx-background-color: grey;");
-                Label label = new Label(((Gear)action).getHeading().toString());
-                this.getChildren().add(label);
-                break;
-            }
             if (action instanceof Laser) {
                 this.setStyle("-fx-background-color: red;");
                 Label label = new Label(((Laser)action).getHeading().toString());
@@ -182,6 +176,21 @@ public class SpaceView extends StackPane implements ViewObserver {
         return null;
     }
     /**
+     * @author Kresten (s235103)
+     * @return Gear if there is one, null otherwise
+     */
+    private Gear getGear() {
+        if (space.getActions().isEmpty()) {
+            return null;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof Gear) {
+                return (Gear) action;
+            }
+        }
+        return null;
+    }
+    /**
      * @Description Draws the spaces and their content
      * @author Kresten (s235103)
      */
@@ -227,6 +236,13 @@ public class SpaceView extends StackPane implements ViewObserver {
             spaceImage = new Image("images/energyField.png");
             spaceImageView.setImage(spaceImage);
             /*@TODO indicate if energy has been taken*/
+        } else if (getGear() != null) {
+            if (getGear().getHeading() == Heading.WEST) {
+                spaceImage = new Image("images/gearLeft.png");
+            } else {
+                spaceImage = new Image("images/gearRight.png");
+            }
+            spaceImageView.setImage(spaceImage);
         } else if (space.getActions().isEmpty() || getPushPanel() != null) {
             spaceImage = new Image("images/empty.png");
             spaceImageView.setImage(spaceImage);
@@ -234,7 +250,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.getChildren().add(spaceImageView);
 
         if (getPushPanel() != null) {
-            ImageView pushPanelImageView = getPushImageView();
+            ImageView pushPanelImageView = createPushImageView();
             this.getChildren().add(pushPanelImageView);
         }
 
@@ -272,7 +288,7 @@ public class SpaceView extends StackPane implements ViewObserver {
      * @return Placed ImageView of the pushPanel
      */
     @NotNull
-    private ImageView getPushImageView() {
+    private ImageView createPushImageView() {
         ImageView pushPanelImageView = new ImageView();
         if (getPushPanel().getPushTime() == PushPanel.PushTime.EVEN) {
             Image pushPanelImage = new Image("images/pushEven.png");
