@@ -241,18 +241,30 @@ public class GameController {
                 } else if (currentPlayer.isRebooting()) {
                     currentPlayer.discardCommandCard(card);
                 }
-                int nextPlayerNumber = playerOrder.indexOf(currentPlayer) + 1;
-
-                //INTERACTIVE PHASE
-                if (board.getPhase() == Phase.PLAYER_INTERACTION) {
-                    System.out.println("interactive");
+                if (board.getPhase() != Phase.PLAYER_INTERACTION) {
+                    endTurn();
+                } else {
                     return;
                 }
-                if (nextPlayerNumber < board.getPlayersNumber()) {
-                    board.setCurrentPlayer(playerOrder.get(nextPlayerNumber));
-                } else {
-                    step++;
 
+            } else {
+                // this should not happen
+                assert false;
+            }
+        } else {
+            // this should not happen
+            assert false;
+        }
+    }
+
+    public void endTurn() {
+        Player currentPlayer = board.getCurrentPlayer();
+        int step = board.getStep();
+        int nextPlayerNumber = playerOrder.indexOf(currentPlayer) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(playerOrder.get(nextPlayerNumber));
+        } else {
+            step++;
                     // TODO: Activate special fields and lasers
                     for (int i = 0; i < board.getPlayersNumber(); i++) {
                         board.setCurrentPlayer(board.getPlayer(i));
@@ -284,16 +296,7 @@ public class GameController {
                         startProgrammingPhase();
                     }
                 }
-            } else {
-                // this should not happen
-                assert false;
-            }
-        } else {
-            // this should not happen
-            assert false;
-        }
     }
-
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();

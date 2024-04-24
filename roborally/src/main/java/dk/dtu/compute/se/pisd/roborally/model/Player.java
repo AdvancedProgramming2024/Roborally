@@ -115,6 +115,15 @@ public class Player extends Subject {
     public void discardCommandCard(CommandCard card) {
         discardPile.add(card);
     }
+
+    public void removeCommandCard(Command command) {
+        for (CommandCard card : discardPile) {
+            if (card.command == command) {
+                discardPile.remove(card);
+                return;
+            }
+        }
+    }
       
     public int getCheckpoints() {
         return checkpoints;
@@ -207,7 +216,7 @@ public class Player extends Subject {
 
 
         if (!gameController.moveToSpace(this, board.getRebootStation(), board.getRebootStationHeading())) {
-            // TODO: What to do if the reboot station is blocked? Move to start space?
+            // TODO: What to do if the reboot station is blocked and it can't push? Move to start space?
         }
         // TODO: Player should choose heading
     }

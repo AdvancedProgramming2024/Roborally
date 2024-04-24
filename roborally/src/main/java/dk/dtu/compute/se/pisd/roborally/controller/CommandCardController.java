@@ -4,9 +4,17 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandCardController {
+
+    private Command currentCommand = null;
+
+    public Command getCurrentCommand() {
+        return currentCommand;
+    }
+
     /**
      * Execute command boolean.
      *
+     * @author Jonathan (s235115)
      * @param gameController
      * @param player
      * @param command
@@ -14,6 +22,7 @@ public class CommandCardController {
      */
     public boolean executeCommand(GameController gameController, @NotNull Player player, Command command) {
         if (player.board == gameController.board && command != null) {
+            currentCommand = command;
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
             //     (this concerns the way cards are modelled as well as the way they are executed).
@@ -44,11 +53,11 @@ public class CommandCardController {
                     gameController.moveInDirection(player, player.getHeading().next().next());
                     break;
                 case POWER_UP:
-                    // TODO: Do something here
+                    player.addEnergyCubes(1);
                     break;
                 case AGAIN:
                     int i = gameController.board.getStep()-1;
-                    if (i < 0 ) return true;
+                    if (i < 0 ) break;
                     Command c = gameController.board.getCurrentPlayer().
                             getProgramField(i).getCard().command;
                     executeCommand(gameController, player, c);
@@ -75,6 +84,24 @@ public class CommandCardController {
                 case WORM:
                     gameController.board.getCurrentPlayer().reboot(gameController);
                     return false;
+                case ENERGY_ROUTINE:
+                    player.addEnergyCubes(1);
+                    break;
+                case SANDBOX_ROUTINE:
+                    gameController.board.setPhase(Phase.PLAYER_INTERACTION);
+                    break;
+                case WEASEL_ROUTINE:
+                    gameController.board.setPhase(Phase.PLAYER_INTERACTION);
+                    break;
+                case SPEED_ROUTINE:
+                    executeCommand(gameController, player, Command.MOVE_3);
+                    break;
+                case SPAM_FOLDER:
+                    player.removeCommandCard(Command.SPAM);
+                    break;
+                case REPEAT_ROUTINE:
+                    executeCommand(gameController, player, Command.AGAIN);
+                    break;
                 default:
                     // DO NOTHING (for now)
             }
