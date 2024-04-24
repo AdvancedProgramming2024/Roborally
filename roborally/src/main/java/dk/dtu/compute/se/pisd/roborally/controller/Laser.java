@@ -1,9 +1,9 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
+
+import static dk.dtu.compute.se.pisd.roborally.model.Command.SPAM;
 
 public class Laser extends FieldAction {
     private Heading heading;
@@ -18,16 +18,12 @@ public class Laser extends FieldAction {
 
     public void setLazer(int lazer) {this.lazer = lazer;}
 
-    /*@Override
-    public String getActionType() {
-        return super.getActionType();
-    }*/
-
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         Player player = space.getPlayer();
         if (player != null) {
-            //hit.getPLayer().doloadsofdamage()
+            Command[] commands = Command.values();
+            player.addCommandCard(new CommandCard(commands[9]));
             return true;
         }
 
@@ -38,9 +34,10 @@ public class Laser extends FieldAction {
         }
         if (hit.getPlayer() != null) {
             for (int i = 0; i < lazer; i++) {
-                //hit.getPLayer().doloadsofdamage() , TODO: Implement damage
-                System.out.println("HEADSHOT!");
-                System.out.println("Player " + hit.getPlayer().getName() + "  got hit with a lazer");
+                Command[] commands = Command.values();
+                hit.getPlayer().addCommandCard(new CommandCard(commands[9]));
+
+                return true;
             }
 
         }

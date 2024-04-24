@@ -124,7 +124,8 @@
         {
           "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.Laser",
           "INSTANCE": {
-            "heading": "NORTH"
+            "heading": "NORTH",
+            "lazer": 1
           }
         }
       ],
