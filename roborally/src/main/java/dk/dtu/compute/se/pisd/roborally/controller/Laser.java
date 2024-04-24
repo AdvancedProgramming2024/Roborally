@@ -34,11 +34,9 @@ public class Laser extends FieldAction {
         }
         if (hit.getPlayer() != null) {
             for (int i = 0; i < lazer; i++) {
-                Command[] commands = Command.values();
-                hit.getPlayer().addCommandCard(new CommandCard(commands[9]));
-
-                return true;
+                hit.getPlayer().addCommandCard(new CommandCard(Command.SPAM));
             }
+            return true;
 
         }
         return false;
