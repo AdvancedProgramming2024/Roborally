@@ -104,51 +104,6 @@ public class SpaceView extends StackPane implements ViewObserver {
     }
     /**
      * @author Kresten (s235103)
-     * @return true if the space contains a conveyor belt, false otherwise
-     */
-    private boolean containsConveyorBelt() {
-        if (space.getActions().isEmpty()) {
-            return false;
-        }
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof ConveyorBelt) {
-                return true;
-            }
-        }
-        return false;
-    }
-    /**
-     * @author Kresten (s235103)
-     * @return the checkpoint on the space, null if there is none
-    */
-    private Checkpoint getCheckpoint() {
-        if (space.getActions().isEmpty()) {
-            return null;
-        }
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof Checkpoint) {
-                return (Checkpoint) action;
-            }
-        }
-        return null;
-    }
-    /**
-     * @author Kresten (s235103)
-     * @return true if the space contains an energy cube field, false otherwise
-     */
-    private boolean containsEnergyCubeField() {
-        if (space.getActions().isEmpty()) {
-            return false;
-        }
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof EnergyCubeField) {
-                return true;
-            }
-        }
-        return false;
-    }
-    /**
-     * @author Kresten (s235103)
      * @return pushPanel if the space contains one, null otherwise
      */
     private PushPanel getPushPanel() {
@@ -163,21 +118,6 @@ public class SpaceView extends StackPane implements ViewObserver {
         return null;
     }
     /**
-     * @author Kresten (s235103)
-     * @return Gear if there is one, null otherwise
-     */
-    private Gear getGear() {
-        if (space.getActions().isEmpty()) {
-            return null;
-        }
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof Gear) {
-                return (Gear) action;
-            }
-        }
-        return null;
-    }
-    /**
      * @Description Draws the spaces and their content
      * @author Kresten (s235103)
      */
@@ -186,49 +126,22 @@ public class SpaceView extends StackPane implements ViewObserver {
         Image spaceImage;
         spaceImageView.setFitHeight(SPACE_HEIGHT);
         spaceImageView.setFitWidth(SPACE_WIDTH);
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof ConveyorBelt) {
+                drawConveyorBelt(spaceImageView);
+            } else if (action instanceof Checkpoint) {
+                drawCheckpoint(spaceImageView, (Checkpoint) action);
+            } else if (action instanceof EnergyCubeField) {
+                drawEnergyField(spaceImageView, (EnergyCubeField) action);
+            } else if (action instanceof Gear) {
+                drawGear(spaceImageView, (Gear) action);
+            }
+        }
         if (space == space.board.getAntenna()) {
             spaceImage = new Image("images/antenna.png");
             spaceImageView.setImage(spaceImage);
         } else if (space == space.board.getRebootStation()) {
             spaceImage = new Image("images/reboot.png");
-            spaceImageView.setImage(spaceImage);
-        } else if (containsConveyorBelt()) {
-            spaceImage = new Image("images/greenConveyor.png");
-            spaceImageView.setImage(spaceImage);
-            switch (((ConveyorBelt)space.getActions().get(0)).getHeading()) {
-                case NORTH:
-                    spaceImageView.setRotate(0);
-                    break;
-                case SOUTH:
-                    spaceImageView.setRotate(180);
-                    break;
-                case EAST:
-                    spaceImageView.setRotate(90);
-                    break;
-                case WEST:
-                    spaceImageView.setRotate(270);
-                    break;
-            }
-        } else if (getCheckpoint() != null) {
-            spaceImage = switch (getCheckpoint().getId()) {
-                case 2 -> new Image("images/checkpoint2.png");
-                case 3 -> new Image("images/checkpoint3.png");
-                case 4 -> new Image("images/checkpoint4.png");
-                case 5 -> new Image("images/checkpoint5.png");
-                case 6 -> new Image("images/checkpoint6.png");
-                default -> new Image("images/checkpoint1.png");
-            };
-            spaceImageView.setImage(spaceImage);
-        } else if (containsEnergyCubeField()) {
-            spaceImage = new Image("images/energyField.png");
-            spaceImageView.setImage(spaceImage);
-            /*@TODO indicate if energy has been taken*/
-        } else if (getGear() != null) {
-            if (getGear().getHeading() == Heading.WEST) {
-                spaceImage = new Image("images/gearLeft.png");
-            } else {
-                spaceImage = new Image("images/gearRight.png");
-            }
             spaceImageView.setImage(spaceImage);
         } else if (space.getActions().isEmpty() || getPushPanel() != null || getLaser() != null) {
             spaceImage = new Image("images/empty.png");
@@ -273,6 +186,53 @@ public class SpaceView extends StackPane implements ViewObserver {
                 }
                 this.getChildren().add(wallImageView);
             }
+        }
+    }
+
+    private void drawGear(ImageView spaceImageView, Gear gear) {
+        Image spaceImage;
+        if (gear.getHeading() == Heading.WEST) {
+            spaceImage = new Image("images/gearLeft.png");
+        } else {
+            spaceImage = new Image("images/gearRight.png");
+        }
+        spaceImageView.setImage(spaceImage);
+    }
+
+    private void drawEnergyField(ImageView spaceImageView, EnergyCubeField energyCubeField) {
+        Image spaceImage = new Image("images/energyField.png");
+        spaceImageView.setImage(spaceImage);
+        /*@TODO indicate if energy has been taken*/
+    }
+
+    private void drawCheckpoint(ImageView spaceImageView, Checkpoint checkpoint) {
+        Image spaceImage = switch (checkpoint.getId()) {
+            case 2 -> new Image("images/checkpoint2.png");
+            case 3 -> new Image("images/checkpoint3.png");
+            case 4 -> new Image("images/checkpoint4.png");
+            case 5 -> new Image("images/checkpoint5.png");
+            case 6 -> new Image("images/checkpoint6.png");
+            default -> new Image("images/checkpoint1.png");
+        };
+        spaceImageView.setImage(spaceImage);
+    }
+
+    private void drawConveyorBelt(ImageView spaceImageView) {
+        Image spaceImage = new Image("images/greenConveyor.png");
+        spaceImageView.setImage(spaceImage);
+        switch (((ConveyorBelt)space.getActions().get(0)).getHeading()) {
+            case NORTH:
+                spaceImageView.setRotate(0);
+                break;
+            case SOUTH:
+                spaceImageView.setRotate(180);
+                break;
+            case EAST:
+                spaceImageView.setRotate(90);
+                break;
+            case WEST:
+                spaceImageView.setRotate(270);
+                break;
         }
     }
 
