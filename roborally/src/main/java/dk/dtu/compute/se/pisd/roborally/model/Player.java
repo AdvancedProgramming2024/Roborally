@@ -70,7 +70,7 @@ public class Player extends Subject {
         Command[] commands = Command.values();
         drawPile = new ArrayList<CommandCard>();
         discardPile = new ArrayList<CommandCard>();
-        int[] commandValues = {0, 0, 0, 0, 1, 1, 1, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 6, 7, 8};
+        int[] commandValues = {0, 0, 0, 0, 1, 1, 1, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 6, 7, 8, 13, 13, 13, 13, 13, 9, 9, 9, 9, 9};
         for (int commandValue : commandValues) {
             drawPile.add(new CommandCard(commands[commandValue]));
         }

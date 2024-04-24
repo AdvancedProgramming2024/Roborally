@@ -91,4 +91,24 @@ class CommandCardControllerTest {
 
         // TODO: Add test when energy cubes are implemented
     }
+
+    /**
+     * @author Jamie (s236939)
+     */
+    @Test
+    void executeCommandOptionAndContinueTest() {
+        Board board = gameController.board;
+        Player player1 = board.getPlayer(0);
+        Player player2 = board.getPlayer(1);
+        Player player3 = board.getPlayer(2);
+
+        gameController.executeCommandOptionAndContinue(Command.LEFT);
+        gameController.executeCommandOptionAndContinue(Command.RIGHT);
+        gameController.executeCommandOptionAndContinue(Command.U_TURN);
+
+        Assertions.assertEquals(Heading.EAST, player1.getHeading(), "Player " + player1.getName() + " should be facing EAST!");
+        Assertions.assertEquals(Heading.WEST, player2.getHeading(), "Player " + player2.getName() + " should be facing WEST!");
+        Assertions.assertEquals(Heading.NORTH, player3.getHeading(), "Player " + player3.getName() + " should be facing NORTH!");
+    }
 }
+

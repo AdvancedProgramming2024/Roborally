@@ -242,6 +242,12 @@ public class GameController {
                     currentPlayer.discardCommandCard(card);
                 }
                 int nextPlayerNumber = playerOrder.indexOf(currentPlayer) + 1;
+
+                //INTERACTIVE PHASE
+                if (board.getPhase() == Phase.PLAYER_INTERACTION) {
+                    System.out.println("interactive");
+                    return;
+                }
                 if (nextPlayerNumber < board.getPlayersNumber()) {
                     board.setCurrentPlayer(playerOrder.get(nextPlayerNumber));
                 } else {
@@ -288,6 +294,7 @@ public class GameController {
         }
     }
 
+
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -300,6 +307,36 @@ public class GameController {
         }
     }
 
+    /**
+     * @author Jamie (s236939)
+     *
+     * @param option The command option to execute.
+     */
+    public void executeCommandOptionAndContinue(Command option) {
+        //switch game back to activation phase
+        board.setPhase(Phase.ACTIVATION);
+
+        //execute selected option for player
+        Player currentPlayer = board.getCurrentPlayer();
+        commandCardController.executeCommand(this, currentPlayer, option);
+
+        //continue program
+        int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        } else {
+            int step = board.getStep();
+            step++;
+            if (step < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(step);
+                board.setStep(step);
+                board.setCurrentPlayer(board.getPlayer(0));
+            } else {
+                startProgrammingPhase();
+            }
+        }
+
+    }
 
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);

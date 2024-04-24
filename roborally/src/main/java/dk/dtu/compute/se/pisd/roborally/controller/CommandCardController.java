@@ -1,9 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Command;
-import dk.dtu.compute.se.pisd.roborally.model.CommandCard;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandCardController {
@@ -55,6 +52,9 @@ public class CommandCardController {
                     Command c = gameController.board.getCurrentPlayer().
                             getProgramField(i).getCard().command;
                     executeCommand(gameController, player, c);
+                    break;
+                case OPTION_LEFT_RIGHT:
+                    gameController.board.setPhase(Phase.PLAYER_INTERACTION);
                     break;
                 case SPAM:
                     return false;
