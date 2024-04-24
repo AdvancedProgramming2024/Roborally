@@ -52,7 +52,12 @@ public enum Command {
     WORM("Worm"),
 
     // Special programming commands
-    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
+    ENERGY_ROUTINE("Energy Routine"),
+    SANDBOX_ROUTINE("Sandbox Routine", MOVE_1, MOVE_2, MOVE_3, MOVE_BACK, LEFT, RIGHT, U_TURN),
+    WEASEL_ROUTINE("Weasel Routine", LEFT, RIGHT, U_TURN),
+    SPEED_ROUTINE("Speed Routine", MOVE_3),
+    SPAM_FOLDER("Spam Folder"),
+    REPEAT_ROUTINE("Repeat Routine", AGAIN);
 
     final public String displayName;
 
