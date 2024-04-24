@@ -81,7 +81,7 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = loadBoard(/*"defaultboard"*/"dizzy_highway");
+            Board board = loadBoard(/*"defaultboard"*/"high_octane");
             board.setAntenna(0,4, Heading.EAST);
             board.setRebootStation(6,8, Heading.NORTH);
 

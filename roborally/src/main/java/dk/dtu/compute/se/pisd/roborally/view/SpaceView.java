@@ -73,27 +73,11 @@ public class SpaceView extends StackPane implements ViewObserver {
 
         drawBoard();
 
-        if ((space.x + space.y) % 2 == 0) {
-            this.setStyle("-fx-background-color: white;");
-        } else {
-            this.setStyle("-fx-background-color: black;");
-        }
-
-        if (space == space.board.getAntenna()) {
-            this.setStyle("-fx-background-color: red;");
-        }
-
         // TODO: Remove this later and replace with images for space backgrounds
         for (FieldAction action : space.getActions()) {
             if (action instanceof Gear) {
                 this.setStyle("-fx-background-color: grey;");
                 Label label = new Label(((Gear)action).getHeading().toString());
-                this.getChildren().add(label);
-                break;
-            }
-            if (action instanceof PushPanel) {
-                this.setStyle("-fx-background-color: blue;");
-                Label label = new Label(((PushPanel)action).getHeading().toString());
                 this.getChildren().add(label);
                 break;
             }
@@ -183,6 +167,21 @@ public class SpaceView extends StackPane implements ViewObserver {
         return false;
     }
     /**
+     * @author Kresten (s235103)
+     * @return pushPanel if the space contains one, null otherwise
+     */
+    private PushPanel getPushPanel() {
+        if (space.getActions().isEmpty()) {
+            return null;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof PushPanel) {
+                return (PushPanel) action;
+            }
+        }
+        return null;
+    }
+    /**
      * @Description Draws the spaces and their content
      * @author Kresten (s235103)
      */
@@ -228,11 +227,16 @@ public class SpaceView extends StackPane implements ViewObserver {
             spaceImage = new Image("images/energyField.png");
             spaceImageView.setImage(spaceImage);
             /*@TODO indicate if energy has been taken*/
-        } else if (space.getActions().isEmpty()) {
+        } else if (space.getActions().isEmpty() || getPushPanel() != null) {
             spaceImage = new Image("images/empty.png");
             spaceImageView.setImage(spaceImage);
         }
         this.getChildren().add(spaceImageView);
+
+        if (getPushPanel() != null) {
+            ImageView pushPanelImageView = getPushImageView();
+            this.getChildren().add(pushPanelImageView);
+        }
 
         if (!space.getWalls().isEmpty()) {
             for (Heading wall : space.getWalls()) {
@@ -262,5 +266,41 @@ public class SpaceView extends StackPane implements ViewObserver {
                 this.getChildren().add(wallImageView);
             }
         }
+    }
+    /**
+     * @author Kresten (s235103)
+     * @return Placed ImageView of the pushPanel
+     */
+    @NotNull
+    private ImageView getPushImageView() {
+        ImageView pushPanelImageView = new ImageView();
+        if (getPushPanel().getPushTime() == PushPanel.PushTime.EVEN) {
+            Image pushPanelImage = new Image("images/pushEven.png");
+            pushPanelImageView.setImage(pushPanelImage);
+        } else {
+            Image pushPanelImage = new Image("images/pushOdd.png");
+            pushPanelImageView.setImage(pushPanelImage);
+        }
+        pushPanelImageView.setFitHeight(SPACE_HEIGHT);
+        pushPanelImageView.setPreserveRatio(true);
+        switch (getPushPanel().getHeading()) {
+            case NORTH:
+                pushPanelImageView.setRotate(270);
+                pushPanelImageView.setTranslateY(SPACE_HEIGHT/4.3);
+                break;
+            case SOUTH:
+                pushPanelImageView.setRotate(90);
+                pushPanelImageView.setTranslateY(-SPACE_HEIGHT/4.3);
+                break;
+            case EAST:
+                pushPanelImageView.setRotate(0);
+                pushPanelImageView.setTranslateX(-SPACE_WIDTH/4.3);
+                break;
+            case WEST:
+                pushPanelImageView.setRotate(180);
+                pushPanelImageView.setTranslateX(SPACE_WIDTH/4.3);
+                break;
+        }
+        return pushPanelImageView;
     }
 }

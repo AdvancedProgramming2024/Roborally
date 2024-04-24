@@ -18,10 +18,10 @@ public class Laser extends FieldAction {
 
     public void setLazer(int lazer) {this.lazer = lazer;}
 
-    @Override
+    /*@Override
     public String getActionType() {
         return super.getActionType();
-    }
+    }*/
 
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
