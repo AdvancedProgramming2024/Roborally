@@ -70,20 +70,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-
         drawBoard();
-
-        // TODO: Remove this later and replace with images for space backgrounds
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof Laser) {
-                this.setStyle("-fx-background-color: red;");
-                Label label = new Label(((Laser)action).getHeading().toString());
-                this.getChildren().add(label);
-                break;
-            }
-        }
-        // updatePlayer();
-
 
         // This space view should listen to changes of the space
         space.attach(this);
@@ -243,7 +230,7 @@ public class SpaceView extends StackPane implements ViewObserver {
                 spaceImage = new Image("images/gearRight.png");
             }
             spaceImageView.setImage(spaceImage);
-        } else if (space.getActions().isEmpty() || getPushPanel() != null) {
+        } else if (space.getActions().isEmpty() || getPushPanel() != null || getLaser() != null) {
             spaceImage = new Image("images/empty.png");
             spaceImageView.setImage(spaceImage);
         }
@@ -252,6 +239,11 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (getPushPanel() != null) {
             ImageView pushPanelImageView = createPushImageView();
             this.getChildren().add(pushPanelImageView);
+        }
+
+        if (getLaser() != null) {
+            ImageView laserImageView = createLaserImageView();
+            this.getChildren().add(laserImageView);
         }
 
         if (!space.getWalls().isEmpty()) {
@@ -283,6 +275,46 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
         }
     }
+
+    private ImageView createLaserImageView() {
+        ImageView laserImageView = new ImageView();
+        Image laserImage = new Image("images/laserStart.png");
+        laserImageView.setImage(laserImage);
+        laserImageView.setFitHeight(SPACE_HEIGHT/4);
+        laserImageView.setPreserveRatio(true);
+        switch (getLaser().getHeading()) {
+            case NORTH:
+                laserImageView.setRotate(270);
+                laserImageView.setTranslateY(SPACE_HEIGHT/4.3);
+                break;
+            case SOUTH:
+                laserImageView.setRotate(90);
+                laserImageView.setTranslateY(-SPACE_HEIGHT/4.3);
+                break;
+            case EAST:
+                laserImageView.setRotate(0);
+                laserImageView.setTranslateX(-SPACE_WIDTH/4.3);
+                break;
+            case WEST:
+                laserImageView.setRotate(180);
+                laserImageView.setTranslateX(SPACE_WIDTH/4.3);
+                break;
+        }
+        return laserImageView;
+    }
+
+    private Laser getLaser() {
+        if (space.getActions().isEmpty()) {
+            return null;
+        }
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof Laser) {
+                return (Laser) action;
+            }
+        }
+        return null;
+    }
+
     /**
      * @author Kresten (s235103)
      * @return Placed ImageView of the pushPanel

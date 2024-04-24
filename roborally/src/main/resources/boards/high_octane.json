@@ -117,12 +117,14 @@
       "y": 1
     },
     {
-      "walls": [],
+      "walls": [
+        "SOUTH"
+      ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.Gear",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.Laser",
           "INSTANCE": {
-            "heading": "EAST"
+            "heading": "NORTH"
           }
         }
       ],
