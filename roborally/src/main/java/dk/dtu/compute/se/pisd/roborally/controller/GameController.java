@@ -241,7 +241,12 @@ public class GameController {
                 } else if (currentPlayer.isRebooting()) {
                     currentPlayer.discardCommandCard(card);
                 }
-                if (board.getPhase() != Phase.PLAYER_INTERACTION) endTurn();
+                if (board.getPhase() != Phase.PLAYER_INTERACTION) {
+                    endTurn();
+                } else {
+                    return;
+                }
+
             } else {
                 // this should not happen
                 assert false;
@@ -260,44 +265,37 @@ public class GameController {
             board.setCurrentPlayer(playerOrder.get(nextPlayerNumber));
         } else {
             step++;
+                    // TODO: Activate special fields and lasers
+                    for (int i = 0; i < board.getPlayersNumber(); i++) {
+                        board.setCurrentPlayer(board.getPlayer(i));
+                        Space space = board.getCurrentPlayer().getSpace();
+                        for (FieldAction action : space.getActions()) {
+                            if (!(action instanceof Laser)) {
+                                action.doAction(this, space);
+                            }
+                        }
 
-            // TODO: Activate special fields and lasers
-            for (int i = 0; i < board.getPlayersNumber(); i++) {
-                board.setCurrentPlayer(board.getPlayer(i));
-                Space space = board.getCurrentPlayer().getSpace();
-                for (FieldAction action : space.getActions()) {
-                    if (!(action instanceof Laser)) {
-                        action.doAction(this, space);
                     }
-                }
-
-            }
-            //Fire lasers here
-            for (int x = 0; x < board.width; x++) {
-                for (int y = 0; y < board.height; y++) {
-                    Space space = board.getSpace(x, y);
-                    for (FieldAction action : space.getActions()) {
-                        if (action instanceof Laser) {
-                            action.doAction(this, space);
+                    //Fire lasers here
+                    for (int x = 0; x < board.width; x++) {
+                        for (int y = 0; y < board.height; y++) {
+                            Space space = board.getSpace(x, y);
+                            for (FieldAction action : space.getActions()) {
+                                if (action instanceof Laser) {
+                                    action.doAction(this, space);
+                                }
+                            }
                         }
                     }
+
+                    if (step < Player.NO_REGISTERS) {
+                        makeProgramFieldsVisible(step);
+                        board.setStep(step);
+                        board.setCurrentPlayer(playerOrder.get(0));
+                    } else {
+                        startProgrammingPhase();
+                    }
                 }
-            }
-
-            if (step < Player.NO_REGISTERS) {
-                makeProgramFieldsVisible(step);
-                board.setStep(step);
-                board.setCurrentPlayer(playerOrder.get(0));
-            } else {
-                startProgrammingPhase();
-            }
-        }
-    }
-
-    public void makeChoice(Command command) {
-        board.setPhase(Phase.ACTIVATION);
-        commandCardController.executeCommand(this, board.getCurrentPlayer(), command);
-        endTurn();
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
@@ -312,6 +310,36 @@ public class GameController {
         }
     }
 
+    /**
+     * @author Jamie (s236939)
+     *
+     * @param option The command option to execute.
+     */
+    public void executeCommandOptionAndContinue(Command option) {
+        //switch game back to activation phase
+        board.setPhase(Phase.ACTIVATION);
+
+        //execute selected option for player
+        Player currentPlayer = board.getCurrentPlayer();
+        commandCardController.executeCommand(this, currentPlayer, option);
+
+        //continue program
+        int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        } else {
+            int step = board.getStep();
+            step++;
+            if (step < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(step);
+                board.setStep(step);
+                board.setCurrentPlayer(board.getPlayer(0));
+            } else {
+                startProgrammingPhase();
+            }
+        }
+
+    }
 
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);

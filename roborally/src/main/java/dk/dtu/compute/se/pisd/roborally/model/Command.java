@@ -45,6 +45,9 @@ public enum Command {
     POWER_UP("Power Up"),
     AGAIN("Again (repeat action)"),
 
+    //Interactive command
+    OPTION_LEFT_RIGHT("Turn Left OR Right", LEFT, RIGHT),
+
     // Damage commands
     SPAM("Spam"),
     TROJAN_HORSE("Trojan Horse"),
@@ -58,6 +61,7 @@ public enum Command {
     SPEED_ROUTINE("Speed Routine", MOVE_3),
     SPAM_FOLDER("Spam Folder"),
     REPEAT_ROUTINE("Repeat Routine", AGAIN);
+
 
     final public String displayName;
 

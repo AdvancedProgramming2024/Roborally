@@ -62,6 +62,9 @@ public class CommandCardController {
                             getProgramField(i).getCard().command;
                     executeCommand(gameController, player, c);
                     break;
+                case OPTION_LEFT_RIGHT:
+                    gameController.board.setPhase(Phase.PLAYER_INTERACTION);
+                    break;
                 case SPAM:
                     return false;
                 case VIRUS:
