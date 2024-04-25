@@ -48,6 +48,7 @@ public class PlayerView extends Tab implements ViewObserver {
     private VBox top;
 
     private Label programLabel;
+    private Label energyCubeLabel;
     private GridPane programPane;
     private Label cardsLabel;
     private Label checkPointLabel;
@@ -83,8 +84,10 @@ public class PlayerView extends Tab implements ViewObserver {
         programPane.setHgap(2.0);
 
         checkPointLabel = new Label("Checkpoint\n" + player.getCheckpoints());
+        energyCubeLabel = new Label("Energy Cubes\n" + player.getEnergyCubes());
 
         programPane.add(checkPointLabel, Player.NO_REGISTERS+1, 0);
+        programPane.add(energyCubeLabel, Player.NO_REGISTERS+1, 1);
 
         programCardViews = new CardFieldView[Player.NO_REGISTERS];
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
