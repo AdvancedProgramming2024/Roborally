@@ -30,6 +30,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class BoardView extends VBox implements ViewObserver {
+public class BoardView extends BorderPane implements ViewObserver {
 
     private Board board;
 
@@ -48,21 +49,37 @@ public class BoardView extends VBox implements ViewObserver {
     private SpaceView[][] spaces;
 
     private PlayersView playersView;
+    private UpgradeShopView upgradeShopView;
 
     private Label statusLabel;
 
     private SpaceEventHandler spaceEventHandler;
 
     public BoardView(@NotNull GameController gameController) {
-        board = gameController.board;
 
+        board = gameController.board;
         mainBoardPane = new GridPane();
         playersView = new PlayersView(gameController);
+        upgradeShopView = new UpgradeShopView(gameController);
         statusLabel = new Label("<no status>");
 
-        this.getChildren().add(mainBoardPane);
-        this.getChildren().add(playersView);
-        this.getChildren().add(statusLabel);
+
+//        this.getChildren().add(mainBoardPane);
+//        this.getChildren().add(playersView);
+//
+//        this.getChildren().add(statusLabel);
+//        this.getChildren().add(upgradeShopView);
+        // Add mainBoardPane to the center of the BorderPane
+        setCenter(mainBoardPane);
+
+        // Add playersView to the right of the BorderPane
+        setRight(playersView);
+
+        // Add upgradeShopView to the left of the BorderPane
+        setLeft(upgradeShopView);
+
+        // Add statusLabel to the bottom of the BorderPane
+        setBottom(statusLabel);
 
         spaces = new SpaceView[board.width][board.height];
 

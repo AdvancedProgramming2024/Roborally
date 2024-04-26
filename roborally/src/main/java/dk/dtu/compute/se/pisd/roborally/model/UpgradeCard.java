@@ -21,12 +21,33 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public enum Phase {
-    INITIALISATION, PROGRAMMING, ACTIVATION, PLAYER_INTERACTION, UPGRADE
+public class UpgradeCard extends Subject {
+
+    final public Upgrade upgrade;
+
+    public UpgradeCard(@NotNull Upgrade upgrade) {
+        this.upgrade = upgrade;
+    }
+
+    public String getName() {
+        return upgrade.displayName;
+    }
+
+    public int getCost() {
+        return upgrade.cost;
+    }
+    public boolean getIsPermanent() {
+        return upgrade.isPermanent;
+    }
+
+
 }
