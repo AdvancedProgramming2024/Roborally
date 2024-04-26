@@ -1,19 +1,23 @@
 {
   "width": 13,
   "height": 10,
+  "antennaX": 0,
+  "antennaY": 4,
+  "antennaHeading": 3,
+  "rebootStationX": 6,
+  "rebootStationY": 8,
+  "rebootStationHeading": 2,
   "spaces": [
     {
-      "walls": [],
-      "actions": [
-        {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt",
-          "INSTANCE": {
-            "heading": "EAST"
-          }
-        }
+      "walls": [
+        "NORTH",
+        "WEST",
+        "SOUTH",
+        "EAST"
       ],
-      "x": 2,
-      "y": 0
+      "actions": [],
+      "x": 0,
+      "y": 4
     },
     {
       "walls": [
@@ -42,7 +46,7 @@
         }
       ],
       "x": 2,
-      "y": 9
+      "y": 0
     },
     {
       "walls": [
@@ -59,6 +63,19 @@
       "actions": [],
       "x": 2,
       "y": 5
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt",
+          "INSTANCE": {
+            "heading": "EAST"
+          }
+        }
+      ],
+      "x": 2,
+      "y": 9
     },
     {
       "walls": [],
