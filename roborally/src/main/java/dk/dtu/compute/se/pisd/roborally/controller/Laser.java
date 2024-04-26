@@ -37,7 +37,6 @@ public class Laser extends FieldAction {
                 hit.getPlayer().addCommandCard(new CommandCard(Command.SPAM));
             }
             return true;
-
         }
         return false;
     }

@@ -238,14 +238,27 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     private ImageView createLaserImageView() {
         ImageView laserImageView = new ImageView();
-        Image laserImage = new Image("images/laserStart.png");
-        laserImageView.setImage(laserImage);
-        laserImageView.setFitHeight(SPACE_HEIGHT/4);
+        Image laserImage;
+        if (getLaser().getLazer() == 2) {
+            laserImage = new Image("images/doublelaser.png");
+            laserImageView.setFitHeight(SPACE_HEIGHT/2.0);
+        } else if (getLaser().getLazer() > 2) {
+            laserImage = new Image("images/triplelaser.png");
+            laserImageView.setFitHeight(SPACE_HEIGHT/1.2);
+        } else {
+            laserImage = new Image("images/laserStart.png");
+            laserImageView.setFitHeight(SPACE_HEIGHT/4.0);
+        }
+
+
         laserImageView.setPreserveRatio(true);
+        laserImageView.setImage(laserImage);
+
         switch (getLaser().getHeading()) {
             case NORTH:
                 laserImageView.setRotate(270);
                 laserImageView.setTranslateY(SPACE_HEIGHT/4.3);
+
                 break;
             case SOUTH:
                 laserImageView.setRotate(90);
