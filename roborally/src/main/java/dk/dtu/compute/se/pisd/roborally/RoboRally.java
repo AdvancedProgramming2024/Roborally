@@ -28,6 +28,8 @@ import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -62,17 +64,28 @@ public class RoboRally extends Application {
         boardRoot = new BorderPane();
         VBox vbox = new VBox(menuBar, boardRoot);
         vbox.setMinWidth(MIN_APP_WIDTH);
-        Scene primaryScene = new Scene(vbox);
+        TilePane r = new TilePane();
+        r.getChildren().add(RoboRallyMenuBar.newGameButton);
+        r.getChildren().add(RoboRallyMenuBar.loadGameButton);
 
-        stage.setScene(primaryScene);
+        Scene menuScene = new Scene(r, 800, 600);
+        Scene gameScene = new Scene(vbox, 800, 600);
+
+                if(appController.isGameRunning()) {
+                    stage.setScene(gameScene);
+                }
+                else {
+                    stage.setScene(menuScene);
+                }
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
                 e -> {
                     e.consume();
                     appController.exit();} );
         stage.setResizable(false);
-        stage.sizeToScene();
+        stage.setFullScreen(true);
         stage.show();
+
     }
 
     public void createBoardView(GameController gameController) {

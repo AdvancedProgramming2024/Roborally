@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -47,6 +48,8 @@ public class RoboRallyMenuBar extends MenuBar {
     private MenuItem stopGame;
 
     private MenuItem exitApp;
+    public static Button newGameButton = new Button("New Game");
+    public static Button loadGameButton = new Button("Load Game");
 
     public RoboRallyMenuBar(AppController appController) {
         this.appController = appController;
@@ -54,9 +57,11 @@ public class RoboRallyMenuBar extends MenuBar {
         controlMenu = new Menu("File");
         this.getMenus().add(controlMenu);
 
-        newGame = new MenuItem("New Game");
-        newGame.setOnAction( e -> this.appController.newGame());
-        controlMenu.getItems().add(newGame);
+        //newGame = new MenuItem("New Game");
+        //newGame.setOnAction( e -> this.appController.newGame());
+        //controlMenu.getItems().add(newGame);
+
+        newGameButton.setOnAction( e -> this.appController.newGame());
 
         stopGame = new MenuItem("Stop Game");
         stopGame.setOnAction( e -> this.appController.stopGame());
@@ -66,9 +71,11 @@ public class RoboRallyMenuBar extends MenuBar {
         saveGame.setOnAction( e -> this.appController.saveGame());
         controlMenu.getItems().add(saveGame);
 
-        loadGame = new MenuItem("Load Game");
-        loadGame.setOnAction( e -> this.appController.loadGame());
-        controlMenu.getItems().add(loadGame);
+        //loadGame = new MenuItem("Load Game");
+        //loadGame.setOnAction( e -> this.appController.loadGame());
+        //controlMenu.getItems().add(loadGame);
+
+        loadGameButton.setOnAction( e -> this.appController.loadGame());
 
         exitApp = new MenuItem("Exit");
         exitApp.setOnAction( e -> this.appController.exit());
@@ -79,17 +86,11 @@ public class RoboRallyMenuBar extends MenuBar {
         update();
     }
 
+
     public void update() {
         if (appController.isGameRunning()) {
-            newGame.setVisible(false);
             stopGame.setVisible(true);
             saveGame.setVisible(true);
-            loadGame.setVisible(false);
-        } else {
-            newGame.setVisible(true);
-            stopGame.setVisible(false);
-            saveGame.setVisible(false);
-            loadGame.setVisible(true);
         }
     }
 
