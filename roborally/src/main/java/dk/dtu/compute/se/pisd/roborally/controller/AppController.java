@@ -21,16 +21,23 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
-import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
+import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -40,12 +47,16 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard.loadBoard;
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard.saveBoard;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveBoard;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGame;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGame;
 
 /**
  * ...
@@ -91,7 +102,7 @@ public class AppController implements Observer {
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1), i);
                 board.addPlayer(player);
                 player.setSpace(board.getSpace(i % board.width, i));
             }
@@ -124,7 +135,7 @@ public class AppController implements Observer {
         root.setPadding(new Insets(10));
         stage.showAndWait();
 
-        LoadBoard.saveBoard(gameController.board, filenameField.getText());
+        LoadSave.saveGame(gameController, filenameField.getText());
     }
 
     public void loadGame() {

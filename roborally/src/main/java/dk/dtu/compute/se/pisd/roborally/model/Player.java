@@ -43,6 +43,8 @@ public class Player extends Subject {
 
     final public Board board;
 
+    final private int id;
+
     private String name;
     private String color;
 
@@ -53,14 +55,15 @@ public class Player extends Subject {
     private List<CommandCard> discardPile;
       
     private int checkpoints = 0;
-    public int eneregyBank = 0;
+    public int energyCubes = 0;
     private CommandCardField[] program;
     private CommandCardField[] cards;
 
     boolean rebooting = false;
 
-    public Player(@NotNull Board board, String color, @NotNull String name) {
+    public Player(@NotNull Board board, String color, @NotNull String name, int id) {
         this.board = board;
+        this.id = id;
         this.name = name;
         this.color = color;
 
@@ -86,6 +89,10 @@ public class Player extends Subject {
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new CommandCardField(this);
         }
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void shuffleDrawPile() {
@@ -136,19 +143,19 @@ public class Player extends Subject {
 
     //energy cube functions
     public int getEnergyCubes() {
-        return eneregyBank;
+        return energyCubes;
     }
 
     public void setEnergyCubes(int energyCubes) {
-        this.eneregyBank = energyCubes;
+        this.energyCubes = energyCubes;
     }
 
     public void addEnergyCubes(int energyCubes) {
-        this.eneregyBank += energyCubes;
+        this.energyCubes += energyCubes;
     }
 
     public void removeEnergyCubes(int energyCubes) {
-        this.eneregyBank -= energyCubes;
+        this.energyCubes -= energyCubes;
     }
 
     public String getName() {
@@ -235,6 +242,22 @@ public class Player extends Subject {
 
     public CommandCardField getCardField(int i) {
         return cards[i];
+    }
+
+    public List<CommandCard> getDrawPile() {
+        return drawPile;
+    }
+
+    public List<CommandCard> getDiscardPile() {
+        return discardPile;
+    }
+
+    public CommandCardField[] getProgram() {
+        return program;
+    }
+
+    public CommandCardField[] getCards() {
+        return cards;
     }
 
 }
