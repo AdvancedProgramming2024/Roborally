@@ -46,6 +46,8 @@ public class RoboRally extends Application {
     private Stage stage;
     private BorderPane boardRoot;
 
+    private Scene gameScene;
+
     @Override
     public void init() throws Exception {
         super.init();
@@ -69,14 +71,8 @@ public class RoboRally extends Application {
         r.getChildren().add(RoboRallyMenuBar.loadGameButton);
 
         Scene menuScene = new Scene(r, 800, 600);
-        Scene gameScene = new Scene(vbox, 800, 600);
-
-                if(appController.isGameRunning()) {
-                    stage.setScene(gameScene);
-                }
-                else {
-                    stage.setScene(menuScene);
-                }
+        gameScene = new Scene(vbox, 800, 1200);
+        stage.setScene(menuScene);
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
                 e -> {
@@ -90,6 +86,7 @@ public class RoboRally extends Application {
 
     public void createBoardView(GameController gameController) {
         // if present, remove old BoardView
+        stage.setScene(gameScene);
         boardRoot.getChildren().clear();
 
         if (gameController != null) {
