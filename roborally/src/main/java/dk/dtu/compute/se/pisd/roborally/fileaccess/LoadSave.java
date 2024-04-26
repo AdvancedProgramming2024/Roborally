@@ -34,6 +34,8 @@ import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ...
@@ -115,8 +117,92 @@ public class LoadSave {
         writeToFile(template, filename);
     }
 
-    public static void loadGame() {
+    public static GameController loadGame(String fileName) {
 
+        ClassLoader classLoader = LoadSave.class.getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(GAMESFOLDER + "/" + fileName + "." + JSON_EXT);
+
+        // In simple cases, we can create a Gson object with new Gson():
+        GsonBuilder simpleBuilder = new GsonBuilder().
+                registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>());
+        Gson gson = simpleBuilder.create();
+
+        // FileReader fileReader = null;
+        JsonReader reader = null;
+        try {
+            // fileReader = new FileReader(filename);
+            reader = gson.newJsonReader(new InputStreamReader(inputStream));
+            GameTemplate template = gson.fromJson(reader, GameTemplate.class);
+
+            Board board = new Board(template.board.width, template.board.height);
+            GameController gameController = new GameController(board);
+
+            board.setGameId(template.gameId);
+
+            board.setAntenna(template.board.antennaX, template.board.antennaY, Heading.values()[template.board.antennaHeading]);
+            board.setRebootStation(template.board.rebootStationX, template.board.rebootStationY, Heading.values()[template.board.rebootStationHeading]);
+
+            for (SpaceTemplate spaceTemplate: template.board.spaces) {
+                Space space = board.getSpace(spaceTemplate.x, spaceTemplate.y);
+                if (space != null) {
+                    space.getActions().addAll(spaceTemplate.actions);
+                    space.getWalls().addAll(spaceTemplate.walls);
+                }
+            }
+
+            for (PlayerTemplate playerTemplate: template.players) {
+                Player player = new Player(board, playerTemplate.name, playerTemplate.color, playerTemplate.id);
+                player.setSpace(board.getSpace(playerTemplate.xPosition, playerTemplate.yPosition));
+                player.setHeading(Heading.values()[playerTemplate.heading]);
+
+                for (int card : playerTemplate.drawPile) {
+                    player.getDrawPile().add(new CommandCard(Command.values()[card]));
+                }
+                for (int card : playerTemplate.discardPile) {
+                    player.getDiscardPile().add(new CommandCard(Command.values()[card]));
+                }
+                for (int i=0; i<playerTemplate.program.length; i++) {
+                    player.getProgram()[i] = new CommandCardField(player);
+                    if (playerTemplate.program[i] != -1)
+                        player.getProgram()[i].setCard(new CommandCard(Command.values()[playerTemplate.program[i]]));
+                }
+                for (int i=0; i<playerTemplate.hand.length; i++) {
+                    player.getCards()[i] = new CommandCardField(player);
+                    if (playerTemplate.hand[i] != -1)
+                        player.getCards()[i].setCard(new CommandCard(Command.values()[playerTemplate.hand[i]]));
+                }
+
+                player.setCheckpoints(playerTemplate.checkpoints);
+                player.setEnergyCubes(playerTemplate.energyBank);
+                player.setRebooting(playerTemplate.rebooting);
+                board.addPlayer(player);
+            }
+
+            board.setCurrentPlayer(board.getPlayer(template.currentPlayer));
+            List<Player> playerOrder = new ArrayList<>();
+            for (int i : template.playerOrder) {
+                playerOrder.add(board.getPlayer(i));
+            }
+            gameController.setPlayerOrder(playerOrder);
+            board.setPhase(Phase.values()[template.playPhase]);
+            board.setStep(template.step);
+
+            reader.close();
+            return gameController;
+        } catch (IOException e1) {
+            if (reader != null) {
+                try {
+                    reader.close();
+                    inputStream = null;
+                } catch (IOException e2) {}
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e2) {}
+            }
+        }
+        return null;
     }
 
     public static void saveGame(GameController gameController, String fileName) {
@@ -142,10 +228,12 @@ public class LoadSave {
                 playerTemplate.discardPile.add(card.command.ordinal());
             }
             for (int j = 0; j < player.getProgram().length; j++) {
-                playerTemplate.program[j] = player.getProgram()[j].getCard().command.ordinal();
+                CommandCardField field = player.getProgram()[j];
+                playerTemplate.program[j] = field.getCard() == null ? -1 : field.getCard().command.ordinal();
             }
             for (int j = 0; j < player.getCards().length; j++) {
-                playerTemplate.hand[j] = player.getCards()[j].getCard().command.ordinal();
+                CommandCardField field = player.getCards()[j];
+                playerTemplate.hand[j] = field.getCard() == null ? -1 : field.getCard().command.ordinal();
             }
 
             playerTemplate.checkpoints = player.getCheckpoints();

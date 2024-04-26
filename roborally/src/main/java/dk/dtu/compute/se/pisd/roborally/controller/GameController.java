@@ -182,6 +182,10 @@ public class GameController {
         return playerOrder;
     }
 
+    public void setPlayerOrder(List<Player> playerOrder) {
+        this.playerOrder = playerOrder;
+    }
+
     public void determinePlayerOrder() {
         playerOrder = new ArrayList<>();
         for (int i = 0; i < board.getPlayersNumber(); i++) {

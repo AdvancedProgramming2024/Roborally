@@ -141,6 +141,10 @@ public class Player extends Subject {
         notifyChange();
     }
 
+    public void setCheckpoints(int checkpoints) {
+        this.checkpoints = checkpoints;
+    }
+
     //energy cube functions
     public int getEnergyCubes() {
         return energyCubes;
@@ -234,6 +238,11 @@ public class Player extends Subject {
 
     public void stopRebooting() {
         rebooting = false;
+    }
+
+    // For save and load
+    public void setRebooting(boolean rebooting) {
+        this.rebooting = rebooting;
     }
 
     public CommandCardField getProgramField(int i) {
