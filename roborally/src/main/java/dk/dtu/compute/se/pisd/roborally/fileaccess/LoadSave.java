@@ -25,12 +25,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
 import java.io.*;
 
@@ -39,9 +40,10 @@ import java.io.*;
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  */
-public class LoadBoard {
+public class LoadSave {
 
     private static final String BOARDSFOLDER = "boards";
+    private static final String GAMESFOLDER = "games";
     private static final String DEFAULTBOARD = "defaultboard";
     private static final String JSON_EXT = "json";
 
@@ -50,7 +52,7 @@ public class LoadBoard {
             boardname = DEFAULTBOARD;
         }
 
-        ClassLoader classLoader = LoadBoard.class.getClassLoader();
+        ClassLoader classLoader = LoadSave.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname + "." + JSON_EXT);
         if (inputStream == null) {
             // TODO these constants should be defined somewhere
@@ -100,7 +102,79 @@ public class LoadBoard {
 		return null;
     }
 
-    public static void saveBoard(Board board, String name) {
+    public static void saveBoard(Board board, String fileName) {
+        BoardTemplate template = createBoardTemplate(board);
+
+        ClassLoader classLoader = LoadSave.class.getClassLoader();
+        // TODO: this is not very defensive, and will result in a NullPointerException
+        //       when the folder "resources" does not exist! But, it does not need
+        //       the file "simpleCards.json" to exist!
+        String filename =
+                classLoader.getResource(BOARDSFOLDER).getPath() + "/" + fileName + "." + JSON_EXT;
+
+        writeToFile(template, filename);
+    }
+
+    public static void loadGame() {
+
+    }
+
+    public static void saveGame(GameController gameController, String fileName) {
+        GameTemplate gameTemplate = new GameTemplate();
+        gameTemplate.gameId = gameController.board.getGameId();
+        gameTemplate.board = createBoardTemplate(gameController.board);
+
+        for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
+            PlayerTemplate playerTemplate = new PlayerTemplate();
+            Player player = gameController.board.getPlayer(i);
+            playerTemplate.id = player.getId();
+            playerTemplate.name = player.getName();
+            playerTemplate.color = player.getColor();
+            playerTemplate.xPosition = player.getSpace().x;
+            playerTemplate.yPosition = player.getSpace().y;
+            playerTemplate.heading = player.getHeading().ordinal();
+
+
+            for (CommandCard card : player.getDrawPile()) {
+                playerTemplate.drawPile.add(card.command.ordinal());
+            }
+            for (CommandCard card : player.getDiscardPile()) {
+                playerTemplate.discardPile.add(card.command.ordinal());
+            }
+            for (int j = 0; j < player.getProgram().length; j++) {
+                playerTemplate.program[j] = player.getProgram()[j].getCard().command.ordinal();
+            }
+            for (int j = 0; j < player.getCards().length; j++) {
+                playerTemplate.hand[j] = player.getCards()[j].getCard().command.ordinal();
+            }
+
+            playerTemplate.checkpoints = player.getCheckpoints();
+            playerTemplate.energyBank = player.getEnergyCubes();
+            playerTemplate.rebooting = player.isRebooting();
+
+            gameTemplate.players.add(playerTemplate);
+        }
+
+        gameTemplate.currentPlayer = gameController.board.getCurrentPlayer().getId();
+
+        gameController.getPlayerOrder().forEach(player -> gameTemplate.playerOrder.add(player.getId()));
+
+        gameTemplate.playPhase = gameController.board.getPhase().ordinal();
+        gameTemplate.step = gameController.board.getStep();
+
+
+
+        ClassLoader classLoader = LoadSave.class.getClassLoader();
+        // TODO: this is not very defensive, and will result in a NullPointerException
+        //       when the folder "resources" does not exist! But, it does not need
+        //       the file "simpleCards.json" to exist!
+        String filename =
+                classLoader.getResource(GAMESFOLDER).getPath() + "/" + fileName + "." + JSON_EXT;
+
+        writeToFile(gameTemplate, filename);
+    }
+
+    private static BoardTemplate createBoardTemplate(Board board) {
         BoardTemplate template = new BoardTemplate();
         template.width = board.width;
         template.height = board.height;
@@ -125,14 +199,10 @@ public class LoadBoard {
                 }
             }
         }
+        return template;
+    }
 
-        ClassLoader classLoader = LoadBoard.class.getClassLoader();
-        // TODO: this is not very defensive, and will result in a NullPointerException
-        //       when the folder "resources" does not exist! But, it does not need
-        //       the file "simpleCards.json" to exist!
-        String filename =
-                classLoader.getResource(BOARDSFOLDER).getPath() + "/" + name + "." + JSON_EXT;
-
+    public static void writeToFile(Object template, String filename) {
         // In simple cases, we can create a Gson object with new:
         //
         //   Gson gson = new Gson();
@@ -166,5 +236,4 @@ public class LoadBoard {
             }
         }
     }
-
 }
