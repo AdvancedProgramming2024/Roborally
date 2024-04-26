@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard.loadBoard;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard.saveBoard;
 
 /**
  * ...
@@ -81,9 +82,8 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = loadBoard(/*"defaultboard"*/"high_octane");
-            board.setAntenna(0,4, Heading.EAST);
-            board.setRebootStation(6,8, Heading.NORTH);
+            Board board = loadBoard("dizzy_highway"/*"high_octane"*/);
+            //saveBoard(board, "test");
 
             gameController = new GameController(board);
             int no = result.get();
