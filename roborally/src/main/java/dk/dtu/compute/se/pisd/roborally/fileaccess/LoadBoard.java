@@ -29,6 +29,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 
 import java.io.*;
@@ -70,6 +71,10 @@ public class LoadBoard {
 			BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
 
 			result = new Board(template.width, template.height);
+
+            result.setAntenna(template.antennaX, template.antennaY, Heading.values()[template.antennaHeading]);
+            result.setRebootStation(template.rebootStationX, template.rebootStationY, Heading.values()[template.rebootStationHeading]);
+
 			for (SpaceTemplate spaceTemplate: template.spaces) {
 			    Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
 			    if (space != null) {
@@ -99,6 +104,13 @@ public class LoadBoard {
         BoardTemplate template = new BoardTemplate();
         template.width = board.width;
         template.height = board.height;
+
+        template.antennaX = board.getAntenna().x;
+        template.antennaY = board.getAntenna().y;
+        template.antennaHeading = board.getAntennaHeading().ordinal();
+        template.rebootStationX = board.getRebootStation().x;
+        template.rebootStationY = board.getRebootStation().y;
+        template.rebootStationHeading = board.getRebootStationHeading().ordinal();
 
         for (int i=0; i<board.width; i++) {
             for (int j=0; j<board.height; j++) {
