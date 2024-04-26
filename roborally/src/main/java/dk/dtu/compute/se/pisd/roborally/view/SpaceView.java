@@ -126,6 +126,8 @@ public class SpaceView extends StackPane implements ViewObserver {
         Image spaceImage;
         spaceImageView.setFitHeight(SPACE_HEIGHT);
         spaceImageView.setFitWidth(SPACE_WIDTH);
+        spaceImage = new Image("images/empty.png");
+        spaceImageView.setImage(spaceImage);
         for (FieldAction action : space.getActions()) {
             if (action instanceof ConveyorBelt) {
                 drawConveyorBelt(spaceImageView);
@@ -137,17 +139,48 @@ public class SpaceView extends StackPane implements ViewObserver {
                 drawGear(spaceImageView, (Gear) action);
             }
         }
+        this.getChildren().add(spaceImageView);
+
+        if (!space.getWalls().isEmpty()) {
+            for (Heading wall : space.getWalls()) {
+                ImageView wallImageView = new ImageView();
+                Image wallImage = new Image("images/wall.png");
+                wallImageView.setImage(wallImage);
+                wallImageView.setFitHeight(SPACE_HEIGHT);
+                wallImageView.setFitWidth((double) SPACE_HEIGHT /6);
+                switch (wall) {
+                    case NORTH:
+                        wallImageView.setRotate(90);
+                        wallImageView.setTranslateY(((double) -SPACE_HEIGHT /2)+wallImageView.getFitWidth()/2);
+                        break;
+                    case SOUTH:
+                        wallImageView.setRotate(90);
+                        wallImageView.setTranslateY(((double) SPACE_HEIGHT /2)-wallImageView.getFitWidth()/2);
+                        break;
+                    case EAST:
+                        wallImageView.setTranslateX(((double) SPACE_WIDTH /2)-wallImageView.getFitWidth()/2);
+                        break;
+                    case WEST:
+                        wallImageView.setTranslateX(((double) -SPACE_WIDTH /2)+wallImageView.getFitWidth()/2);
+                        break;
+                    default:
+                        continue;
+                }
+                this.getChildren().add(wallImageView);
+            }
+        }
+
+        ImageView fieldView = new ImageView();
+        fieldView.setFitHeight(SPACE_HEIGHT);
+        fieldView.setFitWidth(SPACE_WIDTH);
         if (space == space.board.getAntenna()) {
             spaceImage = new Image("images/antenna.png");
-            spaceImageView.setImage(spaceImage);
+            fieldView.setImage(spaceImage);
         } else if (space == space.board.getRebootStation()) {
             spaceImage = new Image("images/reboot.png");
-            spaceImageView.setImage(spaceImage);
-        } else if (space.getActions().isEmpty() || getPushPanel() != null || getLaser() != null) {
-            spaceImage = new Image("images/empty.png");
-            spaceImageView.setImage(spaceImage);
+            fieldView.setImage(spaceImage);
         }
-        this.getChildren().add(spaceImageView);
+        this.getChildren().add(fieldView);
 
         if (getPushPanel() != null) {
             ImageView pushPanelImageView = createPushImageView();
@@ -157,35 +190,6 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (getLaser() != null) {
             ImageView laserImageView = createLaserImageView();
             this.getChildren().add(laserImageView);
-        }
-
-        if (!space.getWalls().isEmpty()) {
-            for (Heading wall : space.getWalls()) {
-                ImageView wallImageView = new ImageView();
-                Image wallImage = new Image("images/wall.png");
-                wallImageView.setImage(wallImage);
-                wallImageView.setFitHeight(SPACE_HEIGHT);
-                wallImageView.setFitWidth(SPACE_HEIGHT/6);
-                switch (wall) {
-                    case NORTH:
-                        wallImageView.setRotate(90);
-                        wallImageView.setTranslateY((-SPACE_HEIGHT/2)+wallImageView.getFitWidth()/2);
-                        break;
-                    case SOUTH:
-                        wallImageView.setRotate(90);
-                        wallImageView.setTranslateY((SPACE_HEIGHT/2)-wallImageView.getFitWidth()/2);
-                        break;
-                    case EAST:
-                        wallImageView.setTranslateX((SPACE_WIDTH/2)-wallImageView.getFitWidth()/2);
-                        break;
-                    case WEST:
-                        wallImageView.setTranslateX((-SPACE_WIDTH/2)+wallImageView.getFitWidth()/2);
-                        break;
-                    default:
-                        continue;
-                }
-                this.getChildren().add(wallImageView);
-            }
         }
     }
 
