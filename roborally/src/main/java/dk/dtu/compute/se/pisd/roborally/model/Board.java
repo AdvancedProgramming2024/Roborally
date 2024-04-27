@@ -47,7 +47,7 @@ public class Board extends Subject {
     private final Space[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
-
+    private List<Space> LOS = new ArrayList<>();
     private Player current;
 
     private Phase phase = INITIALISATION;
@@ -273,15 +273,18 @@ public class Board extends Subject {
         return result;
     }
 
-    public Space getLOS(@NotNull Space space, @NotNull Heading heading) {
+    //Please call this everytime you use getLOS(),
+    public void resetLOS() {
+        LOS.clear();
+    }
+    //This function returns a list of all spaces in a given heading until it hits a wall or player
+    //DOES NOT ADD CURRENT SPACE UNLESS IT CONTAINS A PLAYER OR WALL IN THE GIVEN HEADING
+    public List<Space> getLOS(@NotNull Space space, @NotNull Heading heading) {
         Player player = space.getPlayer();
-        if (player != null) {
-            return space;
+        if (player != null || space.getWalls().contains(heading)) {
+            LOS.add(space);
+            return LOS;
         }
-        if (space.getWalls().contains(heading)) {
-            return null;
-        }
-
 
         //Implement the same way neighbour is made, just with no null checks
         int x = space.x;
@@ -301,24 +304,21 @@ public class Board extends Subject {
                 break;
         }
 
+        //Checks if LOS is out of bounds before adding new space to the list
         if (x >= space.board.width || x < 0 || y >= space.board.height || y < 0 ) {
-            return null;
+            return LOS;
         }
         Space neighbour = getSpace(x,y);
-
+        LOS.add(neighbour);
         Heading reverse = heading.next().next();
-        if (neighbour.getWalls().contains(reverse)) {
-            return null;
-        }
-        if (neighbour.getPlayer() != null) {
-            return neighbour;
-        }
-        // Check if neighbour has a wall in the opposite direction
-        if (neighbour.getWalls().contains(heading)) {
-            return null;  // LOS is obstructed
-        }
-        //Check for player at neighbours neighbours neighbour...
 
+        //If there is a wall in the lasers path or a player then returns the list
+        if (neighbour.getWalls().contains(reverse) || neighbour.getPlayer() != null
+                || neighbour.getWalls().contains(heading)) {
+            return LOS;
+        }
+
+        //Check for player at neighbours neighbours neighbour...
         return getLOS(neighbour, heading);
     }
 
