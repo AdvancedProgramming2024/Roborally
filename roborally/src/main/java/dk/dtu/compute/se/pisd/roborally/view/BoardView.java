@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.view;
 import com.google.common.base.MoreObjects;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
+import dk.dtu.compute.se.pisd.roborally.controller.Laser;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -50,6 +51,7 @@ public class BoardView extends VBox implements ViewObserver {
 
     private GridPane mainBoardPane;
     private SpaceView[][] spaces;
+    private static List<LaserView> laserView = new ArrayList<>();
 
     private PlayersView playersView;
 
@@ -79,11 +81,22 @@ public class BoardView extends VBox implements ViewObserver {
                 spaces[x][y] = spaceView;
                 mainBoardPane.add(spaceView, x, y);
                 spaceView.setOnMouseClicked(spaceEventHandler);
+                if (space.getActions().stream().anyMatch(action -> action instanceof Laser)) {
+                    laserView.add(new LaserView(board, spaceView, x, y));
+                }
             }
         }
 
+        setLaserVisibility(false);
+
         board.attach(this);
         update(board);
+    }
+
+    public static void setLaserVisibility(boolean b) {
+        for (LaserView laser : laserView) {
+            laser.setLaserVisibility(b);
+        }
     }
 
     @Override

@@ -160,14 +160,6 @@ public class SpaceView extends StackPane implements ViewObserver {
 
         if (getLaser() != null) {
             ImageView laserImageView = createLaserImageView();
-            List<Space> LOS = space.board.getLOS(space, getLaser().getHeading());
-
-            double y = 0;
-            for (Space space : LOS) {
-                drawLaserPath(y);
-                y -= 60;
-            }
-
             this.getChildren().add(laserImageView);
         }
 
@@ -298,17 +290,6 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
         }
         return null;
-    }
-
-    public void drawLaserPath(double y) {
-        Image laserImage = new Image("images/laser.png");
-        ImageView laserImageView = new ImageView();
-        laserImageView.setFitWidth(SPACE_WIDTH);
-        laserImageView.setPreserveRatio(true);
-        laserImageView.setRotate(90);
-        laserImageView.setTranslateY(y);
-        laserImageView.setImage(laserImage);
-        this.getChildren().add(laserImageView);
     }
 
     /**
