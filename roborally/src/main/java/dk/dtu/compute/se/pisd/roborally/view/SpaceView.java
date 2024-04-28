@@ -44,6 +44,9 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 /**
  * ...
  *
@@ -286,6 +289,26 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
         }
         return null;
+    }
+
+    public void drawLaserPath(Laser laser) throws InterruptedException {
+        Image laserImage = new Image("images/laser.png");
+        ImageView laserImageView = new ImageView();
+
+        laserImageView.setImage(laserImage);
+
+        List<Space> LOS = space.board.getLOS(space, laser.getHeading());
+
+        for (Space space : LOS) {
+            laserImageView.setImage(laserImage);
+            getChildren().add(laserImageView);
+        }
+
+        TimeUnit.SECONDS.sleep(1);
+
+        for (Space space : LOS) {
+            this.getChildren().removeIf(node -> node instanceof ImageView);
+        }
     }
 
     /**
