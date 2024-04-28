@@ -32,6 +32,7 @@ import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -44,6 +45,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -59,7 +61,6 @@ public class SpaceView extends StackPane implements ViewObserver {
     final public static int SPACE_WIDTH = 60; // 75;
 
     public final Space space;
-
 
     public SpaceView(@NotNull Space space) {
         this.space = space;
@@ -159,6 +160,14 @@ public class SpaceView extends StackPane implements ViewObserver {
 
         if (getLaser() != null) {
             ImageView laserImageView = createLaserImageView();
+            List<Space> LOS = space.board.getLOS(space, getLaser().getHeading());
+
+            double y = 0;
+            for (Space space : LOS) {
+                drawLaserPath(y);
+                y -= 60;
+            }
+
             this.getChildren().add(laserImageView);
         }
 
@@ -291,24 +300,15 @@ public class SpaceView extends StackPane implements ViewObserver {
         return null;
     }
 
-    public void drawLaserPath(Laser laser) throws InterruptedException {
+    public void drawLaserPath(double y) {
         Image laserImage = new Image("images/laser.png");
         ImageView laserImageView = new ImageView();
-
+        laserImageView.setFitWidth(SPACE_WIDTH);
+        laserImageView.setPreserveRatio(true);
+        laserImageView.setRotate(90);
+        laserImageView.setTranslateY(y);
         laserImageView.setImage(laserImage);
-
-        List<Space> LOS = space.board.getLOS(space, laser.getHeading());
-
-        for (Space space : LOS) {
-            laserImageView.setImage(laserImage);
-            getChildren().add(laserImageView);
-        }
-
-        TimeUnit.SECONDS.sleep(1);
-
-        for (Space space : LOS) {
-            this.getChildren().removeIf(node -> node instanceof ImageView);
-        }
+        this.getChildren().add(laserImageView);
     }
 
     /**

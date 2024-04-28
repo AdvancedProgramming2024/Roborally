@@ -281,8 +281,10 @@ public class Board extends Subject {
     //DOES NOT ADD CURRENT SPACE UNLESS IT CONTAINS A PLAYER OR WALL IN THE GIVEN HEADING
     public List<Space> getLOS(@NotNull Space space, @NotNull Heading heading) {
         Player player = space.getPlayer();
-        if (player != null || space.getWalls().contains(heading)) {
+        if (LOS.isEmpty()) {
             LOS.add(space);
+        }
+        if (player != null || space.getWalls().contains(heading)) {
             return LOS;
         }
 

@@ -21,6 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally.view;
 
+import com.google.common.base.MoreObjects;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
@@ -29,10 +30,14 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ...
@@ -41,7 +46,6 @@ import org.jetbrains.annotations.NotNull;
  *
  */
 public class BoardView extends VBox implements ViewObserver {
-
     private Board board;
 
     private GridPane mainBoardPane;
