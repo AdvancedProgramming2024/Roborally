@@ -116,7 +116,7 @@ public class Player extends Subject {
         discardPile.add(card);
     }
 
-    public void removeCommandCard(Command command) {
+    public void removeFromDiscardPile(Command command) {
         for (CommandCard card : discardPile) {
             if (card.command == command) {
                 discardPile.remove(card);
