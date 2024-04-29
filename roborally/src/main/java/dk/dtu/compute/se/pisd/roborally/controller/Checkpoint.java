@@ -19,7 +19,7 @@ public class Checkpoint extends FieldAction{
      * @author Jonathan (s235115)
      * @param gameController
      * @param space
-     * @return ???
+     * @return True if player got the checkpoint, false if not
      */
     @Override
     public boolean doAction(GameController gameController, Space space) {

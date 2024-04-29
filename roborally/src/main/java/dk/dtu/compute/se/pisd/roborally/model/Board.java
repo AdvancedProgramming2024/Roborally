@@ -96,6 +96,11 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * @author Jonathan (s235115)
+     * @param space     Space used to calculate distance
+     * @return Distance
+     */
     public double getDistanceToAntenna(Space space) {
         if (antenna == null) {
             return -1;
@@ -105,17 +110,17 @@ public class Board extends Subject {
         return Math.abs(dx) + Math.abs(dy);
     }
 
+    /**
+     * @author Jonathan (s235115)
+     * @param space     Space used to calculate angle
+     * @return Angle to antenna
+     */
     public double getAngleToAntenna(Space space) {
         if (antenna == null) {
             return -1;
         }
         int dx = space.x - antenna.x;
         int dy = space.y - antenna.y;
-
-        double n = Math.toDegrees(Math.atan2(dx, -dy));
-        double e = Math.toDegrees(Math.atan2(dy, dx));
-        double s = Math.toDegrees(Math.atan2(-dx, dy));
-        double w = Math.toDegrees(Math.atan2(-dy, -dx));
 
         // This calculates the angle between the antenna and the space
         double angle = switch (antennaHeading) {
@@ -125,6 +130,7 @@ public class Board extends Subject {
             case WEST -> Math.atan2(-dy, -dx);
         };
 
+        // If the angle is negative, add 2 pi to get positive angles to easily compare them
         if (angle < 0) {
             angle += 2 * Math.PI;
         }
@@ -264,6 +270,7 @@ public class Board extends Subject {
         }
         Heading reverse = heading.next().next();
         Space result = getSpace(x, y);
+
         // TODO: Id space is hole, return null
         if (result != null) {
             if (result.getWalls().contains(reverse) || result == antenna) {
