@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
+import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -45,6 +46,7 @@ public class RoboRally extends Application {
 
     private static Stage stage;
     private BorderPane boardRoot;
+    private static TilePane r;
 
     private Scene gameScene;
     private static Scene menuScene;
@@ -64,12 +66,13 @@ public class RoboRally extends Application {
         // the board view (which initially is empty); it will be filled
         // when the user creates a new game or loads a game
         RoboRallyMenuBar menuBar = new RoboRallyMenuBar(appController);
+        MenuButtons menuButtons = new MenuButtons(appController);
         boardRoot = new BorderPane();
         VBox vbox = new VBox(menuBar, boardRoot);
         vbox.setMinWidth(MIN_APP_WIDTH);
         TilePane r = new TilePane();
-        r.getChildren().add(RoboRallyMenuBar.newGameButton);
-        r.getChildren().add(RoboRallyMenuBar.loadGameButton);
+        r.getChildren().add(MenuButtons.newGameButton);
+        r.getChildren().add(MenuButtons.loadGameButton);
 
         menuScene = new Scene(r, 800, 600);
         gameScene = new Scene(vbox, 800, 1200);
@@ -87,10 +90,10 @@ public class RoboRally extends Application {
 
     public void createBoardView(GameController gameController) {
         // if present, remove old BoardView
-        stage.setScene(gameScene);
         boardRoot.getChildren().clear();
 
         if (gameController != null) {
+            stage.setScene(gameScene);
             // create and add view for new board
             BoardView boardView = new BoardView(gameController);
             boardRoot.setCenter(boardView);
@@ -102,6 +105,7 @@ public class RoboRally extends Application {
 
     public static void returnToMenu() {
         stage.setScene(menuScene);
+
     }
 
     @Override
