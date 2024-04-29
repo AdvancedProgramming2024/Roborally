@@ -43,10 +43,11 @@ public class RoboRally extends Application {
 
     private static final int MIN_APP_WIDTH = 600;
 
-    private Stage stage;
+    private static Stage stage;
     private BorderPane boardRoot;
 
     private Scene gameScene;
+    private static Scene menuScene;
 
     @Override
     public void init() throws Exception {
@@ -70,7 +71,7 @@ public class RoboRally extends Application {
         r.getChildren().add(RoboRallyMenuBar.newGameButton);
         r.getChildren().add(RoboRallyMenuBar.loadGameButton);
 
-        Scene menuScene = new Scene(r, 800, 600);
+        menuScene = new Scene(r, 800, 600);
         gameScene = new Scene(vbox, 800, 1200);
         stage.setScene(menuScene);
         stage.setTitle("RoboRally");
@@ -95,7 +96,12 @@ public class RoboRally extends Application {
             boardRoot.setCenter(boardView);
         }
 
-        stage.sizeToScene();
+        //stage.sizeToScene();
+        stage.setFullScreen(true);
+    }
+
+    public static void returnToMenu() {
+        stage.setScene(menuScene);
     }
 
     @Override
