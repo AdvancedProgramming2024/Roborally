@@ -27,6 +27,8 @@ import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -70,9 +72,17 @@ public class RoboRally extends Application {
         boardRoot = new BorderPane();
         VBox vbox = new VBox(menuBar, boardRoot);
         vbox.setMinWidth(MIN_APP_WIDTH);
-        TilePane r = new TilePane();
+        TilePane r = new TilePane(Orientation.VERTICAL);
         r.getChildren().add(MenuButtons.newGameButton);
         r.getChildren().add(MenuButtons.loadGameButton);
+        r.getChildren().add(MenuButtons.exitGameButton);
+
+        //style for the menu
+        r.setAlignment(Pos.CENTER);
+        r.setVgap(15);
+
+        //placeholder indtil vi har et billede
+        r.setStyle("-fx-background-color: green;");
 
         menuScene = new Scene(r, 800, 600);
         gameScene = new Scene(vbox, 800, 1200);
