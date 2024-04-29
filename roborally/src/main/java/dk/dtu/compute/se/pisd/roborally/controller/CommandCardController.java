@@ -94,7 +94,7 @@ public class CommandCardController {
                     executeCommand(gameController, player, Command.MOVE_3);
                     break;
                 case SPAM_FOLDER:
-                    player.removeCommandCard(Command.SPAM);
+                    player.removeFromDiscardPile(Command.SPAM);
                     break;
                 case REPEAT_ROUTINE:
                     executeCommand(gameController, player, Command.AGAIN);
