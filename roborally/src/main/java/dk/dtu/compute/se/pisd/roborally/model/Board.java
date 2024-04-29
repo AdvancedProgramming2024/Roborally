@@ -278,11 +278,13 @@ public class Board extends Subject {
         LOS.clear();
     }
     //This function returns a list of all spaces in a given heading until it hits a wall or player
-    //DOES NOT ADD CURRENT SPACE UNLESS IT CONTAINS A PLAYER OR WALL IN THE GIVEN HEADING
+
     public List<Space> getLOS(@NotNull Space space, @NotNull Heading heading) {
         Player player = space.getPlayer();
-        if (player != null || space.getWalls().contains(heading)) {
+        if (LOS.isEmpty()) {
             LOS.add(space);
+        }
+        if (player != null || space.getWalls().contains(heading)) {
             return LOS;
         }
 
