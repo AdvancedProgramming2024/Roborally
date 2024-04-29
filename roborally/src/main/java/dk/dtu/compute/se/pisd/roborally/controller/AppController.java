@@ -97,6 +97,8 @@ public class AppController implements Observer {
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
             Board board = loadBoard("dizzy_highway"/*"high_octane"*/);
+            assert board != null;
+            board.setGameId((int)(Math.random() * 100));
             //saveBoard(board, "test");
 
             gameController = new GameController(board);
@@ -116,9 +118,26 @@ public class AppController implements Observer {
     }
 
     public void saveGame() {
-        Label label = new Label("Save game as:");
+        String fileName = inputBox(true);
+
+        LoadSave.saveGame(gameController, fileName);
+    }
+
+    public void loadGame() {
+        // XXX needs to be implemented eventually
+        // for now, we just create a new game
+        if (gameController == null) {
+            String fileName = inputBox(false);
+            gameController = LoadSave.loadGame(fileName);
+            if (gameController == null) return;
+            roboRally.createBoardView(gameController);
+        }
+    }
+
+    private String inputBox(boolean saving) {
+        Label label = new Label(saving ? "Save game as:" : "Load game from:");
         TextField filenameField = new TextField();
-        Button button = new Button("Save");
+        Button button = new Button(saving ? "Save" : "Load");
         button.setOnAction(e -> {
             Stage stage = (Stage) button.getScene().getWindow();
             stage.close();
@@ -127,7 +146,7 @@ public class AppController implements Observer {
         VBox root = new VBox();
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("Save game");
+        stage.setTitle(saving ? "Save" : "Load" + "game");
         stage.setResizable(false);
         stage.setAlwaysOnTop(true);
         stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -135,15 +154,7 @@ public class AppController implements Observer {
         root.setPadding(new Insets(10));
         stage.showAndWait();
 
-        LoadSave.saveGame(gameController, filenameField.getText());
-    }
-
-    public void loadGame() {
-        // XXX needs to be implemented eventually
-        // for now, we just create a new game
-        if (gameController == null) {
-            newGame();
-        }
+        return filenameField.getText();
     }
 
     /**

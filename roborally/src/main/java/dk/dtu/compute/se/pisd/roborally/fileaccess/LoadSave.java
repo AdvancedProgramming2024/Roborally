@@ -122,6 +122,10 @@ public class LoadSave {
         ClassLoader classLoader = LoadSave.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(GAMESFOLDER + "/" + fileName + "." + JSON_EXT);
 
+        if (inputStream == null) {
+            return null;
+        }
+
         // In simple cases, we can create a Gson object with new Gson():
         GsonBuilder simpleBuilder = new GsonBuilder().
                 registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>());
@@ -151,7 +155,7 @@ public class LoadSave {
             }
 
             for (PlayerTemplate playerTemplate: template.players) {
-                Player player = new Player(board, playerTemplate.name, playerTemplate.color, playerTemplate.id);
+                Player player = new Player(board, playerTemplate.color, playerTemplate.name, playerTemplate.id);
                 player.setSpace(board.getSpace(playerTemplate.xPosition, playerTemplate.yPosition));
                 player.setHeading(Heading.values()[playerTemplate.heading]);
 
