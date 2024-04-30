@@ -54,7 +54,7 @@ public class GameController {
 
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
-                if (push) {
+                if (target.getPlayer() != null && !push) {
                     return;
                 }
                 try {
