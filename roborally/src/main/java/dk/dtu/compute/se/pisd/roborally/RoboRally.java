@@ -61,6 +61,9 @@ public class RoboRally extends Application {
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
+        stage.setMaximized(true);
+        double screenWidth = stage.getMaxWidth();
+        double screenHeight = stage.getMaxHeight();
 
         AppController appController = new AppController(this);
 
@@ -84,16 +87,16 @@ public class RoboRally extends Application {
         //placeholder indtil vi har et billede
         r.setStyle("-fx-background-color: green;");
 
-        menuScene = new Scene(r, 800, 600);
-        gameScene = new Scene(vbox, 800, 1200);
+        menuScene = new Scene(r, screenWidth, screenHeight);
+        gameScene = new Scene(vbox, screenWidth, screenHeight);
         stage.setScene(menuScene);
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
                 e -> {
                     e.consume();
                     appController.exit();} );
-        stage.setResizable(false);
-        stage.setFullScreen(true);
+        stage.setResizable(true);
+        stage.setMaximized(true);
         stage.show();
 
     }
@@ -108,9 +111,7 @@ public class RoboRally extends Application {
             BoardView boardView = new BoardView(gameController);
             boardRoot.setCenter(boardView);
         }
-
-        //stage.sizeToScene();
-        stage.setFullScreen(true);
+        stage.setMaximized(true);
     }
 
     public static void returnToMenu() {
