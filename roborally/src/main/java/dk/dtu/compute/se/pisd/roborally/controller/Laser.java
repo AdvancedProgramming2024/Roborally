@@ -1,6 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -27,7 +28,8 @@ public class Laser extends FieldAction {
         if (LOS == null) {
             return false;
         }
-        System.out.println(LOS.size());
+
+        SpaceView.drawLaser(LOS);
 
         //If list is length 1 check for player/wall
         if (LOS.size() == 1) {

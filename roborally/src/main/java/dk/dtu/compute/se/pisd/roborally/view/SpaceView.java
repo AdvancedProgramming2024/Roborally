@@ -29,9 +29,11 @@ import dk.dtu.compute.se.pisd.roborally.controller.PushPanel;
 import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.model.CommandCard;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -46,6 +48,11 @@ import javafx.stage.Screen;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static dk.dtu.compute.se.pisd.roborally.model.Command.SPAM;
 
 /**
  * ...
@@ -59,6 +66,7 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     public final Space space;
 
+    public static List<ImageView> lasers = new ArrayList<>();
 
     public SpaceView(@NotNull Space space) {
         this.space = space;
@@ -77,6 +85,105 @@ public class SpaceView extends StackPane implements ViewObserver {
         // This space view should listen to changes of the space
         space.attach(this);
         update(space);
+    }
+    /**
+     * @author Kresten (s235103)
+     * @Description Draws the lasers on the board for a given time
+     * @param LOS List of spaces the laser passes through
+     */
+    public static void drawLaser(List<Space> LOS) {
+        Heading heading = null;
+        Laser laser;
+        for (FieldAction action : LOS.get(0).getActions()) {
+            if (action instanceof Laser) {
+                laser = (Laser) action;
+                heading = laser.getHeading();
+                break;
+            }
+        }
+
+        // Draw the laser on the Space which contains the laserStart
+        Image laserImage = new Image("images/laser.png");
+        ImageView laserImageView = new ImageView();
+        laserImageView.setCache(true);
+        laserImageView.setImage(laserImage);
+        laserImageView.setFitHeight(SPACE_SIZE/8);
+        laserImageView.setFitWidth(SPACE_SIZE-(SPACE_SIZE/3));
+        int rotation = 0;
+        switch (heading) {
+            case NORTH:
+                rotation= 90;
+                laserImageView.setTranslateY(-laserImageView.getFitWidth()/2+(SPACE_SIZE/6));
+                break;
+            case EAST:
+                laserImageView.setTranslateX(laserImageView.getFitWidth()/2-(SPACE_SIZE/6));
+                break;
+            case SOUTH:
+                rotation= 270;
+                laserImageView.setTranslateY(laserImageView.getFitWidth()/2-(SPACE_SIZE/6));
+                break;
+            case WEST:
+                rotation= 180;
+                laserImageView.setTranslateX((-laserImageView.getFitWidth()/2)+SPACE_SIZE/6);
+                break;
+        }
+        laserImageView.setRotate(rotation);
+        lasers.add(laserImageView);
+        BoardView.getSpaceView(LOS.get(0)).getChildren().add(laserImageView);
+
+        // Draw the laser on the Spaces the laser passes through
+        for (int i = 1 ; i < LOS.size()-1 ; i++) {
+            ImageView laserImageView2 = new ImageView();
+            laserImageView2.setCache(true);
+            laserImageView2.setImage(laserImage);
+            laserImageView2.setFitHeight(SPACE_SIZE/8);
+            laserImageView2.setFitWidth(SPACE_SIZE);
+            laserImageView2.setRotate(rotation);
+            lasers.add(laserImageView2);
+            BoardView.getSpaceView(LOS.get(i)).getChildren().add(laserImageView2);
+        }
+        // Determine if and how the last laser should be drawn
+        Space hit = LOS.get(LOS.size() -1);
+        Heading reverse = heading.next().next();
+
+        if (hit.getWalls().contains(reverse)) {
+            return;
+        }
+
+        if (hit.getPlayer() != null) {
+            // Draw half-length laser
+            ImageView laserImageView3 = new ImageView();
+            laserImageView3.setCache(true);
+            laserImageView3.setImage(laserImage);
+            laserImageView3.setFitHeight(SPACE_SIZE/8);
+            laserImageView3.setFitWidth(SPACE_SIZE/2);
+            switch (heading) {
+                case NORTH -> laserImageView3.setTranslateY(SPACE_SIZE/4);
+                case EAST -> laserImageView3.setTranslateX(-SPACE_SIZE/4);
+                case SOUTH -> laserImageView3.setTranslateY(-SPACE_SIZE/4);
+                case WEST -> laserImageView3.setTranslateX(SPACE_SIZE/4);
+            }
+            laserImageView3.setRotate(rotation);
+            lasers.add(laserImageView3);
+            BoardView.getSpaceView(hit).getChildren().add(laserImageView3);
+        } else {
+            // Draw full length laser
+            ImageView laserImageView4 = new ImageView();
+            laserImageView4.setCache(true);
+            laserImageView4.setImage(laserImage);
+            laserImageView4.setFitHeight(SPACE_SIZE/8);
+            laserImageView4.setFitWidth(SPACE_SIZE);
+            laserImageView4.setRotate(rotation);
+            lasers.add(laserImageView4);
+            BoardView.getSpaceView(hit).getChildren().add(laserImageView4);
+        }
+    }
+
+    public static void destroyLasers() {
+        for (ImageView laser : lasers) {
+            laser.setImage(null);
+        }
+        lasers.clear();
     }
 
     private void updatePlayer() {

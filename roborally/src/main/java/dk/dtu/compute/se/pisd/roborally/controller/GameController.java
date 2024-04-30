@@ -22,10 +22,14 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.view.BoardView;
+import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
+import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ...
@@ -277,6 +281,17 @@ public class GameController {
                     }
                 }
             }
+
+            // Destroy lasers after 500ms
+            new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                SpaceView.destroyLasers();
+            }}).start();
+
 
             if (step < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(step);
