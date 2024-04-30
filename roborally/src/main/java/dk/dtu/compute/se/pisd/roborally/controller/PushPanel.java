@@ -23,9 +23,9 @@ public class PushPanel extends FieldAction {
         Player player = space.getPlayer();
         if (player == null) return false;
         if (pushTime == PushTime.EVEN && (space.board.getStep() + 1) % 2 == 0) {  // +1 because step is 0-indexed
-            gameController.moveInDirection(player, heading);
+            gameController.moveInDirection(player, heading, true);
         } else if (pushTime == PushTime.ODD && (space.board.getStep() + 1) % 2 == 1) {  // +1 because step is 0-indexed
-            gameController.moveInDirection(player, heading);
+            gameController.moveInDirection(player, heading, true);
         }
         return true;
     }

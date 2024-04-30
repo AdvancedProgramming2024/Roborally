@@ -50,7 +50,7 @@ public class CommandCardController {
                     gameController.turn(player, 2);
                     break;
                 case MOVE_BACK:
-                    gameController.moveInDirection(player, player.getHeading().next().next());
+                    gameController.moveInDirection(player, player.getHeading().next().next(), true);
                     break;
                 case POWER_UP:
                     player.addEnergyCubes(1);
