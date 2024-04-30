@@ -53,16 +53,18 @@ public class UpgradeShopView extends VBox implements ViewObserver {
     public UpgradeShopView(@NotNull GameController gameController) {
         board = gameController.board;
         top = new VBox();
+        top.setSpacing(10.0);
         getChildren().add(top);
         cardsLabel = new Label("Upgrade Shop");
         cardsPane = new GridPane();
-        cardsPane.setVgap(2.0);
+        cardsPane.setVgap(20.0);
         cardsPane.setHgap(2.0);
+        cardsPane.setAlignment(Pos.CENTER);
         cardViews = new UpgradeCardFieldView[5];
 
         Upgrade[] upgrades = Upgrade.values();
-        ArrayList<UpgradeCard> upgradePile = new ArrayList<UpgradeCard>();
-        int[] upgradeValues = {0, 1,2,3, 4 };
+        ArrayList<UpgradeCard> upgradePile = new ArrayList<>();
+        int[] upgradeValues = {0,1,2,3,4};
         for (int upgradeValue : upgradeValues) {
             upgradePile.add(new UpgradeCard(upgrades[upgradeValue]));
         }
@@ -73,13 +75,14 @@ public class UpgradeShopView extends VBox implements ViewObserver {
             cardField.setCard(upgradePile.get(i));
 
             cardViews[i] = new UpgradeCardFieldView(gameController, cardField);
-            cardsPane.add(cardViews[i], i, 0);
+            cardsPane.add(cardViews[i], 0, i);
 
         }
 
-
+        top.setPrefWidth(120.0);
         top.getChildren().add(cardsLabel);
         top.getChildren().add(cardsPane);
+        top.setAlignment(Pos.CENTER);
         board.attach(this);
         update(board);
 

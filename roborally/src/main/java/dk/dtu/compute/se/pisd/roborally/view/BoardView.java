@@ -73,13 +73,13 @@ public class BoardView extends BorderPane implements ViewObserver {
         setCenter(mainBoardPane);
 
         // Add playersView to the right of the BorderPane
-        setRight(playersView);
+        setBottom(playersView);
 
         // Add upgradeShopView to the left of the BorderPane
-        setLeft(upgradeShopView);
+        setRight(upgradeShopView);
 
         // Add statusLabel to the bottom of the BorderPane
-        setBottom(statusLabel);
+        //setBottom(statusLabel);
 
         spaces = new SpaceView[board.width][board.height];
 
