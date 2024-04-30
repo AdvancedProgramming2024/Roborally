@@ -21,24 +21,20 @@
  */
 package dk.dtu.compute.se.pisd.roborally.view;
 
-import com.google.common.base.MoreObjects;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
-import dk.dtu.compute.se.pisd.roborally.controller.Laser;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Phase;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ...
@@ -51,13 +47,12 @@ public class BoardView extends VBox implements ViewObserver {
 
     private GridPane mainBoardPane;
     private SpaceView[][] spaces;
-    private static List<LaserView> laserView = new ArrayList<>();
-
     private PlayersView playersView;
 
     private Label statusLabel;
 
     private SpaceEventHandler spaceEventHandler;
+    private static Map<Space, SpaceView> spaceViewMap = new HashMap<>();
 
     public BoardView(@NotNull GameController gameController) {
         board = gameController.board;
@@ -79,24 +74,14 @@ public class BoardView extends VBox implements ViewObserver {
                 Space space = board.getSpace(x, y);
                 SpaceView spaceView = new SpaceView(space);
                 spaces[x][y] = spaceView;
+                spaceViewMap.put(space, spaceView);
                 mainBoardPane.add(spaceView, x, y);
                 spaceView.setOnMouseClicked(spaceEventHandler);
-                if (space.getActions().stream().anyMatch(action -> action instanceof Laser)) {
-                    laserView.add(new LaserView(board, spaceView, x, y));
-                }
             }
         }
 
-        setLaserVisibility(false);
-
         board.attach(this);
         update(board);
-    }
-
-    public static void setLaserVisibility(boolean b) {
-        for (LaserView laser : laserView) {
-            laser.setLaserVisibility(b);
-        }
     }
 
     @Override
@@ -105,6 +90,9 @@ public class BoardView extends VBox implements ViewObserver {
             Phase phase = board.getPhase();
             statusLabel.setText(board.getStatusMessage());
         }
+    }
+    public static SpaceView getSpaceView(Space space) {
+        return spaceViewMap.get(space);
     }
 
     // XXX this handler and its uses should eventually be deleted! This is just to help test the
@@ -131,7 +119,5 @@ public class BoardView extends VBox implements ViewObserver {
                 }
             }
         }
-
     }
-
 }

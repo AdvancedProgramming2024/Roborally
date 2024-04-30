@@ -1,12 +1,10 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import dk.dtu.compute.se.pisd.roborally.view.BoardView;
-import dk.dtu.compute.se.pisd.roborally.view.LaserView;
+import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Command.SPAM;
 
@@ -31,15 +29,7 @@ public class Laser extends FieldAction {
             return false;
         }
 
-        BoardView.setLaserVisibility(true);
-        /*new Thread(() -> {
-            try {
-                TimeUnit.MILLISECONDS.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            LaserView.setLaserVisibility(false);
-        }).start();*/
+        SpaceView.drawLaser(LOS);
 
         //If list is length 1 check for player/wall
         if (LOS.size() == 1) {
