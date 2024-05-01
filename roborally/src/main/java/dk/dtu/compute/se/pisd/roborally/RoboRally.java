@@ -88,7 +88,7 @@ public class RoboRally extends Application {
         r.setStyle("-fx-background-color: green;");
 
         menuScene = new Scene(r, screenWidth, screenHeight);
-        gameScene = new Scene(vbox, screenWidth, screenHeight);
+        gameScene = new Scene(vbox, 360, 640);
         stage.setScene(menuScene);
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
@@ -111,7 +111,7 @@ public class RoboRally extends Application {
             BoardView boardView = new BoardView(gameController);
             boardRoot.setCenter(boardView);
         }
-        stage.setMaximized(true);
+        //stage.setMaximized(true);
     }
 
     public static void returnToMenu() {
