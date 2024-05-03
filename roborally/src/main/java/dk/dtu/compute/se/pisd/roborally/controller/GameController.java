@@ -22,9 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
-import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -83,16 +81,16 @@ public class GameController {
         player.setHeading(playerHeading);
     }
 
-    public boolean moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) {
+    public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) {
         Player other = space.getPlayer();
         if (other != null && other != player) {
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
-                if (target == space) return false;
+                if (target == space) return;
                 try {
                     move(other, target, heading);
                 } catch (ImpossibleMoveException e) {
-                    return false;
+                    return;
                 }
                 assert space.getPlayer() == null : target; // make sure target is free now
             } else {
@@ -101,7 +99,6 @@ public class GameController {
             }
         }
         player.setSpace(space);
-        return true;
     }
 
     private void move(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {

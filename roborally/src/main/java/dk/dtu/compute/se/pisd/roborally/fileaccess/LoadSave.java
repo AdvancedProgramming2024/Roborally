@@ -82,8 +82,8 @@ public class LoadSave {
 			for (SpaceTemplate spaceTemplate: template.spaces) {
 			    Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
 			    if (space != null) {
-                    space.getActions().addAll(spaceTemplate.actions);
-                    space.getWalls().addAll(spaceTemplate.walls);
+                    spaceTemplate.actions.forEach(space::addAction);
+                    spaceTemplate.walls.forEach(space::addWall);
                 }
             }
 			reader.close();
@@ -117,7 +117,7 @@ public class LoadSave {
         writeToFile(template, filename);
     }
 
-    public static GameController loadGame(String fileName) {
+    public static GameController loadGameState(String fileName) {
 
         ClassLoader classLoader = LoadSave.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(GAMESFOLDER + "/" + fileName + "." + JSON_EXT);
@@ -209,7 +209,7 @@ public class LoadSave {
         return null;
     }
 
-    public static void saveGame(GameController gameController, String fileName) {
+    public static void saveGameState(GameController gameController, String fileName) {
         GameTemplate gameTemplate = new GameTemplate();
         gameTemplate.gameId = gameController.board.getGameId();
         gameTemplate.board = createBoardTemplate(gameController.board);

@@ -83,6 +83,9 @@ public class Space extends Subject {
     public void addAction(FieldAction action) {
         actions.add(action);
     }
+    public void addWall(Heading heading) {
+        walls.add(heading);
+    }
 
     void playerChanged() {
         // This is a minor hack; since some views that are registered with the space

@@ -21,23 +21,14 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
-import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
-import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -47,16 +38,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveBoard;
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGame;
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGame;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGameState;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGameState;
 
 /**
  * ...
@@ -120,15 +109,13 @@ public class AppController implements Observer {
     public void saveGame() {
         String fileName = inputBox(true);
 
-        LoadSave.saveGame(gameController, fileName);
+        saveGameState(gameController, fileName);
     }
 
     public void loadGame() {
-        // XXX needs to be implemented eventually
-        // for now, we just create a new game
         if (gameController == null) {
             String fileName = inputBox(false);
-            gameController = LoadSave.loadGame(fileName);
+            gameController = loadGameState(fileName);
             if (gameController == null) return;
             roboRally.createBoardView(gameController);
         }
