@@ -35,6 +35,8 @@ public class BoardTemplate {
 
     public int width;
     public int height;
+    public int antennaX, antennaY, antennaHeading;
+    public int rebootStationX, rebootStationY, rebootStationHeading;
 
     public List<SpaceTemplate> spaces = new ArrayList<>();
 

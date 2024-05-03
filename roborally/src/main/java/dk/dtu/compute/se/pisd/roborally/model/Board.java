@@ -146,6 +146,10 @@ public class Board extends Subject {
         antennaHeading = heading;
     }
 
+    public Heading getAntennaHeading() {
+        return antennaHeading;
+    }
+
     public Space getRebootStation() {
         return rebootStation;
     }
@@ -273,7 +277,7 @@ public class Board extends Subject {
 
         // TODO: Id space is hole, return null
         if (result != null) {
-            if (result.getWalls().contains(reverse) || result == antenna) {
+            if (result.getWalls().contains(reverse)) {
                 return space;
             }
         }

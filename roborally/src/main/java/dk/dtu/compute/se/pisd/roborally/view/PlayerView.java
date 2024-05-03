@@ -148,6 +148,7 @@ public class PlayerView extends Tab implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == player.board) {
             checkPointLabel.setText("Checkpoint\n" + player.getCheckpoints());
+            energyCubeLabel.setText("Energy Cubes\n" + player.getEnergyCubes());
             for (int i = 0; i < Player.NO_REGISTERS; i++) {
                 CardFieldView cardFieldView = programCardViews[i];
                 if (cardFieldView != null) {
@@ -159,7 +160,8 @@ public class PlayerView extends Tab implements ViewObserver {
                         } else if (i == player.board.getStep()) {
                             if (player.board.getCurrentPlayer() == player) {
                                 cardFieldView.setBackground(CardFieldView.BG_ACTIVE);
-                            } else if (player.board.getPlayerNumber(player.board.getCurrentPlayer()) > player.board.getPlayerNumber(player)) {
+                            } else if (gameController.getPlayerOrder().indexOf(player) <
+                                    gameController.getPlayerOrder().indexOf(player.board.getCurrentPlayer())) {
                                 cardFieldView.setBackground(CardFieldView.BG_DONE);
                             } else {
                                 cardFieldView.setBackground(CardFieldView.BG_DEFAULT);

@@ -32,13 +32,16 @@ public class CommandCardController {
                     gameController.moveForward(player);
                     break;
                 case MOVE_2:
-                    gameController.moveForward(player);
-                    gameController.moveForward(player);
+                    for (int i = 0; i < 2; i++) {
+                        if (player.isRebooting()) break;
+                        gameController.moveForward(player);
+                    }
                     break;
                 case MOVE_3:
-                    gameController.moveForward(player);
-                    gameController.moveForward(player);
-                    gameController.moveForward(player);
+                    for (int i = 0; i < 3; i++) {
+                        if (player.isRebooting()) break;
+                        gameController.moveForward(player);
+                    }
                     break;
                 case RIGHT:
                     gameController.turn(player, 1);
