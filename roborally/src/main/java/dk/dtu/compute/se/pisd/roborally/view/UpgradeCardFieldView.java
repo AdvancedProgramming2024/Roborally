@@ -37,6 +37,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+
 /**
  * ...
  *
@@ -45,9 +47,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class UpgradeCardFieldView extends GridPane implements ViewObserver {
 
-
-    final public static int CARDFIELD_WIDTH = 65;
-    final public static int CARDFIELD_HEIGHT = 100;
+    final public static int CARDFIELD_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width/20;
+    final public static int CARDFIELD_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height/15;
 
     final public static Border BORDER = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(2)));
 
