@@ -22,10 +22,14 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.view.BoardView;
+import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
+import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ...
@@ -45,15 +49,18 @@ public class GameController {
     }
 
     public void moveForward(@NotNull Player player) {
-        moveInDirection(player, player.getHeading());
+        moveInDirection(player, player.getHeading(), true);
     }
 
-    public void moveInDirection(@NotNull Player player, @NotNull Heading heading) {
+    public void moveInDirection(@NotNull Player player, @NotNull Heading heading, boolean push) {
         if (player.board == board) {
             Space space = player.getSpace();
 
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
+                if (target.getPlayer() != null && !push) {
+                    return;
+                }
                 try {
                     move(player, target, heading);
                 } catch (ImpossibleMoveException e) {
@@ -67,15 +74,7 @@ public class GameController {
             }
         }
     }
-    // TODO Assignment A3
-    public void turnRight(@NotNull Player player) {
-        player.setHeading(player.getHeading().next());
-    }
 
-    // TODO Assignment A3
-    public void turnLeft(@NotNull Player player) {
-        player.setHeading(player.getHeading().prev());
-    }
     public void turn(@NotNull Player player, int timesClockwise) {
         Heading playerHeading = player.getHeading();
         for (int i = 0; i < timesClockwise; i++) {
@@ -89,6 +88,7 @@ public class GameController {
         if (other != null && other != player) {
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
+                if (target == space) return false;
                 try {
                     move(other, target, heading);
                 } catch (ImpossibleMoveException e) {
@@ -96,7 +96,8 @@ public class GameController {
                 }
                 assert space.getPlayer() == null : target; // make sure target is free now
             } else {
-                return false;
+                other.reboot(this);
+                System.out.println("Player fell off the board and reboots...");
             }
         }
         player.setSpace(space);
@@ -109,17 +110,14 @@ public class GameController {
         if (other != null && other != player) {
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
-                // XXX Note that there might be additional problems with
-                //     infinite recursion here (in some special cases)!
-                //     We will come back to that!
-                move(other, target, heading);
+                if (target == space) throw new ImpossibleMoveException(player, space, heading);
 
-                // Note that we do NOT embed the above statement in a try catch block, since
-                // the thrown exception is supposed to be passed on to the caller
+                move(other, target, heading);
 
                 assert target.getPlayer() == null : target; // make sure target is free now
             } else {
-                throw new ImpossibleMoveException(player, space, heading);
+                other.reboot(this);
+                System.out.println("Player fell off the board and reboots...");
             }
         }
         player.setSpace(space);
@@ -267,7 +265,7 @@ public class GameController {
 
             // TODO: Activate special fields and lasers
             for (int i = 0; i < board.getPlayersNumber(); i++) {
-                board.setCurrentPlayer(board.getPlayer(i));
+                board.setCurrentPlayer(playerOrder.get(i));
                 Space space = board.getCurrentPlayer().getSpace();
                 for (FieldAction action : space.getActions()) {
                     if (!(action instanceof Laser)) {
@@ -287,6 +285,17 @@ public class GameController {
                     }
                 }
             }
+
+            // Destroy lasers after 500ms
+            new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                SpaceView.destroyLasers();
+            }}).start();
+
 
             if (step < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(step);

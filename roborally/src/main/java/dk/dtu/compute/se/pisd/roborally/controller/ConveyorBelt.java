@@ -50,7 +50,7 @@ public class ConveyorBelt extends FieldAction {
         Player player = space.getPlayer();
         if (player == null) return false; // TODO: Remove if doAction is only called when a player is on a conveyor belt
 
-        gameController.moveInDirection(player, heading);
+        gameController.moveInDirection(player, heading, false);
         return false;
     }
 
