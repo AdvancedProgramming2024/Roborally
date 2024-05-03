@@ -67,21 +67,10 @@ public class RoboRallyMenuBar extends MenuBar {
         exitApp.setOnAction( e -> this.appController.exit());
         controlMenu.getItems().add(exitApp);
 
-        controlMenu.setOnShowing(e -> update());
         controlMenu.setOnShown(e -> this.updateBounds());
-        update();
     }
 
 
-    public void update() {
-        if (appController.isGameRunning()) {
-            stopGame.setVisible(true);
-            saveGame.setVisible(true);
-        }else {
-            stopGame.setVisible(false);
-            saveGame.setVisible(false);
-        }
 
-    }
 
 }
