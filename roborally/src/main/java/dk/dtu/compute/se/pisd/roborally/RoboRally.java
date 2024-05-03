@@ -24,10 +24,14 @@ package dk.dtu.compute.se.pisd.roborally;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
+import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -41,17 +45,27 @@ public class RoboRally extends Application {
 
     private static final int MIN_APP_WIDTH = 600;
 
-    private Stage stage;
+    private static Stage stage;
     private BorderPane boardRoot;
+    private VBox gameRoot;
+    private static TilePane menuPane;
+    private static Scene scene;
 
     @Override
     public void init() throws Exception {
         super.init();
     }
 
+    /**
+     * @Description Creates the stage and scene. The input into the scene changes depending on if the start menu is needed or the in game menu is needed.
+     * @author Oscar (224752)
+     */
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
+        stage.setMaximized(true);
+        double screenWidth = stage.getMaxWidth();
+        double screenHeight = stage.getMaxHeight();
 
         AppController appController = new AppController(this);
 
@@ -59,19 +73,31 @@ public class RoboRally extends Application {
         // the board view (which initially is empty); it will be filled
         // when the user creates a new game or loads a game
         RoboRallyMenuBar menuBar = new RoboRallyMenuBar(appController);
+        MenuButtons menuButtons = new MenuButtons(appController);
         boardRoot = new BorderPane();
-        VBox vbox = new VBox(menuBar, boardRoot);
-        vbox.setMinWidth(MIN_APP_WIDTH);
-        Scene primaryScene = new Scene(vbox);
+        gameRoot = new VBox(menuBar, boardRoot);
+        gameRoot.setMinWidth(MIN_APP_WIDTH);
+        menuPane = new TilePane(Orientation.VERTICAL);
+        menuPane.getChildren().add(menuButtons.newGameButton);
+        menuPane.getChildren().add(menuButtons.loadGameButton);
+        menuPane.getChildren().add(menuButtons.exitGameButton);
 
-        stage.setScene(primaryScene);
+        //style for the menu
+        menuPane.setAlignment(Pos.CENTER);
+        menuPane.setVgap(15);
+
+        //placeholder indtil vi har et billede
+        menuPane.setStyle("-fx-background-color: green;");
+
+        scene = new Scene(menuPane, screenWidth, screenHeight);
+        stage.setScene(scene);
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
                 e -> {
                     e.consume();
                     appController.exit();} );
-        stage.setResizable(false);
-        stage.sizeToScene();
+        stage.setResizable(true);
+        stage.setMaximized(true);
         stage.show();
     }
 
@@ -83,9 +109,18 @@ public class RoboRally extends Application {
             // create and add view for new board
             BoardView boardView = new BoardView(gameController);
             boardRoot.setCenter(boardView);
+            boardView.updateView(gameController.board);
+            scene.setRoot(gameRoot);
         }
-
-        stage.sizeToScene();
+        //stage.setMaximized(true);
+    }
+    /**
+     * @Description changes the menu from the in game menu to the start menu.
+     * @author Oscar (224752)
+     */
+    public static void returnToMenu() {
+        scene.setRoot(menuPane);
+        stage.show();
     }
 
     @Override

@@ -151,18 +151,34 @@ public class Player extends Subject {
     }
 
     //energy cube functions
+    /**
+     * @Returns Returns the amount of energy cubes the player has in their energy bank.
+     * @author Oscar (224752)
+     */
     public int getEnergyCubes() {
         return energyCubes;
     }
 
+    /**
+     * @Description Sets the amount of energy cubes the player has in their energy bank to a wished amount.
+     * @author Oscar (224752)
+     */
     public void setEnergyCubes(int energyCubes) {
         this.energyCubes = energyCubes;
     }
 
+    /**
+     * @Description adds a wished number of energy cubes to the player's energy bank.
+     * @author Oscar (224752)
+     */
     public void addEnergyCubes(int energyCubes) {
         this.energyCubes += energyCubes;
     }
 
+    /**
+     * @Description removes a wished number of energy cubes from the player's energy bank.
+     * @author Oscar (224752)
+     */
     public void removeEnergyCubes(int energyCubes) {
         this.energyCubes -= energyCubes;
     }

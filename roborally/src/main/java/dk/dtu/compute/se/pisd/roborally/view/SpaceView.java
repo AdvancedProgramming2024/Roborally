@@ -64,11 +64,9 @@ public class SpaceView extends StackPane implements ViewObserver {
 
         // XXX the following styling should better be done with styles
         this.setPrefWidth(SPACE_SIZE);
-        this.setMinWidth(SPACE_SIZE);
         this.setMaxWidth(SPACE_SIZE);
 
         this.setPrefHeight(SPACE_SIZE);
-        this.setMinHeight(SPACE_SIZE);
         this.setMaxHeight(SPACE_SIZE);
 
         drawBoard();
@@ -170,7 +168,10 @@ public class SpaceView extends StackPane implements ViewObserver {
             BoardView.getSpaceView(hit).getChildren().add(laserImageView4);
         }
     }
-
+    /**
+     * Sets all laser images to null and clears the list of lasers
+     * @author Kresten (s235103)
+     */
     public static void destroyLasers() {
         for (ImageView laser : lasers) {
             laser.setImage(null);
@@ -307,6 +308,11 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
     }
 
+    /**
+     * @author Kresten (s235103)
+     * @param spaceImageView ImageView of the space
+     * @param gear Gear to be drawn
+     */
     private void drawGear(ImageView spaceImageView, Gear gear) {
         Image spaceImage;
         if (gear.getHeading() == Heading.WEST) {
@@ -317,6 +323,12 @@ public class SpaceView extends StackPane implements ViewObserver {
         spaceImageView.setImage(spaceImage);
     }
 
+    /**
+     * Draws the energy field on the board. Initially draws an energyCube
+     * @author Kresten (s235103)
+     * @param spaceImageView ImageView of the space
+     * @param energyCubeField EnergyCubeField to be drawn
+     */
     private void drawEnergyField(ImageView spaceImageView, EnergyCubeField energyCubeField) {
         Image spaceImage = new Image("images/energyField.png");
         spaceImageView.setImage(spaceImage);
@@ -333,6 +345,12 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.getChildren().add(energyCubeImageView);
     }
 
+    /**
+     * Draws the checkpoint on the board
+     * @author Kresten (s235103)
+     * @param spaceImageView ImageView of the space
+     * @param checkpoint Checkpoint to be drawn
+     */
     private void drawCheckpoint(ImageView spaceImageView, Checkpoint checkpoint) {
         Image spaceImage = switch (checkpoint.getId()) {
             case 2 -> new Image("images/checkpoint2.png");
@@ -345,6 +363,11 @@ public class SpaceView extends StackPane implements ViewObserver {
         spaceImageView.setImage(spaceImage);
     }
 
+    /**
+     * Draws the conveyor belt on the board
+     * @author Kresten (s235103)
+     * @param spaceImageView ImageView of the space
+     */
     private void drawConveyorBelt(ImageView spaceImageView) {
         Image spaceImage = new Image("images/greenConveyor.png");
         spaceImageView.setImage(spaceImage);
@@ -364,6 +387,11 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
     }
 
+    /**
+     * Creates an ImageView of the laser to be drawn on the board
+     * @author Kresten (s235103)
+     * @return ImageView of the laser
+     */
     @NotNull
     private ImageView createLaserImageView() {
         ImageView laserImageView = new ImageView();
@@ -380,7 +408,6 @@ public class SpaceView extends StackPane implements ViewObserver {
             laserImage = new Image("images/laserStart.png");
             laserImageView.setFitHeight(SPACE_SIZE/4.0);
         }
-
         laserImageView.setPreserveRatio(true);
         laserImageView.setImage(laserImage);
 
@@ -405,6 +432,10 @@ public class SpaceView extends StackPane implements ViewObserver {
         return laserImageView;
     }
 
+    /**
+     * @author Kresten (s235103)
+     * @return Laser if the space contains one, null otherwise
+     */
     private Laser getLaser() {
         if (space.getActions().isEmpty()) {
             return null;

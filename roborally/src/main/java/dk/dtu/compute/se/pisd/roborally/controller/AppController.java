@@ -164,7 +164,8 @@ public class AppController implements Observer {
             if (!result.isPresent() || result.get() != ButtonType.OK) {
                 return false;
             }
-
+          
+            RoboRally.returnToMenu();
             gameController = null;
             roboRally.createBoardView(null);
             return true;
