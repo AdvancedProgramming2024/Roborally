@@ -21,12 +21,36 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * ...
  *
- * @author Ekkart Kindler, ekki@dtu.dk
+ * @author Jamie (s236939)
  *
  */
-public enum Phase {
-    INITIALISATION, PROGRAMMING, ACTIVATION, PLAYER_INTERACTION, UPGRADE
+public enum Upgrade {
+
+    //Permanent Upgrades
+    ADMIN_PRIVILEGE("Admin Privilege", 3, true),
+    CORRUPTION_WAVE("Corruption Wave", 4, true),
+    BLUE_SCREEN_OF_DEATH("Blue Screen of Death", 4, true),
+    BRAKES("Brakes", 3, true),
+    DEFLECTOR_SHIELD("Deflector Shield", 2, true);
+
+    //TO DO
+    //Temporary Upgrades
+
+    final public String displayName;
+    final public int cost;
+    final public boolean isPermanent;
+
+    Upgrade(String displayName, int cost, boolean isPermanent) {
+        this.displayName = displayName;
+        this.cost = cost;
+        this.isPermanent = isPermanent;
+    }
+
 }
