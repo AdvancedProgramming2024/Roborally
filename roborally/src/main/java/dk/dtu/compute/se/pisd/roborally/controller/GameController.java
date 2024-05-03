@@ -269,7 +269,6 @@ public class GameController {
                         action.doAction(this, space);
                     }
                 }
-
             }
             //Fire lasers here
             for (int x = 0; x < board.width; x++) {
@@ -293,6 +292,10 @@ public class GameController {
                 SpaceView.destroyLasers();
             }}).start();
 
+            //Reset all players pushability on conveyorbelts
+            for (int i = 0; i < board.getPlayersNumber(); i++) {
+                board.getCurrentPlayer().setConveyorPush(false);
+            }
 
             if (step < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(step);

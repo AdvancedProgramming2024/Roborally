@@ -26,6 +26,8 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.jetbrains.annotations.NotNull;
 
+import static dk.dtu.compute.se.pisd.roborally.model.Heading.WEST;
+
 /**
  * ...
  *
@@ -35,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 public class ConveyorBelt extends FieldAction {
 
     private Heading heading;
+    private Heading turn;
 
     public Heading getHeading() {
         return heading;
@@ -43,14 +46,56 @@ public class ConveyorBelt extends FieldAction {
     public void setHeading(Heading heading) {
         this.heading = heading;
     }
+    private int belt = 1;
 
+    public int getBelt() {return belt;}
+
+    public void setBelt(int belt) {this.belt = belt;}
+
+    public Heading getTurn() {return turn;}
+
+    public void setTurn(Heading turn) {this.turn = turn;}
+
+    //If heading turn = west then turn left, all others turn right
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
+        //boolean contains = false;
         Player player = space.getPlayer();
         if (player == null) return false; // TODO: Remove if doAction is only called when a player is on a conveyor belt
+        //if (player.isConveyorPush()) return false;
 
-        gameController.moveInDirection(player, heading, false);
+        //Check neighbour to see what the fuck to do
+        //Space neighbour = space.board.getNeighbour(space,heading);
+
+        //This is a suprise tool that will help us later.
+        //To check if we need to "simultaneously" move them or just push
+        /*for (FieldAction action : neighbour.getActions()) {
+            if (action instanceof ConveyorBelt) contains = true;
+        }*/
+
+
+        //If neighbour is null or wall, move one forward. wall should block regardless.
+        //Landing on a turningBelt, well, turns you
+        for (int i = 0; i < belt; i++) {
+            gameController.moveInDirection(player, heading, false);
+            turningBelt(player.getSpace(), heading);
+        }
+
+
         return false;
+    }
+
+    //Method to find a belt and turn player
+    private void turningBelt(Space space, Heading heading1) {
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof ConveyorBelt && ((ConveyorBelt) action).getHeading() != heading1) {
+                if (((ConveyorBelt) action).getTurn() == WEST) {
+                    space.getPlayer().setHeading(space.getPlayer().getHeading().prev());
+                } else {
+                    space.getPlayer().setHeading(space.getPlayer().getHeading().next());
+                }
+            }
+        }
     }
 
 }
