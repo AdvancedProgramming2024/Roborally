@@ -276,6 +276,20 @@ public class SpaceView extends StackPane implements ViewObserver {
             fieldView.setImage(spaceImage);
         } else if (space == space.board.getRebootStation()) {
             spaceImage = new Image("images/reboot.png");
+            switch (space.board.getRebootStationHeading()) {
+                case NORTH:
+                    fieldView.setRotate(0);
+                    break;
+                case SOUTH:
+                    fieldView.setRotate(180);
+                    break;
+                case EAST:
+                    fieldView.setRotate(90);
+                    break;
+                case WEST:
+                    fieldView.setRotate(270);
+                    break;
+            }
             fieldView.setImage(spaceImage);
         }
         this.getChildren().add(fieldView);
