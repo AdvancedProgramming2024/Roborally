@@ -56,7 +56,7 @@ public class ConveyorBelt extends FieldAction {
 
     public void setTurn(Heading turn) {this.turn = turn;}
 
-    //If heading turn = west then turn left, all others turn right
+    //If heading turn = west then turn left, all others turn right TODO: switch statement to better handle
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         boolean turned = false;
@@ -69,7 +69,6 @@ public class ConveyorBelt extends FieldAction {
         Space neighbour = space.board.getNeighbour(space,heading);
 
         //This is a suprise tool that will help us later.
-        //To check if we need to "simultaneously" move them or just push
         for (FieldAction action : neighbour.getActions()) {
             if (action instanceof ConveyorBelt) {
                optional = ((ConveyorBelt) action).getHeading();
@@ -78,6 +77,10 @@ public class ConveyorBelt extends FieldAction {
 
 
         //If neighbour is null or wall, move one forward. wall should block regardless.
+        if (neighbour == null) {
+            gameController.moveInDirection(player, heading, false);
+            return false;
+        }
         //Landing on a turningBelt, well, turns you
         for (int i = 0; i < belt; i++) {
             if (i == 1 && turned)  {
