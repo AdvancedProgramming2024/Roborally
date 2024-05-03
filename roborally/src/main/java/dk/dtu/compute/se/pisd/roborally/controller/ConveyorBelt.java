@@ -59,26 +59,33 @@ public class ConveyorBelt extends FieldAction {
     //If heading turn = west then turn left, all others turn right
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
-        //boolean contains = false;
+        boolean turned = false;
         Player player = space.getPlayer();
+        Heading optional = null;
         if (player == null) return false; // TODO: Remove if doAction is only called when a player is on a conveyor belt
         //if (player.isConveyorPush()) return false;
 
         //Check neighbour to see what the fuck to do
-        //Space neighbour = space.board.getNeighbour(space,heading);
+        Space neighbour = space.board.getNeighbour(space,heading);
 
         //This is a suprise tool that will help us later.
         //To check if we need to "simultaneously" move them or just push
-        /*for (FieldAction action : neighbour.getActions()) {
-            if (action instanceof ConveyorBelt) contains = true;
-        }*/
+        for (FieldAction action : neighbour.getActions()) {
+            if (action instanceof ConveyorBelt) {
+               optional = ((ConveyorBelt) action).getHeading();
+            }
+        }
 
 
         //If neighbour is null or wall, move one forward. wall should block regardless.
         //Landing on a turningBelt, well, turns you
         for (int i = 0; i < belt; i++) {
-            gameController.moveInDirection(player, heading, false);
-            turningBelt(player.getSpace(), heading);
+            if (i == 1 && turned)  {
+                gameController.moveInDirection(player, optional, false);
+            } else {
+                gameController.moveInDirection(player, heading, false);
+                turned = turningBelt(player.getSpace(), heading);
+            }
         }
 
 
@@ -86,16 +93,19 @@ public class ConveyorBelt extends FieldAction {
     }
 
     //Method to find a belt and turn player
-    private void turningBelt(Space space, Heading heading1) {
+    private boolean turningBelt(Space space, Heading heading1) {
         for (FieldAction action : space.getActions()) {
             if (action instanceof ConveyorBelt && ((ConveyorBelt) action).getHeading() != heading1) {
                 if (((ConveyorBelt) action).getTurn() == WEST) {
                     space.getPlayer().setHeading(space.getPlayer().getHeading().prev());
+                    return true;
                 } else {
                     space.getPlayer().setHeading(space.getPlayer().getHeading().next());
+                    return true;
                 }
             }
         }
+        return false;
     }
 
 }
