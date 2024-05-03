@@ -32,16 +32,11 @@ import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -52,8 +47,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SpaceView extends StackPane implements ViewObserver {
 
-    final public static int SPACE_HEIGHT = 60; // 75;
-    final public static int SPACE_WIDTH = 60; // 75;
+    final public static int SPACE_SIZE = 60; // 75;
 
     public final Space space;
 
@@ -62,13 +56,11 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.space = space;
 
         // XXX the following styling should better be done with styles
-        this.setPrefWidth(SPACE_WIDTH);
-        this.setMinWidth(SPACE_WIDTH);
-        this.setMaxWidth(SPACE_WIDTH);
+        this.setPrefWidth(SPACE_SIZE);
+        this.setMaxWidth(SPACE_SIZE);
 
-        this.setPrefHeight(SPACE_HEIGHT);
-        this.setMinHeight(SPACE_HEIGHT);
-        this.setMaxHeight(SPACE_HEIGHT);
+        this.setPrefHeight(SPACE_SIZE);
+        this.setMaxHeight(SPACE_SIZE);
 
         drawBoard();
 
@@ -124,8 +116,8 @@ public class SpaceView extends StackPane implements ViewObserver {
     private void drawBoard() {
         ImageView spaceImageView = new ImageView();
         Image spaceImage;
-        spaceImageView.setFitHeight(SPACE_HEIGHT);
-        spaceImageView.setFitWidth(SPACE_WIDTH);
+        spaceImageView.setFitHeight(SPACE_SIZE);
+        spaceImageView.setFitWidth(SPACE_SIZE);
         for (FieldAction action : space.getActions()) {
             if (action instanceof ConveyorBelt) {
                 drawConveyorBelt(spaceImageView);
@@ -164,22 +156,22 @@ public class SpaceView extends StackPane implements ViewObserver {
                 ImageView wallImageView = new ImageView();
                 Image wallImage = new Image("images/wall.png");
                 wallImageView.setImage(wallImage);
-                wallImageView.setFitHeight(SPACE_HEIGHT);
-                wallImageView.setFitWidth(SPACE_HEIGHT/6);
+                wallImageView.setFitHeight(SPACE_SIZE);
+                wallImageView.setFitWidth(SPACE_SIZE /6);
                 switch (wall) {
                     case NORTH:
                         wallImageView.setRotate(90);
-                        wallImageView.setTranslateY((-SPACE_HEIGHT/2)+wallImageView.getFitWidth()/2);
+                        wallImageView.setTranslateY((-SPACE_SIZE /2)+wallImageView.getFitWidth()/2);
                         break;
                     case SOUTH:
                         wallImageView.setRotate(90);
-                        wallImageView.setTranslateY((SPACE_HEIGHT/2)-wallImageView.getFitWidth()/2);
+                        wallImageView.setTranslateY((SPACE_SIZE /2)-wallImageView.getFitWidth()/2);
                         break;
                     case EAST:
-                        wallImageView.setTranslateX((SPACE_WIDTH/2)-wallImageView.getFitWidth()/2);
+                        wallImageView.setTranslateX((SPACE_SIZE /2)-wallImageView.getFitWidth()/2);
                         break;
                     case WEST:
-                        wallImageView.setTranslateX((-SPACE_WIDTH/2)+wallImageView.getFitWidth()/2);
+                        wallImageView.setTranslateX((-SPACE_SIZE /2)+wallImageView.getFitWidth()/2);
                         break;
                     default:
                         continue;
@@ -240,24 +232,24 @@ public class SpaceView extends StackPane implements ViewObserver {
         ImageView laserImageView = new ImageView();
         Image laserImage = new Image("images/laserStart.png");
         laserImageView.setImage(laserImage);
-        laserImageView.setFitHeight(SPACE_HEIGHT/4);
+        laserImageView.setFitHeight(SPACE_SIZE /4);
         laserImageView.setPreserveRatio(true);
         switch (getLaser().getHeading()) {
             case NORTH:
                 laserImageView.setRotate(270);
-                laserImageView.setTranslateY(SPACE_HEIGHT/4.3);
+                laserImageView.setTranslateY(SPACE_SIZE /4.3);
                 break;
             case SOUTH:
                 laserImageView.setRotate(90);
-                laserImageView.setTranslateY(-SPACE_HEIGHT/4.3);
+                laserImageView.setTranslateY(-SPACE_SIZE /4.3);
                 break;
             case EAST:
                 laserImageView.setRotate(0);
-                laserImageView.setTranslateX(-SPACE_WIDTH/4.3);
+                laserImageView.setTranslateX(-SPACE_SIZE /4.3);
                 break;
             case WEST:
                 laserImageView.setRotate(180);
-                laserImageView.setTranslateX(SPACE_WIDTH/4.3);
+                laserImageView.setTranslateX(SPACE_SIZE /4.3);
                 break;
         }
         return laserImageView;
@@ -289,24 +281,24 @@ public class SpaceView extends StackPane implements ViewObserver {
             Image pushPanelImage = new Image("images/pushOdd.png");
             pushPanelImageView.setImage(pushPanelImage);
         }
-        pushPanelImageView.setFitHeight(SPACE_HEIGHT);
+        pushPanelImageView.setFitHeight(SPACE_SIZE);
         pushPanelImageView.setPreserveRatio(true);
         switch (getPushPanel().getHeading()) {
             case NORTH:
                 pushPanelImageView.setRotate(270);
-                pushPanelImageView.setTranslateY(SPACE_HEIGHT/4.3);
+                pushPanelImageView.setTranslateY(SPACE_SIZE /4.3);
                 break;
             case SOUTH:
                 pushPanelImageView.setRotate(90);
-                pushPanelImageView.setTranslateY(-SPACE_HEIGHT/4.3);
+                pushPanelImageView.setTranslateY(-SPACE_SIZE /4.3);
                 break;
             case EAST:
                 pushPanelImageView.setRotate(0);
-                pushPanelImageView.setTranslateX(-SPACE_WIDTH/4.3);
+                pushPanelImageView.setTranslateX(-SPACE_SIZE /4.3);
                 break;
             case WEST:
                 pushPanelImageView.setRotate(180);
-                pushPanelImageView.setTranslateX(SPACE_WIDTH/4.3);
+                pushPanelImageView.setTranslateX(SPACE_SIZE /4.3);
                 break;
         }
         return pushPanelImageView;
