@@ -148,6 +148,7 @@ public class PlayerView extends Tab implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == player.board) {
             checkPointLabel.setText("Checkpoint\n" + player.getCheckpoints());
+            energyCubeLabel.setText("Energy Cubes\n" + player.getEnergyCubes());
             for (int i = 0; i < Player.NO_REGISTERS; i++) {
                 CardFieldView cardFieldView = programCardViews[i];
                 if (cardFieldView != null) {
