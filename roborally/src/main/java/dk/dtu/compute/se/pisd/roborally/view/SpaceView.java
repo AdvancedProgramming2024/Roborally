@@ -246,27 +246,7 @@ public class SpaceView extends StackPane implements ViewObserver {
                 drawGear(spaceImageView, (Gear) action);
             }
         }
-        if (space == space.board.getAntenna()) {
-            spaceImage = new Image("images/antenna.png");
-            spaceImageView.setImage(spaceImage);
-        } else if (space == space.board.getRebootStation()) {
-            spaceImage = new Image("images/reboot.png");
-            spaceImageView.setImage(spaceImage);
-        } else if (space.getActions().isEmpty() || getPushPanel() != null || getLaser() != null) {
-            spaceImage = new Image("images/empty.png");
-            spaceImageView.setImage(spaceImage);
-        }
         this.getChildren().add(spaceImageView);
-
-        if (getPushPanel() != null) {
-            ImageView pushPanelImageView = createPushImageView();
-            this.getChildren().add(pushPanelImageView);
-        }
-
-        if (getLaser() != null) {
-            ImageView laserImageView = createLaserImageView();
-            this.getChildren().add(laserImageView);
-        }
 
         if (!space.getWalls().isEmpty()) {
             for (Heading wall : space.getWalls()) {
@@ -295,6 +275,28 @@ public class SpaceView extends StackPane implements ViewObserver {
                 }
                 this.getChildren().add(wallImageView);
             }
+        }
+
+        ImageView fieldView = new ImageView();
+        fieldView.setFitHeight(SPACE_HEIGHT);
+        fieldView.setFitWidth(SPACE_WIDTH);
+        if (space == space.board.getAntenna()) {
+            spaceImage = new Image("images/antenna.png");
+            fieldView.setImage(spaceImage);
+        } else if (space == space.board.getRebootStation()) {
+            spaceImage = new Image("images/reboot.png");
+            fieldView.setImage(spaceImage);
+        }
+        this.getChildren().add(fieldView);
+
+        if (getPushPanel() != null) {
+            ImageView pushPanelImageView = createPushImageView();
+            this.getChildren().add(pushPanelImageView);
+        }
+
+        if (getLaser() != null) {
+            ImageView laserImageView = createLaserImageView();
+            this.getChildren().add(laserImageView);
         }
     }
 
