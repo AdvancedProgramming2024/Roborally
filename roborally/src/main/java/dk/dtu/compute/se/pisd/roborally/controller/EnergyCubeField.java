@@ -12,7 +12,11 @@ public class EnergyCubeField extends FieldAction {
         return energyCubes;
     }
 
-    //picks up an energy cube and adds it to the player's energy bank
+
+    /**
+     * @Description Picks up an energy cube and adds it to the player's energy bank.
+     * @author Oscar (224752)
+     */
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         Player player = space.getPlayer();
         if (player == null) return false;
