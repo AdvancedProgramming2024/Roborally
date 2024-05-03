@@ -34,6 +34,7 @@ import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -260,8 +261,18 @@ public class LoadSave {
         // TODO: this is not very defensive, and will result in a NullPointerException
         //       when the folder "resources" does not exist! But, it does not need
         //       the file "simpleCards.json" to exist!
+
+        URL url = classLoader.getResource(GAMESFOLDER);
+        if (url == null) {
+            File folder = new File(classLoader.getResource("").getPath() + "/" + GAMESFOLDER);
+            if (!folder.exists()) {
+                folder.mkdir(); // Create the folder if it doesn't exist
+            }
+        }
+        assert url != null;
+
         String filename =
-                classLoader.getResource(GAMESFOLDER).getPath() + "/" + fileName + "." + JSON_EXT;
+                url.getPath() + "/" + fileName + "." + JSON_EXT;
 
         writeToFile(gameTemplate, filename);
     }
