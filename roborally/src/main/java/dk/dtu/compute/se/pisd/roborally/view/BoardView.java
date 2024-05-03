@@ -25,7 +25,6 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Phase;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
@@ -34,6 +33,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * ...
@@ -47,13 +49,13 @@ public class BoardView extends BorderPane implements ViewObserver {
 
     private GridPane mainBoardPane;
     private SpaceView[][] spaces;
-
     private PlayersView playersView;
     private UpgradeShopView upgradeShopView;
 
     private Label statusLabel;
 
     private SpaceEventHandler spaceEventHandler;
+    private static Map<Space, SpaceView> spaceViewMap = new HashMap<>();
 
     public BoardView(@NotNull GameController gameController) {
 
@@ -90,6 +92,7 @@ public class BoardView extends BorderPane implements ViewObserver {
                 Space space = board.getSpace(x, y);
                 SpaceView spaceView = new SpaceView(space);
                 spaces[x][y] = spaceView;
+                spaceViewMap.put(space, spaceView);
                 mainBoardPane.add(spaceView, x, y);
                 spaceView.setOnMouseClicked(spaceEventHandler);
             }
@@ -105,6 +108,9 @@ public class BoardView extends BorderPane implements ViewObserver {
             Phase phase = board.getPhase();
             statusLabel.setText(board.getStatusMessage());
         }
+    }
+    public static SpaceView getSpaceView(Space space) {
+        return spaceViewMap.get(space);
     }
 
     // XXX this handler and its uses should eventually be deleted! This is just to help test the
@@ -131,7 +137,5 @@ public class BoardView extends BorderPane implements ViewObserver {
                 }
             }
         }
-
     }
-
 }

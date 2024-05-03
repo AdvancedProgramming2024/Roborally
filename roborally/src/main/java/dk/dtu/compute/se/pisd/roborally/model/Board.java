@@ -22,7 +22,6 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class Board extends Subject {
     private final Space[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
-
+    private List<Space> LOS = new ArrayList<>();
     private Player current;
 
     private Phase phase = INITIALISATION;
@@ -96,6 +95,11 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * @author Jonathan (s235115)
+     * @param space     Space used to calculate distance
+     * @return Distance
+     */
     public double getDistanceToAntenna(Space space) {
         if (antenna == null) {
             return -1;
@@ -105,17 +109,17 @@ public class Board extends Subject {
         return Math.abs(dx) + Math.abs(dy);
     }
 
+    /**
+     * @author Jonathan (s235115)
+     * @param space     Space used to calculate angle
+     * @return Angle to antenna
+     */
     public double getAngleToAntenna(Space space) {
         if (antenna == null) {
             return -1;
         }
         int dx = space.x - antenna.x;
         int dy = space.y - antenna.y;
-
-        double n = Math.toDegrees(Math.atan2(dx, -dy));
-        double e = Math.toDegrees(Math.atan2(dy, dx));
-        double s = Math.toDegrees(Math.atan2(-dx, dy));
-        double w = Math.toDegrees(Math.atan2(-dy, -dx));
 
         // This calculates the angle between the antenna and the space
         double angle = switch (antennaHeading) {
@@ -125,6 +129,7 @@ public class Board extends Subject {
             case WEST -> Math.atan2(-dy, -dx);
         };
 
+        // If the angle is negative, add 2 pi to get positive angles to easily compare them
         if (angle < 0) {
             angle += 2 * Math.PI;
         }
@@ -138,6 +143,10 @@ public class Board extends Subject {
     public void setAntenna(int x, int y, Heading heading) {
         antenna = getSpace(x, y);
         antennaHeading = heading;
+    }
+
+    public Heading getAntennaHeading() {
+        return antennaHeading;
     }
 
     public Space getRebootStation() {
@@ -264,24 +273,30 @@ public class Board extends Subject {
         }
         Heading reverse = heading.next().next();
         Space result = getSpace(x, y);
+
         // TODO: Id space is hole, return null
         if (result != null) {
-            if (result.getWalls().contains(reverse) || result == antenna) {
+            if (result.getWalls().contains(reverse)) {
                 return space;
             }
         }
         return result;
     }
 
-    public Space getLOS(@NotNull Space space, @NotNull Heading heading) {
-        Player player = space.getPlayer();
-        if (player != null) {
-            return space;
-        }
-        if (space.getWalls().contains(heading)) {
-            return null;
-        }
+    //Please call this everytime you use getLOS(),
+    public void resetLOS() {
+        LOS.clear();
+    }
+    //This function returns a list of all spaces in a given heading until it hits a wall or player
 
+    public List<Space> getLOS(@NotNull Space space, @NotNull Heading heading) {
+        Player player = space.getPlayer();
+        if (LOS.isEmpty()) {
+            LOS.add(space);
+        }
+        if (player != null || space.getWalls().contains(heading)) {
+            return LOS;
+        }
 
         //Implement the same way neighbour is made, just with no null checks
         int x = space.x;
@@ -301,24 +316,21 @@ public class Board extends Subject {
                 break;
         }
 
+        //Checks if LOS is out of bounds before adding new space to the list
         if (x >= space.board.width || x < 0 || y >= space.board.height || y < 0 ) {
-            return null;
+            return LOS;
         }
         Space neighbour = getSpace(x,y);
-
+        LOS.add(neighbour);
         Heading reverse = heading.next().next();
-        if (neighbour.getWalls().contains(reverse)) {
-            return null;
-        }
-        if (neighbour.getPlayer() != null) {
-            return neighbour;
-        }
-        // Check if neighbour has a wall in the opposite direction
-        if (neighbour.getWalls().contains(heading)) {
-            return null;  // LOS is obstructed
-        }
-        //Check for player at neighbours neighbours neighbour...
 
+        //If there is a wall in the lasers path or a player then returns the list
+        if (neighbour.getWalls().contains(reverse) || neighbour.getPlayer() != null
+                || neighbour.getWalls().contains(heading)) {
+            return LOS;
+        }
+
+        //Check for player at neighbours neighbours neighbour...
         return getLOS(neighbour, heading);
     }
 

@@ -21,7 +21,6 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
@@ -50,7 +49,7 @@ public class ConveyorBelt extends FieldAction {
         Player player = space.getPlayer();
         if (player == null) return false; // TODO: Remove if doAction is only called when a player is on a conveyor belt
 
-        gameController.moveInDirection(player, heading);
+        gameController.moveInDirection(player, heading, false);
         return false;
     }
 

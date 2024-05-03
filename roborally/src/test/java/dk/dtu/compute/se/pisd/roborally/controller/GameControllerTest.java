@@ -56,7 +56,7 @@ class GameControllerTest {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
 
-        gameController.turnRight(current);
+        gameController.turn(current, 1);
 
         Assertions.assertEquals(current, board.getSpace(0, 0).getPlayer(), "Player " + current.getName() + " should beSpace (0,0)!");
         Assertions.assertEquals(Heading.WEST, current.getHeading(), "Player 0 should be heading WEST!");
@@ -70,7 +70,7 @@ class GameControllerTest {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
 
-        gameController.turnLeft(current);
+        gameController.turn(current, 3);
 
         Assertions.assertEquals(current, board.getSpace(0, 0).getPlayer(), "Player " + current.getName() + " should beSpace (0,0)!");
         Assertions.assertEquals(Heading.EAST, current.getHeading(), "Player 0 should be heading EAST!");
@@ -103,7 +103,7 @@ class GameControllerTest {
         board.setRebootStation(0, 3, Heading.EAST);
         Player current = board.getCurrentPlayer();
 
-        gameController.moveInDirection(current, Heading.NORTH);
+        gameController.moveInDirection(current, Heading.NORTH, true);
 
         Assertions.assertEquals(current.getSpace(), board.getSpace(0, 3), "Player 0 should be at the reboot station!");
         Assertions.assertTrue(current.isRebooting(), "Player 0 should be rebooting!");
@@ -119,13 +119,13 @@ class GameControllerTest {
         Player player1 = board.getPlayer(0);
         Player player2 = board.getPlayer(1);
 
-        gameController.moveInDirection(player1, Heading.NORTH);
+        gameController.moveInDirection(player1, Heading.NORTH, true);
 
         Assertions.assertEquals(player1.getSpace(), board.getSpace(0, 3), "Player 0 should be at the reboot station!");
         Assertions.assertTrue(player1.isRebooting(), "Player 0 should be rebooting!");
 
-        gameController.moveInDirection(player2, Heading.NORTH);
-        gameController.moveInDirection(player2, Heading.NORTH);
+        gameController.moveInDirection(player2, Heading.NORTH, true);
+        gameController.moveInDirection(player2, Heading.NORTH, true);
 
         Assertions.assertTrue(player1.isRebooting(), "Player 0 should be rebooting!");
         Assertions.assertTrue(player2.isRebooting(), "Player 1 should be rebooting!");

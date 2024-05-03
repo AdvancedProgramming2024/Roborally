@@ -32,13 +32,16 @@ public class CommandCardController {
                     gameController.moveForward(player);
                     break;
                 case MOVE_2:
-                    gameController.moveForward(player);
-                    gameController.moveForward(player);
+                    for (int i = 0; i < 2; i++) {
+                        if (player.isRebooting()) break;
+                        gameController.moveForward(player);
+                    }
                     break;
                 case MOVE_3:
-                    gameController.moveForward(player);
-                    gameController.moveForward(player);
-                    gameController.moveForward(player);
+                    for (int i = 0; i < 3; i++) {
+                        if (player.isRebooting()) break;
+                        gameController.moveForward(player);
+                    }
                     break;
                 case RIGHT:
                     gameController.turn(player, 1);
@@ -50,7 +53,7 @@ public class CommandCardController {
                     gameController.turn(player, 2);
                     break;
                 case MOVE_BACK:
-                    gameController.moveInDirection(player, player.getHeading().next().next());
+                    gameController.moveInDirection(player, player.getHeading().next().next(), true);
                     break;
                 case POWER_UP:
                     player.addEnergyCubes(1);
@@ -94,7 +97,7 @@ public class CommandCardController {
                     executeCommand(gameController, player, Command.MOVE_3);
                     break;
                 case SPAM_FOLDER:
-                    player.removeCommandCard(Command.SPAM);
+                    player.removeFromDiscardPile(Command.SPAM);
                     break;
                 case REPEAT_ROUTINE:
                     executeCommand(gameController, player, Command.AGAIN);

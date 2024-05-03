@@ -23,7 +23,9 @@ class PlayerTest {
         int[] sumValues = new int[20];
         for (int i = 0; i < 10000; i++) {
             for (int j = 0; j < 20; j++) {
-                sumValues[j] += player.drawCommandCard().command.ordinal();
+                CommandCard card = player.drawCommandCard();
+                sumValues[j] += card.command.ordinal();
+                player.discardCommandCard(card);
             }
         }
         for (int i = 0; i < 20; i++) {

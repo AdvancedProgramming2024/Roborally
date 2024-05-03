@@ -27,21 +27,25 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
 import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard.loadBoard;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveBoard;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGameState;
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGameState;
 
 /**
  * ...
@@ -81,14 +85,15 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = loadBoard(/*"defaultboard"*/"high_octane");
-            board.setAntenna(0,4, Heading.EAST);
-            board.setRebootStation(6,8, Heading.NORTH);
+            Board board = loadBoard("dizzy_highway"/*"high_octane"*/);
+            assert board != null;
+            board.setGameId((int)(Math.random() * 100));
+            //saveBoard(board, "test");
 
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1), i);
                 board.addPlayer(player);
                 player.setSpace(board.getSpace(i % board.width, i));
             }
@@ -102,15 +107,41 @@ public class AppController implements Observer {
     }
 
     public void saveGame() {
-        // XXX needs to be implemented eventually
+        String fileName = inputBox(true);
+
+        saveGameState(gameController, fileName);
     }
 
     public void loadGame() {
-        // XXX needs to be implemented eventually
-        // for now, we just create a new game
         if (gameController == null) {
-            newGame();
+            String fileName = inputBox(false);
+            gameController = loadGameState(fileName);
+            if (gameController == null) return;
+            roboRally.createBoardView(gameController);
         }
+    }
+
+    private String inputBox(boolean saving) {
+        Label label = new Label(saving ? "Save game as:" : "Load game from:");
+        TextField filenameField = new TextField();
+        Button button = new Button(saving ? "Save" : "Load");
+        button.setOnAction(e -> {
+            Stage stage = (Stage) button.getScene().getWindow();
+            stage.close();
+        });
+        Stage stage = new Stage();
+        VBox root = new VBox();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle(saving ? "Save" : "Load" + "game");
+        stage.setResizable(false);
+        stage.setAlwaysOnTop(true);
+        stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        root.getChildren().addAll(label, filenameField, button);
+        root.setPadding(new Insets(10));
+        stage.showAndWait();
+
+        return filenameField.getText();
     }
 
     /**
@@ -124,9 +155,16 @@ public class AppController implements Observer {
      */
     public boolean stopGame() {
         if (gameController != null) {
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Exit RoboRally?");
+            alert.setContentText("Are you sure you want to close RoboRally?\n" +
+                    "Have you remembered to save the game? Unsaved progress wil be deleted!");
+            Optional<ButtonType> result = alert.showAndWait();
 
-            // here we save the game (without asking the user).
-            saveGame();
+            if (!result.isPresent() || result.get() != ButtonType.OK) {
+                return false;
+            }
+          
             RoboRally.returnToMenu();
             gameController = null;
             roboRally.createBoardView(null);
@@ -136,19 +174,7 @@ public class AppController implements Observer {
     }
 
     public void exit() {
-        if (gameController != null) {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Exit RoboRally?");
-            alert.setContentText("Are you sure you want to exit RoboRally?");
-            Optional<ButtonType> result = alert.showAndWait();
-
-            if (!result.isPresent() || result.get() != ButtonType.OK) {
-                return; // return without exiting the application
-            }
-        }
-
         // If the user did not cancel, the RoboRally application will exit
-        // after the option to save the game
         if (gameController == null || stopGame()) {
             Platform.exit();
         }

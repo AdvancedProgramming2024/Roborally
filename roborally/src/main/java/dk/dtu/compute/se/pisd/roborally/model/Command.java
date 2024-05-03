@@ -68,10 +68,6 @@ public enum Command {
         this.options = Collections.unmodifiableList(Arrays.asList(options));
     }
 
-    public boolean isInteractive() {
-        return !options.isEmpty();
-    }
-
     public List<Command> getOptions() {
         return options;
     }
