@@ -226,9 +226,8 @@ public class Player extends Subject {
         addCommandCard(new CommandCard(Command.SPAM));
 
 
-        if (!gameController.moveToSpace(this, board.getRebootStation(), board.getRebootStationHeading())) {
+        gameController.moveToSpace(this, board.getRebootStation(), board.getRebootStationHeading());
             // TODO: What to do if the reboot station is blocked and it can't push? Move to start space?
-        }
         // TODO: Player should choose heading
     }
 
