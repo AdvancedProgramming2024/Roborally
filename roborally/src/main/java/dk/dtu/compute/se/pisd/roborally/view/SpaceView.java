@@ -64,11 +64,9 @@ public class SpaceView extends StackPane implements ViewObserver {
 
         // XXX the following styling should better be done with styles
         this.setPrefWidth(SPACE_SIZE);
-        this.setMinWidth(SPACE_SIZE);
         this.setMaxWidth(SPACE_SIZE);
 
         this.setPrefHeight(SPACE_SIZE);
-        this.setMinHeight(SPACE_SIZE);
         this.setMaxHeight(SPACE_SIZE);
 
         drawBoard();
@@ -410,7 +408,6 @@ public class SpaceView extends StackPane implements ViewObserver {
             laserImage = new Image("images/laserStart.png");
             laserImageView.setFitHeight(SPACE_SIZE/4.0);
         }
-
         laserImageView.setPreserveRatio(true);
         laserImageView.setImage(laserImage);
 

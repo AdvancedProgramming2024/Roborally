@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -40,23 +41,19 @@ public class RoboRallyMenuBar extends MenuBar {
 
     private MenuItem saveGame;
 
-    private MenuItem newGame;
-
-    private MenuItem loadGame;
-
     private MenuItem stopGame;
 
     private MenuItem exitApp;
 
+    /**
+     * @Description Creates a menu bar and adds the menu items to it and sets the actions for the menu items that returns in the appController.
+     * @author Oscar (224752)
+     */
     public RoboRallyMenuBar(AppController appController) {
         this.appController = appController;
 
         controlMenu = new Menu("File");
         this.getMenus().add(controlMenu);
-
-        newGame = new MenuItem("New Game");
-        newGame.setOnAction( e -> this.appController.newGame());
-        controlMenu.getItems().add(newGame);
 
         stopGame = new MenuItem("Stop Game");
         stopGame.setOnAction( e -> this.appController.stopGame());
@@ -66,31 +63,14 @@ public class RoboRallyMenuBar extends MenuBar {
         saveGame.setOnAction( e -> this.appController.saveGame());
         controlMenu.getItems().add(saveGame);
 
-        loadGame = new MenuItem("Load Game");
-        loadGame.setOnAction( e -> this.appController.loadGame());
-        controlMenu.getItems().add(loadGame);
-
         exitApp = new MenuItem("Exit");
         exitApp.setOnAction( e -> this.appController.exit());
         controlMenu.getItems().add(exitApp);
 
-        controlMenu.setOnShowing(e -> update());
         controlMenu.setOnShown(e -> this.updateBounds());
-        update();
     }
 
-    public void update() {
-        if (appController.isGameRunning()) {
-            newGame.setVisible(false);
-            stopGame.setVisible(true);
-            saveGame.setVisible(true);
-            loadGame.setVisible(false);
-        } else {
-            newGame.setVisible(true);
-            stopGame.setVisible(false);
-            saveGame.setVisible(false);
-            loadGame.setVisible(true);
-        }
-    }
+
+
 
 }

@@ -21,12 +21,44 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+
 /**
  * ...
  *
- * @author Ekkart Kindler, ekki@dtu.dk
+ * @author Jamie (s2336939)
  *
  */
-public enum Phase {
-    INITIALISATION, PROGRAMMING, ACTIVATION, PLAYER_INTERACTION, UPGRADE
+public class UpgradeCardField extends Subject {
+
+    private UpgradeCard card;
+
+    private boolean visible;
+
+    public UpgradeCardField() {
+        this. card = null;
+        this.visible = true;
+    }
+
+    public UpgradeCard getCard() {
+        return card;
+    }
+
+    public void setCard(UpgradeCard card) {
+        if (card != this.card) {
+            this.card = card;
+            notifyChange();
+        }
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        if (visible != this.visible) {
+            this.visible = visible;
+            notifyChange();
+        }
+    }
 }
