@@ -88,7 +88,7 @@ public class RoboRally extends Application {
         r.setStyle("-fx-background-color: green;");
 
         menuScene = new Scene(r, screenWidth, screenHeight);
-        gameScene = new Scene(vbox, 360, 640);
+        gameScene = new Scene(vbox, screenWidth, screenHeight);
         stage.setScene(menuScene);
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
