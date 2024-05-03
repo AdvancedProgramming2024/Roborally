@@ -76,7 +76,7 @@ public class BoardView extends BorderPane implements ViewObserver {
         setBottom(playersView);
 
         // Add upgradeShopView to the left of the BorderPane
-        setRight(upgradeShopView);
+        setLeft(upgradeShopView);
 
         // Add statusLabel to the bottom of the BorderPane
         //setBottom(statusLabel);
