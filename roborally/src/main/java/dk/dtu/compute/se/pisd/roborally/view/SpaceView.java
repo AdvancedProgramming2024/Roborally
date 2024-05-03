@@ -68,6 +68,8 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     public static List<ImageView> lasers = new ArrayList<>();
 
+    public ImageView eneryCubeImageView;
+
     public SpaceView(@NotNull Space space) {
         this.space = space;
 
@@ -311,7 +313,17 @@ public class SpaceView extends StackPane implements ViewObserver {
     private void drawEnergyField(ImageView spaceImageView, EnergyCubeField energyCubeField) {
         Image spaceImage = new Image("images/energyField.png");
         spaceImageView.setImage(spaceImage);
-        /*@TODO indicate if energy has been taken*/
+        spaceImageView.setViewOrder(1);
+        if (energyCubeField.getEnergyCubes() == 0) {
+            return;
+        }
+        Image energyCubeImage = new Image("images/energyCube.png");
+        ImageView energyCubeImageView = new ImageView();
+        energyCubeImageView.setImage(energyCubeImage);
+        energyCubeImageView.setFitHeight(SPACE_SIZE/1.2);
+        energyCubeImageView.setFitWidth(SPACE_SIZE/1.2);
+        this.eneryCubeImageView = energyCubeImageView;
+        this.getChildren().add(energyCubeImageView);
     }
 
     private void drawCheckpoint(ImageView spaceImageView, Checkpoint checkpoint) {
