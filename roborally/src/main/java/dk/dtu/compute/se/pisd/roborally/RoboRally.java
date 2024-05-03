@@ -31,7 +31,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -48,10 +47,9 @@ public class RoboRally extends Application {
 
     private static Stage stage;
     private BorderPane boardRoot;
-    private static TilePane r;
-
-    private Scene gameScene;
-    private static Scene menuScene;
+    private VBox gameRoot;
+    private static TilePane menuPane;
+    private static Scene scene;
 
     @Override
     public void init() throws Exception {
@@ -73,23 +71,22 @@ public class RoboRally extends Application {
         RoboRallyMenuBar menuBar = new RoboRallyMenuBar(appController);
         MenuButtons menuButtons = new MenuButtons(appController);
         boardRoot = new BorderPane();
-        VBox vbox = new VBox(menuBar, boardRoot);
-        vbox.setMinWidth(MIN_APP_WIDTH);
-        TilePane r = new TilePane(Orientation.VERTICAL);
-        r.getChildren().add(MenuButtons.newGameButton);
-        r.getChildren().add(MenuButtons.loadGameButton);
-        r.getChildren().add(MenuButtons.exitGameButton);
+        gameRoot = new VBox(menuBar, boardRoot);
+        gameRoot.setMinWidth(MIN_APP_WIDTH);
+        menuPane = new TilePane(Orientation.VERTICAL);
+        menuPane.getChildren().add(menuButtons.newGameButton);
+        menuPane.getChildren().add(menuButtons.loadGameButton);
+        menuPane.getChildren().add(menuButtons.exitGameButton);
 
         //style for the menu
-        r.setAlignment(Pos.CENTER);
-        r.setVgap(15);
+        menuPane.setAlignment(Pos.CENTER);
+        menuPane.setVgap(15);
 
         //placeholder indtil vi har et billede
-        r.setStyle("-fx-background-color: green;");
+        menuPane.setStyle("-fx-background-color: green;");
 
-        menuScene = new Scene(r, screenWidth, screenHeight);
-        gameScene = new Scene(vbox, screenWidth, screenHeight);
-        stage.setScene(menuScene);
+        scene = new Scene(menuPane, screenWidth, screenHeight);
+        stage.setScene(scene);
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
                 e -> {
@@ -98,7 +95,6 @@ public class RoboRally extends Application {
         stage.setResizable(true);
         stage.setMaximized(true);
         stage.show();
-
     }
 
     public void createBoardView(GameController gameController) {
@@ -106,17 +102,18 @@ public class RoboRally extends Application {
         boardRoot.getChildren().clear();
 
         if (gameController != null) {
-            stage.setScene(gameScene);
             // create and add view for new board
             BoardView boardView = new BoardView(gameController);
             boardRoot.setCenter(boardView);
+            boardView.updateView(gameController.board);
+            scene.setRoot(gameRoot);
         }
         //stage.setMaximized(true);
     }
 
     public static void returnToMenu() {
-        stage.setScene(menuScene);
-
+        scene.setRoot(menuPane);
+        stage.show();
     }
 
     @Override
