@@ -327,6 +327,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Makes the player choose a card from the command card field
+     * @param command   Chosen command to be executed
+     */
     public void makeChoice(Command command) {
         board.setPhase(Phase.ACTIVATION);
         commandCardController.executeCommand(this, board.getCurrentPlayer(), command);

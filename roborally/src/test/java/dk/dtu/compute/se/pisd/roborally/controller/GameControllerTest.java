@@ -51,7 +51,6 @@ class GameControllerTest {
      * @author Jonathan (s235115)
      */
     @Test
-
     void turnRight() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();

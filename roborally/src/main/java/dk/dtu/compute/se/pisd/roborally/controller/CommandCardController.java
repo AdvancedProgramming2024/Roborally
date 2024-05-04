@@ -87,10 +87,7 @@ public class CommandCardController {
                 case ENERGY_ROUTINE:
                     player.addEnergyCubes(1);
                     break;
-                case SANDBOX_ROUTINE:
-                    gameController.board.setPhase(Phase.PLAYER_INTERACTION);
-                    break;
-                case WEASEL_ROUTINE:
+                case SANDBOX_ROUTINE, WEASEL_ROUTINE:
                     gameController.board.setPhase(Phase.PLAYER_INTERACTION);
                     break;
                 case SPEED_ROUTINE:
