@@ -32,6 +32,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.URL;
@@ -108,16 +109,17 @@ public class LoadSave {
     public static void saveBoard(Board board, String fileName) {
         BoardTemplate template = createBoardTemplate(board);
 
-        ClassLoader classLoader = LoadSave.class.getClassLoader();
-        // TODO: this is not very defensive, and will result in a NullPointerException
-        //       when the folder "resources" does not exist! But, it does not need
-        //       the file "simpleCards.json" to exist!
-        String filename =
-                classLoader.getResource(BOARDSFOLDER).getPath() + "/" + fileName + "." + JSON_EXT;
+        // Get resource folder, create folder if it doesn't exist
+        String filename = getFilePath(fileName, BOARDSFOLDER);
 
         writeToFile(template, filename);
     }
 
+    /**
+     * Load the game state from a file with the given name. If the file does not exist, null is returned.
+     * @author Jonathan (s235115)
+     * @param fileName
+     */
     public static GameController loadGameState(String fileName) {
 
         ClassLoader classLoader = LoadSave.class.getClassLoader();
@@ -210,6 +212,12 @@ public class LoadSave {
         return null;
     }
 
+    /**
+     * Save the current state of the game to a file with the given name.
+     * @author Jonathan (s235115)
+     * @param gameController
+     * @param fileName
+     */
     public static void saveGameState(GameController gameController, String fileName) {
         GameTemplate gameTemplate = new GameTemplate();
         gameTemplate.gameId = gameController.board.getGameId();
@@ -255,14 +263,24 @@ public class LoadSave {
         gameTemplate.playPhase = gameController.board.getPhase().ordinal();
         gameTemplate.step = gameController.board.getStep();
 
+        // Get resource folder, create folder if it doesn't exist
+        String filename = getFilePath(fileName, GAMESFOLDER);
 
+        writeToFile(gameTemplate, filename);
+    }
 
+    /**
+     * Get the file path for the given file name and resource folder. If the folder does not exist, it is created.
+     * @author Jonathan (s235115)
+     * @param fileName  File name
+     * @param rFolder   Resource folder
+     * @return File path
+     */
+    @NotNull
+    private static String getFilePath(String fileName, String rFolder) {
         ClassLoader classLoader = LoadSave.class.getClassLoader();
-        // TODO: this is not very defensive, and will result in a NullPointerException
-        //       when the folder "resources" does not exist! But, it does not need
-        //       the file "simpleCards.json" to exist!
 
-        URL url = classLoader.getResource(GAMESFOLDER);
+        URL url = classLoader.getResource(rFolder);
         if (url == null) {
             File folder = new File(classLoader.getResource("").getPath() + "/" + GAMESFOLDER);
             if (!folder.exists()) {
@@ -273,8 +291,7 @@ public class LoadSave {
 
         String filename =
                 url.getPath() + "/" + fileName + "." + JSON_EXT;
-
-        writeToFile(gameTemplate, filename);
+        return filename;
     }
 
     private static BoardTemplate createBoardTemplate(Board board) {

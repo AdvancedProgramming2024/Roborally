@@ -241,6 +241,11 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Reboots the player and adds spam cards
+     * @author Jonathan (s235115)
+     * @param gameController
+     */
     public void reboot(GameController gameController) {
         rebooting = true;
         addCommandCard(new CommandCard(Command.SPAM));
