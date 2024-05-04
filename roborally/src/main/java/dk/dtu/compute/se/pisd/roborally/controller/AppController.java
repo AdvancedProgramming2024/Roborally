@@ -72,7 +72,14 @@ public class AppController implements Observer {
         dialog.setHeaderText("Select number of players");
         Optional<Integer> result = dialog.showAndWait();
 
-        if (result.isPresent()) {
+
+        // Temporary map selection dialog. Should be replaced with a new scene for selecting maps
+        ChoiceDialog<String> mapDialog = new ChoiceDialog<>("defaultboard", "defaultboard", "dizzy_highway", "high_octane");
+        mapDialog.setTitle("Map selection");
+        mapDialog.setHeaderText("Select map to play on");
+        Optional<String> mapName = mapDialog.showAndWait();
+
+        if (result.isPresent() && mapName.isPresent()) {
             if (gameController != null) {
                 // The UI should not allow this, but in case this happens anyway.
                 // give the user the option to save the game or abort this operation!
@@ -85,7 +92,7 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = loadBoard("dizzy_highway"/*"high_octane"*/);
+            Board board = loadBoard(mapName.get());
             assert board != null;
             board.setGameId((int)(Math.random() * 100));
             //saveBoard(board, "test");
