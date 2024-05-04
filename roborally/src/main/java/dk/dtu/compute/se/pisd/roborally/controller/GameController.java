@@ -56,6 +56,11 @@ public class GameController {
 
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
+                if (target.isPit()) {
+                    player.reboot(this);
+                    System.out.println(player.getName() + " fell into a pit and reboots...");
+                    return;
+                }
                 if (target.getPlayer() != null && !push) {
                     return;
                 }

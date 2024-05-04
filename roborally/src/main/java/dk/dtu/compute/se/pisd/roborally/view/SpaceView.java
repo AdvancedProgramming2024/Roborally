@@ -228,7 +228,11 @@ public class SpaceView extends StackPane implements ViewObserver {
         Image spaceImage;
         spaceImageView.setFitHeight(SPACE_SIZE);
         spaceImageView.setFitWidth(SPACE_SIZE);
-        spaceImageView.setImage(new Image("images/empty.png"));
+        if (space.isPit()) {
+            spaceImageView.setImage(new Image("images/pit.png"));
+        } else {
+            spaceImageView.setImage(new Image("images/empty.png"));
+        }
         for (FieldAction action : space.getActions()) {
             if (action instanceof ConveyorBelt) {
                 drawConveyorBelt(spaceImageView);

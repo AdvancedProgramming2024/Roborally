@@ -86,6 +86,7 @@ public class LoadSave {
 			    if (space != null) {
                     spaceTemplate.actions.forEach(space::addAction);
                     spaceTemplate.walls.forEach(space::addWall);
+                    space.setPit(spaceTemplate.isPit);
                 }
             }
 			reader.close();
@@ -315,6 +316,7 @@ public class LoadSave {
                     spaceTemplate.y = space.y;
                     spaceTemplate.actions.addAll(space.getActions());
                     spaceTemplate.walls.addAll(space.getWalls());
+                    spaceTemplate.isPit = space.isPit();
                     template.spaces.add(spaceTemplate);
                 }
             }

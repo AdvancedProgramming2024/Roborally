@@ -255,6 +255,13 @@
     },
     {
       "walls": [],
+      "actions": [],
+      "x": 3,
+      "y": 2,
+      "isPit": true
+    },
+    {
+      "walls": [],
       "actions": [
         {
           "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt",
@@ -434,6 +441,13 @@
       ],
       "x": 4,
       "y": 7
+    },
+    {
+      "walls": [],
+      "actions": [],
+      "x": 12,
+      "y": 7,
+      "isPit": true
     },
     {
       "walls": [],
