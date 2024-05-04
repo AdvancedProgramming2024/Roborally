@@ -74,7 +74,7 @@ public class AppController implements Observer {
 
 
         // Temporary map selection dialog. Should be replaced with a new scene for selecting maps
-        ChoiceDialog<String> mapDialog = new ChoiceDialog<>("defaultboard", "defaultboard", "dizzy_highway", "high_octane");
+        ChoiceDialog<String> mapDialog = new ChoiceDialog<>("dizzy_highway", "defaultboard", "dizzy_highway", "high_octane");
         mapDialog.setTitle("Map selection");
         mapDialog.setHeaderText("Select map to play on");
         Optional<String> mapName = mapDialog.showAndWait();
