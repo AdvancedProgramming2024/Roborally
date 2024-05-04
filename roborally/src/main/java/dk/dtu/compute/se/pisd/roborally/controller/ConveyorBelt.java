@@ -66,6 +66,7 @@ public class ConveyorBelt extends FieldAction {
         boolean turned = false;
         Player player = space.getPlayer();
         Heading optional = null;
+        boolean second = false;
         if (player == null) return false; // TODO: Remove if doAction is only called when a player is on a conveyor belt
         //if (player.isConveyorPush()) return false;
 
@@ -77,6 +78,7 @@ public class ConveyorBelt extends FieldAction {
             for (FieldAction action : neighbour.getActions()) {
                 if (action instanceof ConveyorBelt) {
                    optional = ((ConveyorBelt) action).getHeading();
+                   second = true;
                 }
             }
         }
@@ -92,6 +94,9 @@ public class ConveyorBelt extends FieldAction {
             if (i == 1 && turned)  {
                 gameController.moveInDirection(player, optional, false);
             } else {
+                if (i == 1 && !second) {
+                    return false;
+                }
                 gameController.moveInDirection(player, heading, false);
                 turned = turningBelt(player.getSpace(), heading);
             }
