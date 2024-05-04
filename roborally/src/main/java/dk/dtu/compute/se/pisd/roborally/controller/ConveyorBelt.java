@@ -39,6 +39,8 @@ public class ConveyorBelt extends FieldAction {
     private Heading heading;
     private Heading turn;
 
+    private Heading cross;
+    private Heading tea;
     public Heading getHeading() {
         return heading;
     }
@@ -56,7 +58,9 @@ public class ConveyorBelt extends FieldAction {
 
     public void setTurn(Heading turn) {this.turn = turn;}
 
-    //If heading turn = west then turn left, all others turn right TODO: switch statement to better handle
+    public Heading getCross() {return cross;}
+    public Heading getTea() {return tea;}
+    //If heading turn = west then turn left, east turn right
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         boolean turned = false;
@@ -69,9 +73,11 @@ public class ConveyorBelt extends FieldAction {
         Space neighbour = space.board.getNeighbour(space,heading);
 
         //This is a suprise tool that will help us later.
-        for (FieldAction action : neighbour.getActions()) {
-            if (action instanceof ConveyorBelt) {
-               optional = ((ConveyorBelt) action).getHeading();
+        if (neighbour != null) {
+            for (FieldAction action : neighbour.getActions()) {
+                if (action instanceof ConveyorBelt) {
+                   optional = ((ConveyorBelt) action).getHeading();
+                }
             }
         }
 
@@ -100,6 +106,7 @@ public class ConveyorBelt extends FieldAction {
         for (FieldAction action : space.getActions()) {
             if (action instanceof ConveyorBelt && ((ConveyorBelt) action).getHeading() != heading1) {
                 if (((ConveyorBelt) action).getTurn() == WEST) {
+                    //If turn is not applied on the json, it always turns players right
                     space.getPlayer().setHeading(space.getPlayer().getHeading().prev());
                     return true;
                 } else {

@@ -369,7 +369,47 @@ public class SpaceView extends StackPane implements ViewObserver {
      * @param spaceImageView ImageView of the space
      */
     private void drawConveyorBelt(ImageView spaceImageView) {
-        Image spaceImage = new Image("images/greenConveyor.png");
+        Image spaceImage;
+        if (((ConveyorBelt) space.getActions().get(0)).getCross() != null &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 2) {
+            spaceImage = new Image("images/tBlue.png");
+        } else if (((ConveyorBelt) space.getActions().get(0)).getCross() != null &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1) {
+            spaceImage = new Image("images/tGreen4.png");
+        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.WEST &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 2 &&
+                ((ConveyorBelt) space.getActions().get(0)).getTea() == Heading.SOUTH) {
+            spaceImage = new Image("images/tBlue1.png");
+        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.WEST &&
+                    ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1 &&
+                    ((ConveyorBelt) space.getActions().get(0)).getTea() == Heading.SOUTH) {
+                spaceImage = new Image("images/tGreen1.png");
+        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.EAST &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 2 &&
+                ((ConveyorBelt) space.getActions().get(0)).getTea() == Heading.NORTH) {
+            spaceImage = new Image("images/tBlue2.png");
+        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.EAST &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1 &&
+                ((ConveyorBelt) space.getActions().get(0)).getTea() == Heading.NORTH) {
+            spaceImage = new Image("images/tGreen2.png");
+        } else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.WEST &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 2) {
+            spaceImage = new Image("images/blueTurnLeft.png");
+        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.EAST &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 1) {
+            spaceImage = new Image("images/blueTurnRight.png");
+        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.EAST &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1) {
+            spaceImage = new Image("images/greenTurnRight.png");
+        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.WEST &&
+                ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1) {
+            spaceImage = new Image("images/greenTurnLeft.png");
+        } else if (((ConveyorBelt)space.getActions().get(0)).getBelt() >= 2) {
+            spaceImage = new Image("images/blueConveyor.png");
+        } else {
+            spaceImage = new Image("images/greenConveyor.png");
+        }
+
         spaceImageView.setImage(spaceImage);
         switch (((ConveyorBelt)space.getActions().get(0)).getHeading()) {
             case NORTH:
