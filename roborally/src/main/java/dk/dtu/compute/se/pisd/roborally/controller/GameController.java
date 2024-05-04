@@ -73,6 +73,12 @@ public class GameController {
         }
     }
 
+    /**
+     * Turns the player clockwise the given number of times.
+     * @author Jonathan (s235115)
+     * @param player
+     * @param timesClockwise
+     */
     public void turn(@NotNull Player player, int timesClockwise) {
         Heading playerHeading = player.getHeading();
         for (int i = 0; i < timesClockwise; i++) {
@@ -81,6 +87,12 @@ public class GameController {
         player.setHeading(playerHeading);
     }
 
+    /**
+     * Moves the player to the given space
+     * @param player
+     * @param space
+     * @param heading   Heading to move player on the target field
+     */
     public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) {
         Player other = space.getPlayer();
         if (other != null && other != player) {
@@ -120,6 +132,10 @@ public class GameController {
         player.setSpace(space);
     }
 
+    /**
+     * Moves player to space. This method is only for testing and debugging, it doesn't progress the game
+     * @param space
+     */
     public void moveCurrentPlayerToSpace(Space space) {
         // TODO: Import or Implement this method. This method is only for debugging purposes. Not useful for the game.
         if (space.getPlayer() != null) {
@@ -181,6 +197,10 @@ public class GameController {
         this.playerOrder = playerOrder;
     }
 
+    /**
+     * Determines the order of the players based on their distance to the antenna and their angle to the antenna.
+     * @author Jonathan (s235115)
+     */
     public void determinePlayerOrder() {
         playerOrder = new ArrayList<>();
         for (int i = 0; i < board.getPlayersNumber(); i++) {
@@ -260,7 +280,7 @@ public class GameController {
         } else {
             step++;
 
-            // TODO: Activate special fields and lasers
+            // Activate special fields
             for (int i = 0; i < board.getPlayersNumber(); i++) {
                 board.setCurrentPlayer(playerOrder.get(i));
                 Space space = board.getCurrentPlayer().getSpace();
@@ -270,7 +290,7 @@ public class GameController {
                     }
                 }
             }
-            //Fire lasers here
+            // Fire lasers here
             for (int x = 0; x < board.width; x++) {
                 for (int y = 0; y < board.height; y++) {
                     Space space = board.getSpace(x, y);

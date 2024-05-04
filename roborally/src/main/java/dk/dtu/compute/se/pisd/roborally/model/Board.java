@@ -283,12 +283,24 @@ public class Board extends Subject {
         return result;
     }
 
-    //Please call this everytime you use getLOS(),
+
+    /**
+     * Use this to reset LOS as it is saved to the board object
+     * @author Peter (s235069)
+
+     */
     public void resetLOS() {
         LOS.clear();
     }
-    //This function returns a list of all spaces in a given heading until it hits a wall or player
 
+    /**
+     * LOS looks in a given heading and adds all spaces to a list until it encounters a player, wall
+     * or null aka outside the boundary
+     * @author Peter (s235069)
+     * @param space     space used where to check
+     * @param heading  heading used to find LOS in that direction
+     * @return all the spaces until it encounters a player, wall or null including that last space if not null
+     */
     public List<Space> getLOS(@NotNull Space space, @NotNull Heading heading) {
         Player player = space.getPlayer();
         if (LOS.isEmpty()) {

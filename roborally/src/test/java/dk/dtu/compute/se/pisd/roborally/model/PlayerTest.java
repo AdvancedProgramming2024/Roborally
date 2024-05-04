@@ -18,7 +18,7 @@ class PlayerTest {
     @Test
     void shuffleDrawPile() {
         Board board = new Board(8, 8);
-        Player player = new Player(board, "red", "Player 2");
+        Player player = new Player(board, "red", "Player 2", 0);
 
         int[] sumValues = new int[20];
         for (int i = 0; i < 10000; i++) {
