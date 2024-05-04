@@ -128,7 +128,7 @@ class GameControllerTest {
 
         Assertions.assertTrue(player1.isRebooting(), "Player 0 should be rebooting!");
         Assertions.assertTrue(player2.isRebooting(), "Player 1 should be rebooting!");
-        Assertions.assertEquals(player1.getSpace(), board.getSpace(1, 3), "Player 0 should be at the reboot station!");
+        Assertions.assertEquals(player1.getSpace(), board.getSpace(1, 3), "Player 0 should be beside the reboot station!");
         Assertions.assertEquals(player2.getSpace(), board.getSpace(0, 3), "Player 1 should be at the reboot station!");
     }
 

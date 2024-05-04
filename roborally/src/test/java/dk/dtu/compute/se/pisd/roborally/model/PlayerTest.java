@@ -30,8 +30,8 @@ class PlayerTest {
         }
         for (int i = 0; i < 20; i++) {
             // The average ordinal value of the default 20 cards in the draw pile is 2.95
-            Assertions.assertTrue((double) sumValues[i] / 10000 > 2.85, "The sum of the command card values should be between 2.9 and 3");
-            Assertions.assertTrue((double) sumValues[i] / 10000 < 3.05, "The sum of the command card values should be between 2.9 and 3");
+            Assertions.assertTrue((double) sumValues[i] / 10000 > 2.85, "The sum of the command card values should be between 2.85 and 3.05");
+            Assertions.assertTrue((double) sumValues[i] / 10000 < 3.05, "The sum of the command card values should be between 2.85 and 3.05");
         }
     }
 }
