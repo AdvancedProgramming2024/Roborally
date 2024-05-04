@@ -357,7 +357,7 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     /**
      * Draws the conveyor belt on the board
-     * @author Kresten (s235103)
+     * @author Kresten (s235103), Peter (s235069)
      * @param spaceImageView ImageView of the space
      */
     private void drawConveyorBelt(ImageView spaceImageView) {
@@ -421,7 +421,7 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     /**
      * Creates an ImageView of the laser to be drawn on the board
-     * @author Kresten (s235103)
+     * @author Kresten (s235103), Peter (s235069)
      * @return ImageView of the laser
      */
     @NotNull

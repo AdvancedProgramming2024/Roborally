@@ -101,7 +101,12 @@ public class ConveyorBelt extends FieldAction {
         return false;
     }
 
-    //Method to find a belt and turn player
+    /**
+     * Check if a given space is a conveyorBelt with a turn on it, turns the player if necessary
+     * @author Peter (s235069)
+     * @param space     space used where to check
+     * @param heading1  heading used to see if prior heading is different, if it is then turn player
+     */
     private boolean turningBelt(Space space, Heading heading1) {
         for (FieldAction action : space.getActions()) {
             if (action instanceof ConveyorBelt && ((ConveyorBelt) action).getHeading() != heading1) {
