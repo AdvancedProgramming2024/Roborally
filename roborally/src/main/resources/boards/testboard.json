@@ -1,6 +1,12 @@
 {
   "width": 8,
   "height": 8,
+  "antennaX": 0,
+  "antennaY": 4,
+  "antennaHeading": 3,
+  "rebootStationX": 7,
+  "rebootStationY": 3,
+  "rebootStationHeading": 0,
   "spaces": [
     {
       "walls": [
