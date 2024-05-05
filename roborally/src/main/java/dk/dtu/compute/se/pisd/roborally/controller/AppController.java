@@ -146,7 +146,7 @@ public class AppController implements Observer {
         VBox root = new VBox();
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle(saving ? "Save" : "Load" + "game");
+        stage.setTitle(saving ? "Save" : "Load" + " game");
         stage.setResizable(false);
         stage.setAlwaysOnTop(true);
         stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
