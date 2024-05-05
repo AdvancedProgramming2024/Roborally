@@ -1,15 +1,15 @@
-How to download and play this RoboRally game.
+HOW TO DOWNLOAD AND PLAY THIS ROBORALLY GAME
 
-Step 1:
-Click the GitHub repository link and download the project.
+STEP 1:
+CLICK THE GITHUB REPOSIROTY LINK AND DOWNLOAD THE PROJECT
 
-Step 2:
-Open the directory where you saved the project and then open the project in your favorite
-code editor, find the StartRoboRally file and press the run button.
+STEP 2:
+OPEN THE DIRECTORY WHERE YOU SAVED THE PROJECT AND THEN OPEN THE PROJECT IN YOUR FAVORITE CODE EDITOR(VSC),
+FIND THE STARTROBORALLY FILE AND PRESS THE RUN BUTTON.
 
-The file can be found here in the directory.
+THE FILE CAN BE FOUND HERE IN THE DIRECTORY.
 C:\PathToRoboFolder\RoboRally\roborally\src\main\java\dk\dtu\compute\se\pisd\roborally
 
 
-Step 3:
-Play the game, alternatively have fun while doing so.
+STEP 3:
+PLAY THE GAME, ALTERNATIVELY HAVE FUN WILE DOING SO
