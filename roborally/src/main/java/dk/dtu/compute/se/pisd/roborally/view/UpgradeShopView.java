@@ -55,7 +55,8 @@ public class UpgradeShopView extends VBox implements ViewObserver {
         top = new VBox();
         top.setSpacing(10.0);
         getChildren().add(top);
-        cardsLabel = new Label("Upgrade Shop");
+        cardsLabel = new Label("Upgrade Shop (upgrade cards aren't implemented yet, so only visual)");
+        cardsLabel.setWrapText(true);
         cardsPane = new GridPane();
         cardsPane.setVgap(20.0);
         cardsPane.setHgap(2.0);
