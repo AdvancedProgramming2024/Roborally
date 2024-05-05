@@ -115,6 +115,7 @@ public class AppController implements Observer {
 
     public void saveGame() {
         String fileName = inputBox(true);
+        if (fileName == null) return;
 
         saveGameState(gameController, fileName);
     }
@@ -122,6 +123,7 @@ public class AppController implements Observer {
     public void loadGame() {
         if (gameController == null) {
             String fileName = inputBox(false);
+            if (fileName == null) return;
             gameController = loadGameState(fileName);
             if (gameController == null) return;
             roboRally.createBoardView(gameController);
@@ -143,6 +145,7 @@ public class AppController implements Observer {
             stage.close();
         });
         Stage stage = new Stage();
+        stage.setOnCloseRequest(e -> filenameField.setText(null));
         VBox root = new VBox();
         Scene scene = new Scene(root);
         stage.setScene(scene);
