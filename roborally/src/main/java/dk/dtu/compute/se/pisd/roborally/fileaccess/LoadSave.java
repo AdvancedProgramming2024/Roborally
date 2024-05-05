@@ -288,7 +288,7 @@ public class LoadSave {
                 folder.mkdir(); // Create the folder if it doesn't exist
             }
         }
-        assert url != null;
+        url = classLoader.getResource(rFolder);
 
         String filename =
                 url.getPath() + "/" + fileName + "." + JSON_EXT;
