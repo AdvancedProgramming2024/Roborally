@@ -72,6 +72,7 @@ public class PlayerView extends Tab implements ViewObserver {
         this.setStyle("-fx-text-base-color: " + player.getColor() + ";");
 
         top = new VBox();
+        top.setPrefHeight(600);
         this.setContent(top);
 
         this.gameController = gameController;
@@ -97,6 +98,7 @@ public class PlayerView extends Tab implements ViewObserver {
                 programPane.add(programCardViews[i], i, 0);
             }
         }
+
 
         // XXX  the following buttons should actually not be on the tabs of the individual
         //      players, but on the PlayersView (view for all players). This should be
