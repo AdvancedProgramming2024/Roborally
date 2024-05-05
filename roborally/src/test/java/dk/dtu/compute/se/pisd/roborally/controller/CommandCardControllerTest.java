@@ -1,14 +1,10 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import dk.dtu.compute.se.pisd.roborally.model.Command;
 
 class CommandCardControllerTest {
 
@@ -89,6 +85,22 @@ class CommandCardControllerTest {
 
         gameController.commandCardController.executeCommand(gameController, current, Command.POWER_UP);
 
-        // TODO: Add test when energy cubes are implemented
+        Assertions.assertEquals(1, current.getEnergyCubes(), "Player " + current.getName() + " should have 1 energy cube!");
+    }
+
+    /**
+     * @author Jonathan (s235115)
+     */
+    @Test
+    void again() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+
+        board.setStep(1);
+        current.getProgramField(0).setCard(new CommandCard(Command.POWER_UP));
+        gameController.commandCardController.executeCommand(gameController, current, Command.AGAIN);
+
+        // The command from the register of step-1 should be executed, which is power up
+        Assertions.assertEquals(1, current.getEnergyCubes(), "Player " + current.getName() + " should have 1 energy cube!");
     }
 }
