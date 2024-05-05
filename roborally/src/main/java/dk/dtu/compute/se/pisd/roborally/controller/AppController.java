@@ -133,8 +133,8 @@ public class AppController implements Observer {
     /**
      * Create a dialog box for the user to input a filename.
      * @author Kresten (s235103)
-     * @param saving    true if the dialog box is for saving a file, false if it is for loading a file
-     * @return          the filename input by the user
+     * @param saving true if the dialog box is for saving a file, false if it is for loading a file
+     * @return the filename input by the user
      */
     private String inputBox(boolean saving) {
         Label label = new Label(saving ? "Save game as:" : "Load game from:");

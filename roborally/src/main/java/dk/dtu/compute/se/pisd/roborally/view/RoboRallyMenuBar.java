@@ -46,7 +46,7 @@ public class RoboRallyMenuBar extends MenuBar {
     private MenuItem exitApp;
 
     /**
-     * @Description Creates a menu bar and adds the menu items to it and sets the actions for the menu items that returns in the appController.
+     * Creates a menu bar and adds the menu items to it and sets the actions for the menu items that returns in the appController.
      * @author Oscar (224752)
      */
     public RoboRallyMenuBar(AppController appController) {

@@ -119,7 +119,7 @@ public class LoadSave {
     /**
      * Load the game state from a file with the given name. If the file does not exist, null is returned.
      * @author Jonathan (s235115)
-     * @param fileName
+     * @param fileName of the file to load from
      */
     public static GameController loadGameState(String fileName) {
 
@@ -216,8 +216,8 @@ public class LoadSave {
     /**
      * Save the current state of the game to a file with the given name.
      * @author Jonathan (s235115)
-     * @param gameController
-     * @param fileName
+     * @param gameController of the current game
+     * @param fileName of the file to save to
      */
     public static void saveGameState(GameController gameController, String fileName) {
         GameTemplate gameTemplate = new GameTemplate();

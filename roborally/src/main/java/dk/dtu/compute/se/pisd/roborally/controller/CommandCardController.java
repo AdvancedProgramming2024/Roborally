@@ -15,9 +15,9 @@ public class CommandCardController {
      * Execute command boolean.
      *
      * @author Jonathan (s235115)
-     * @param gameController
-     * @param player
-     * @param command
+     * @param gameController of the current game
+     * @param player who is executing the command
+     * @param command to be executed
      * @return whether the command was executed (true) or a new card needs to be drawn (false)
      */
     public boolean executeCommand(GameController gameController, @NotNull Player player, Command command) {

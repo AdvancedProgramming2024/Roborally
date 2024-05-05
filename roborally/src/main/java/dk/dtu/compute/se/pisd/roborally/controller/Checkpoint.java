@@ -17,8 +17,8 @@ public class Checkpoint extends FieldAction{
 
     /**
      * @author Jonathan (s235115)
-     * @param gameController
-     * @param space
+     * @param gameController of the current game
+     * @param space on which the checkpoint is located
      * @return True if player got the checkpoint, false if not
      */
     @Override
