@@ -81,8 +81,8 @@ public class GameController {
     /**
      * Turns the player clockwise the given number of times.
      * @author Jonathan (s235115)
-     * @param player
-     * @param timesClockwise
+     * @param player that is being turned
+     * @param timesClockwise the number of times the player is turned clockwise
      */
     public void turn(@NotNull Player player, int timesClockwise) {
         Heading playerHeading = player.getHeading();
@@ -94,9 +94,9 @@ public class GameController {
 
     /**
      * Moves the player to the given space
-     * @param player
-     * @param space
-     * @param heading   Heading to move player on the target field
+     * @param player being moved
+     * @param space on which the player is standing
+     * @param heading to move player on the target field
      */
     public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) {
         Player other = space.getPlayer();
@@ -139,7 +139,7 @@ public class GameController {
 
     /**
      * Moves player to space. This method is only for testing and debugging, it doesn't progress the game
-     * @param space
+     * @param space to move the player to
      */
     public void moveCurrentPlayerToSpace(Space space) {
         // TODO: Import or Implement this method. This method is only for debugging purposes. Not useful for the game.
@@ -334,7 +334,7 @@ public class GameController {
 
     /**
      * Makes the player choose a card from the command card field
-     * @param command   Chosen command to be executed
+     * @param command Chosen command to be executed
      */
     public void makeChoice(Command command) {
         board.setPhase(Phase.ACTIVATION);

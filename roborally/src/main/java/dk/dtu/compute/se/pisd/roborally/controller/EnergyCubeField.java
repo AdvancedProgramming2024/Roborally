@@ -14,7 +14,7 @@ public class EnergyCubeField extends FieldAction {
 
 
     /**
-     * @Description Picks up an energy cube and adds it to the player's energy bank.
+     * Picks up an energy cube and adds it to the player's energy bank.
      * @author Oscar (224752)
      */
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {

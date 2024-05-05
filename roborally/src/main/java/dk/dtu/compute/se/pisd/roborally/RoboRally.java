@@ -57,7 +57,7 @@ public class RoboRally extends Application {
     }
 
     /**
-     * @Description Creates the stage and scene. The input into the scene changes depending on if the start menu is needed or the in game menu is needed.
+     * Creates the stage and scene. The input into the scene changes depending on if the start menu is needed or the in game menu is needed.
      * @author Oscar (224752)
      */
     @Override
@@ -115,7 +115,7 @@ public class RoboRally extends Application {
         //stage.setMaximized(true);
     }
     /**
-     * @Description changes the menu from the in game menu to the start menu.
+     * changes the menu from the in game menu to the start menu.
      * @author Oscar (224752)
      */
     public static void returnToMenu() {

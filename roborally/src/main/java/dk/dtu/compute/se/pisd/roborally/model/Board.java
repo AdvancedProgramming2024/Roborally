@@ -97,7 +97,7 @@ public class Board extends Subject {
 
     /**
      * @author Jonathan (s235115)
-     * @param space     Space used to calculate distance
+     * @param space Space used to calculate distance
      * @return Distance
      */
     public double getDistanceToAntenna(Space space) {
@@ -111,7 +111,7 @@ public class Board extends Subject {
 
     /**
      * @author Jonathan (s235115)
-     * @param space     Space used to calculate angle
+     * @param space Space used to calculate angle
      * @return Angle to antenna
      */
     public double getAngleToAntenna(Space space) {
@@ -297,8 +297,8 @@ public class Board extends Subject {
      * LOS looks in a given heading and adds all spaces to a list until it encounters a player, wall
      * or null aka outside the boundary
      * @author Peter (s235069)
-     * @param space     space used where to check
-     * @param heading  heading used to find LOS in that direction
+     * @param space used where to check
+     * @param heading used to find LOS in that direction
      * @return all the spaces until it encounters a player, wall or null including that last space if not null
      */
     public List<Space> getLOS(@NotNull Space space, @NotNull Heading heading) {

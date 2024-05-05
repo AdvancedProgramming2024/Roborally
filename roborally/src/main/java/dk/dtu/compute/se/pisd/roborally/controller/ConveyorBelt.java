@@ -109,8 +109,8 @@ public class ConveyorBelt extends FieldAction {
     /**
      * Check if a given space is a conveyorBelt with a turn on it, turns the player if necessary
      * @author Peter (s235069)
-     * @param space     space used where to check
-     * @param heading1  heading used to see if prior heading is different, if it is then turn player
+     * @param space used where to check
+     * @param heading1 used to see if prior heading is different, if it is then turn player
      */
     private boolean turningBelt(Space space, Heading heading1) {
         for (FieldAction action : space.getActions()) {
