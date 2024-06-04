@@ -31,7 +31,7 @@ public class Laser extends FieldAction {
             return false;
         }
 
-        SpaceView.drawLaser(LOS);
+        SpaceView.drawLaser(LOS, getHeading());
 
         //If list is length 1 check for player/wall
         if (LOS.size() == 1) {

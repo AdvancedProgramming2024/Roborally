@@ -80,8 +80,7 @@ public class SpaceView extends StackPane implements ViewObserver {
      * @author Kresten (s235103)
      * @param LOS List of spaces the laser passes through
      */
-    public static void drawLaser(List<Space> LOS) {
-        Heading heading = null;
+    public static void drawLaser(List<Space> LOS, Heading heading) {
         Laser laser;
         for (FieldAction action : LOS.get(0).getActions()) {
             if (action instanceof Laser) {

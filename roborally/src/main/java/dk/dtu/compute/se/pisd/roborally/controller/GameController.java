@@ -310,13 +310,15 @@ public class GameController {
             }
 
             //This is where the robot shoots
-            //TODO: draw lasers, oh god no have mercy
             for (int i = 0; i < board.getPlayersNumber(); i++) {
                 List<Space> LOS = new ArrayList<>();
                 Heading heading = board.getPlayer(i).getHeading();
                 Space space = board.getPlayer(i).getSpace().board.getNeighbour(board.getPlayer(i).getSpace(), heading);
+
                 if (space != null) {
                     LOS = board.getLOS(space, heading, LOS);
+
+                    SpaceView.drawLaser(LOS, heading);
 
                     Space hit = LOS.get(LOS.size() - 1);
                     Heading reverse = heading.next().next();
