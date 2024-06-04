@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static dk.dtu.compute.se.pisd.roborally.model.Command.SPAM;
+
 /**
  * ...
  *
@@ -302,6 +304,28 @@ public class GameController {
                     for (FieldAction action : space.getActions()) {
                         if (action instanceof Laser) {
                             action.doAction(this, space);
+                        }
+                    }
+                }
+            }
+
+            //This is where the robot shoots
+            //TODO: draw lasers, oh god no have mercy
+            for (int i = 0; i < board.getPlayersNumber(); i++) {
+                List<Space> LOS = new ArrayList<>();
+                Heading heading = board.getPlayer(i).getHeading();
+                Space space = board.getPlayer(i).getSpace().board.getNeighbour(board.getPlayer(i).getSpace(), heading);
+                if (space != null) {
+                    LOS = board.getLOS(space, heading, LOS);
+
+                    Space hit = LOS.get(LOS.size() - 1);
+                    Heading reverse = heading.next().next();
+
+                    if (!hit.getWalls().contains(reverse)) {
+                        Player player = hit.getPlayer();
+                        if (player != null) {
+                            player.addCommandCard(new CommandCard(SPAM));
+                            System.out.println("Headshot!");
                         }
                     }
                 }
