@@ -12,7 +12,6 @@ public class CommandCardController {
     }
 
     /**
-     * Execute command boolean.
      *
      * @author Jonathan (s235115)
      * @param gameController of the current game
