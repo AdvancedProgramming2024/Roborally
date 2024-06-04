@@ -90,7 +90,11 @@ public class UpgradeCardFieldView extends GridPane implements ViewObserver {
 
 
         this.setOnMouseClicked(event -> {
-            //change this to phase UPGRADE
+            if (field.getCard() == null || !field.isInShop()) {
+                System.out.println("Can't buy");
+                return;
+            }
+            // TODO: change this to phase UPGRADE
             if (gameController.board.getPhase() == Phase.PROGRAMMING) {
                 showConfirmationDialog();
             } else {
@@ -112,9 +116,8 @@ public class UpgradeCardFieldView extends GridPane implements ViewObserver {
 
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.YES) {
-                //HANDLE UPGRADE
                 System.out.println("buying upgrade");
-                //gameController.handleUpgradeShop();
+                gameController.buyUpgrade(field);
             } else {
                 // Close the dialog (do nothing)
             }

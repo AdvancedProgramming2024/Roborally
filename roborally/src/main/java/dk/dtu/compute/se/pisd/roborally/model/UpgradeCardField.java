@@ -33,11 +33,14 @@ public class UpgradeCardField extends Subject {
 
     private UpgradeCard card;
 
+    private final boolean inShop;
+
     private boolean visible;
 
-    public UpgradeCardField() {
+    public UpgradeCardField(boolean inShop) {
         this. card = null;
         this.visible = true;
+        this.inShop = inShop;
     }
 
     public UpgradeCard getCard() {
@@ -60,5 +63,9 @@ public class UpgradeCardField extends Subject {
             this.visible = visible;
             notifyChange();
         }
+    }
+
+    public boolean isInShop() {
+        return inShop;
     }
 }

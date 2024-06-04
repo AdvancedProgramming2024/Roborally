@@ -379,6 +379,12 @@ public class GameController {
         }
     }
 
+    public void buyUpgrade(UpgradeCardField field) {
+        if (board.getCurrentPlayer().buyUpgradeCard(field.getCard())) {
+            field.setCard(null);
+        }
+    }
+
     /**
      * A method called when no corresponding controller operation is implemented yet. This
      * should eventually be removed.
