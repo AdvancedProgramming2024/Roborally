@@ -18,7 +18,9 @@
       "y": 0
     },
     {
-      "walls": [],
+      "walls": [
+        "WEST"
+      ],
       "actions": [
         {
           "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.Laser",
@@ -30,6 +32,22 @@
       ],
       "x": 0,
       "y": 4
+    },
+    {
+      "walls": [
+        "WEST"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.Laser",
+          "INSTANCE": {
+            "heading": "EAST",
+            "lazer": 1
+          }
+        }
+      ],
+      "x": 0,
+      "y": 6
     },
     {
       "walls": [],

@@ -241,7 +241,7 @@ public class Board extends Subject {
      *
      * @param space the space for which the neighbour should be computed
      * @param heading the heading of the neighbour
-     * @return the space in the given direction; null if neighbor is off the board or a hole; the same space if movement is blocked by wall or antenna
+     * @return the space in the given direction; null if neighbor is off the board; the same space if movement is blocked by wall or antenna
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
         if (space.getWalls().contains(heading)) {
@@ -274,7 +274,6 @@ public class Board extends Subject {
         Heading reverse = heading.next().next();
         Space result = getSpace(x, y);
 
-        // TODO: Id space is hole, return null
         if (result != null) {
             if (result.getWalls().contains(reverse)) {
                 return space;
@@ -310,37 +309,11 @@ public class Board extends Subject {
             return LOS;
         }
 
-        //Implement the same way neighbour is made, just with no null checks
-        int x = space.x;
-        int y = space.y;
-        switch (heading) {
-            case SOUTH:
-                y++;
-                break;
-            case WEST:
-                x--;
-                break;
-            case NORTH:
-                y--;
-                break;
-            case EAST:
-                x++;
-                break;
-        }
-
-        //Checks if LOS is out of bounds before adding new space to the list
-        if (x >= space.board.width || x < 0 || y >= space.board.height || y < 0 ) {
+        Space neighbour = getNeighbour(space, heading);
+        if (space.equals(neighbour) || neighbour == null) {
             return LOS;
         }
-        Space neighbour = getSpace(x,y);
         LOS.add(neighbour);
-        Heading reverse = heading.next().next();
-
-        //If there is a wall in the lasers path or a player then returns the list
-        if (neighbour.getWalls().contains(reverse) || neighbour.getPlayer() != null
-                || neighbour.getWalls().contains(heading)) {
-            return LOS;
-        }
 
         //Check for player at neighbours neighbours neighbour...
         return getLOS(neighbour, heading);
