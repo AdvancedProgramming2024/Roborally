@@ -307,6 +307,7 @@ public class GameController {
                 }
             }
 
+
             // Destroy lasers after 500ms
             new Thread(() -> {
             try {
@@ -316,11 +317,6 @@ public class GameController {
             } finally {
                 SpaceView.destroyLasers();
             }}).start();
-
-            //Reset all players pushability on conveyorbelts
-            for (int i = 0; i < board.getPlayersNumber(); i++) {
-                board.getCurrentPlayer().setConveyorPush(false);
-            }
 
             if (step < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(step);

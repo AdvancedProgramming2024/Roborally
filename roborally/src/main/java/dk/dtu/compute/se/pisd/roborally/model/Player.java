@@ -60,7 +60,7 @@ public class Player extends Subject {
     private CommandCardField[] cards;
 
     boolean rebooting = false;
-    boolean conveyorPush = false;
+
 
     public Player(@NotNull Board board, String color, @NotNull String name, int id) {
         this.board = board;
@@ -123,10 +123,6 @@ public class Player extends Subject {
     public void discardCommandCard(CommandCard card) {
         discardPile.add(card);
     }
-
-    public boolean isConveyorPush() {return conveyorPush;}
-
-    public void setConveyorPush(boolean conveyorPush) {this.conveyorPush = conveyorPush;}
 
     public void removeFromDiscardPile(Command command) {
         for (CommandCard card : discardPile) {
