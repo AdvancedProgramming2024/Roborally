@@ -40,6 +40,7 @@ public class Player extends Subject {
 
     final public static int NO_REGISTERS = 5;
     final public static int NO_CARDS = 8;
+    final public static int NO_UPGRADE_CARDS = 3; // Both for temporary and permanent, so 3 for each
 
     final public Board board;
 
@@ -53,11 +54,14 @@ public class Player extends Subject {
 
     private List<CommandCard> drawPile;
     private List<CommandCard> discardPile;
+
       
     private int checkpoints = 0;
     public int energyCubes = 0;
     private CommandCardField[] program;
     private CommandCardField[] cards;
+    private UpgradeCardField[] temporaryUpgrades;
+    private UpgradeCardField[] permanentUpgrades;
 
     boolean rebooting = false;
     boolean conveyorPush = false;
@@ -89,6 +93,16 @@ public class Player extends Subject {
         cards = new CommandCardField[NO_CARDS];
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new CommandCardField(this);
+        }
+
+        temporaryUpgrades = new UpgradeCardField[NO_UPGRADE_CARDS];
+        for (int i = 0; i < temporaryUpgrades.length; i++) {
+            temporaryUpgrades[i] = new UpgradeCardField(false);
+        }
+
+        permanentUpgrades = new UpgradeCardField[NO_UPGRADE_CARDS];
+        for (int i = 0; i < permanentUpgrades.length; i++) {
+            permanentUpgrades[i] = new UpgradeCardField(false);
         }
     }
 
@@ -181,6 +195,40 @@ public class Player extends Subject {
      */
     public void removeEnergyCubes(int energyCubes) {
         this.energyCubes -= energyCubes;
+    }
+
+    /**
+     * @return Returns whether the card was successfully bought
+     * @author Jonathan (s235115)
+     */
+    public boolean buyUpgradeCard(UpgradeCard upgrade) {
+        if (energyCubes < upgrade.getCost()) {
+            return false;
+        }
+        for (UpgradeCardField field : (upgrade.getIsPermanent() ? permanentUpgrades : temporaryUpgrades)) {
+            if (field.getCard() == null) {
+                field.setCard(upgrade);
+                removeEnergyCubes(upgrade.getCost());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void discardUpgradeCard(UpgradeCardField field) {
+        if (field.getCard() != null) {
+            field.setCard(null);
+            // TODO: Add to board's upgrade card pile
+        }
+    }
+
+    public boolean hasUpgrade(Upgrade upgrade) {
+        for (UpgradeCardField field : (upgrade.isPermanent ? permanentUpgrades : temporaryUpgrades)) {
+            if (field.getCard() != null && field.getCard().upgrade == upgrade) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getName() {
