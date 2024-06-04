@@ -296,8 +296,11 @@ public class Player extends Subject {
      */
     public void reboot(GameController gameController) {
         rebooting = true;
-        addCommandCard(new CommandCard(Command.SPAM));
-        addCommandCard(new CommandCard(Command.SPAM));
+
+        if (!hasUpgrade(Upgrade.FIREWALL)) {
+            addCommandCard(new CommandCard(Command.SPAM));
+            addCommandCard(new CommandCard(Command.SPAM));
+        }
 
 
         gameController.moveToSpace(this, board.getRebootStation(), board.getRebootStationHeading());
