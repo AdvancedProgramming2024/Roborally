@@ -46,7 +46,7 @@ public class Board extends Subject {
     private final Space[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
-    private List<Space> LOS = new ArrayList<>();
+
     private Player current;
 
     private Phase phase = INITIALISATION;
@@ -282,16 +282,6 @@ public class Board extends Subject {
         return result;
     }
 
-
-    /**
-     * Use this to reset LOS as it is saved to the board object
-     * @author Peter (s235069)
-
-     */
-    public void resetLOS() {
-        LOS.clear();
-    }
-
     /**
      * LOS looks in a given heading and adds all spaces to a list until it encounters a player, wall
      * or null aka outside the boundary
@@ -300,7 +290,7 @@ public class Board extends Subject {
      * @param heading used to find LOS in that direction
      * @return all the spaces until it encounters a player, wall or null including that last space if not null
      */
-    public List<Space> getLOS(@NotNull Space space, @NotNull Heading heading) {
+    public List<Space> getLOS(@NotNull Space space, @NotNull Heading heading, @NotNull List<Space> LOS) {
         Player player = space.getPlayer();
         if (LOS.isEmpty()) {
             LOS.add(space);
@@ -316,7 +306,7 @@ public class Board extends Subject {
         LOS.add(neighbour);
 
         //Check for player at neighbours neighbours neighbour...
-        return getLOS(neighbour, heading);
+        return getLOS(neighbour, heading, LOS);
     }
 
     public String getStatusMessage() {

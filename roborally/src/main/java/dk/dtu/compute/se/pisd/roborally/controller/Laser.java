@@ -4,6 +4,7 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Command.SPAM;
@@ -24,7 +25,8 @@ public class Laser extends FieldAction {
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         //First get the lasers path/LOS
-        List<Space> LOS = space.board.getLOS(space, heading);
+        List<Space> LOS = new ArrayList<>();
+        LOS = space.board.getLOS(space, heading, LOS);
         if (LOS == null) {
             return false;
         }
@@ -39,10 +41,8 @@ public class Laser extends FieldAction {
                     hit.getPlayer().addCommandCard(new CommandCard(SPAM));
 
                 }
-                space.board.resetLOS();
                 return true;
             } else if (hit.getWalls().contains(heading)) {
-                space.board.resetLOS();
                 return false;
             }
         }
@@ -52,16 +52,13 @@ public class Laser extends FieldAction {
         Heading reverse = heading.next().next();
 
         if (hit.getWalls().contains(reverse)) {
-            space.board.resetLOS();
             return false;
         } else if (hit.getPlayer() != null) {
             for (int i = 0; i < lazer; i++) {
                 hit.getPlayer().addCommandCard(new CommandCard(SPAM));
             }
-            space.board.resetLOS();
             return true;
         }
-        space.board.resetLOS();
         return false;
     }
 }
