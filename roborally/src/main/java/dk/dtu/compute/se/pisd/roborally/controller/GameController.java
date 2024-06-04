@@ -56,7 +56,7 @@ public class GameController {
 
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
-                if (target.isPit()) {
+                if (target.isPit() && !player.hasUpgrade(Upgrade.HOVER_UNIT)) {
                     player.reboot(this);
                     System.out.println(player.getName() + " fell into a pit and reboots...");
                     return;

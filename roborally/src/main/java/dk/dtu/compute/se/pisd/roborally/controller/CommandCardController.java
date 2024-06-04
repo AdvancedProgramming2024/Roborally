@@ -27,19 +27,17 @@ public class CommandCardController {
             //     (this concerns the way cards are modelled as well as the way they are executed).
 
             switch (command) {
-                case MOVE_1:
-                    gameController.moveForward(player);
-                    break;
-                case MOVE_2:
-                    for (int i = 0; i < 2; i++) {
-                        if (player.isRebooting()) break;
-                        gameController.moveForward(player);
-                    }
-                    break;
                 case MOVE_3:
-                    for (int i = 0; i < 3; i++) {
-                        if (player.isRebooting()) break;
-                        gameController.moveForward(player);
+                    gameController.moveForward(player);
+                case MOVE_2:
+                    if (player.isRebooting()) break;
+                    gameController.moveForward(player);
+                case MOVE_1:
+                    if (player.isRebooting()) break;
+                    gameController.moveForward(player);
+                    if (player.getSpace().isPit()) {
+                        player.reboot(gameController);
+                        System.out.println(player.getName() + " fell into a pit and reboots...");
                     }
                     break;
                 case RIGHT:
