@@ -127,6 +127,8 @@ public class GameController {
                 if (target == space) throw new ImpossibleMoveException(player, space, heading);
 
                 move(other, target, heading);
+                if (player.hasUpgrade(Upgrade.RAMMING_GEAR)) other.addCommandCard(new CommandCard(Command.SPAM));
+                if (player.hasUpgrade(Upgrade.VIRUS_MODULE)) other.addCommandCard(new CommandCard(Command.VIRUS));
 
                 assert target.getPlayer() == null : target; // make sure target is free now
             } else {
