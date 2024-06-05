@@ -83,7 +83,7 @@ public class AppController implements Observer {
             if (gameController != null) {
                 // The UI should not allow this, but in case this happens anyway.
                 // give the user the option to save the game or abort this operation!
-                if (!stopGame()) {
+                if (!stopGame(true)) {
                     return;
                 }
             }
@@ -98,6 +98,7 @@ public class AppController implements Observer {
             //saveBoard(board, "test");
 
             gameController = new GameController(board);
+            Player.appController = this;
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1), i);
@@ -169,18 +170,20 @@ public class AppController implements Observer {
      *
      * @return true if the current game was stopped, false otherwise
      */
-    public boolean stopGame() {
+    public boolean stopGame(boolean savedDialog) {
         if (gameController != null) {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Exit RoboRally?");
-            alert.setContentText("Are you sure you want to close RoboRally?\n" +
-                    "Have you remembered to save the game? Unsaved progress wil be deleted!");
-            Optional<ButtonType> result = alert.showAndWait();
+            if (savedDialog) {
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Exit RoboRally?");
+                alert.setContentText("Are you sure you want to close RoboRally?\n" +
+                        "Have you remembered to save the game? Unsaved progress wil be deleted!");
+                Optional<ButtonType> result = alert.showAndWait();
 
-            if (!result.isPresent() || result.get() != ButtonType.OK) {
-                return false;
+                if (!result.isPresent() || result.get() != ButtonType.OK) {
+                    return false;
+                }
             }
-          
+
             RoboRally.returnToMenu();
             gameController = null;
             roboRally.createBoardView(null);
@@ -191,7 +194,7 @@ public class AppController implements Observer {
 
     public void exit() {
         // If the user did not cancel, the RoboRally application will exit
-        if (gameController == null || stopGame()) {
+        if (gameController == null || stopGame(true)) {
             Platform.exit();
         }
     }

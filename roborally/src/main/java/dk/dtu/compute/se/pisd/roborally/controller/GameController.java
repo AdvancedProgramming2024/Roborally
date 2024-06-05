@@ -45,6 +45,16 @@ public class GameController {
 
     public GameController(Board board) {
         this.board = board;
+        // Count the number of checkpoints on the board
+        for (int x = 0; x < board.width; x++) {
+            for(int y = 0; y < board.height; y++) {
+                for (FieldAction action : board.getSpace(x, y).getActions()){
+                    if (action instanceof Checkpoint) {
+                        board.checkpoints++;
+                    }
+                }
+            }
+        }
         commandCardController = new CommandCardController();
     }
 

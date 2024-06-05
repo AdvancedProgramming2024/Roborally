@@ -22,7 +22,9 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
+import javafx.scene.control.Alert;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -61,15 +63,14 @@ public class Player extends Subject {
 
     boolean rebooting = false;
 
+    public static AppController appController;
 
     public Player(@NotNull Board board, String color, @NotNull String name, int id) {
         this.board = board;
         this.id = id;
         this.name = name;
         this.color = color;
-
         this.space = null;
-
 
         Command[] commands = Command.values();
         drawPile = new ArrayList<CommandCard>();
@@ -140,6 +141,14 @@ public class Player extends Subject {
     public void reachCheckpoint() {
         checkpoints++;
         notifyChange();
+        if (checkpoints == board.checkpoints) {
+            Alert winnerAlert = new Alert(Alert.AlertType.INFORMATION);
+            winnerAlert.setTitle("A player has won the game!");
+            winnerAlert.setHeaderText("Congratulations " + name + "!\nYou have won the game!");
+            winnerAlert.setContentText("Returning to main menu.");
+            winnerAlert.showAndWait();
+            appController.stopGame(false);
+        }
     }
 
     public void setCheckpoints(int checkpoints) {

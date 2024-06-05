@@ -58,6 +58,7 @@ public class Board extends Subject {
     private int step = 0;
 
     private boolean stepMode;
+    public int checkpoints = 0;
 
     public Board(int width, int height) {
         this.width = width;
