@@ -30,6 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dk.dtu.compute.se.pisd.roborally.model.Command.SPAM;
+import static dk.dtu.compute.se.pisd.roborally.model.Command.WORM;
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
 /**
@@ -227,14 +229,43 @@ public class Player extends Subject {
         }
     }
 
-    public boolean hasUpgrade(Upgrade upgrade) {
+    public UpgradeCard getUpgrade(Upgrade upgrade) {
         for (UpgradeCardField field : (upgrade.isPermanent ? permanentUpgrades : temporaryUpgrades)) {
             if (field.getCard() != null && field.getCard().upgrade == upgrade) {
-                return true;
+                return field.getCard();
             }
         }
+        return null;
+    }
+
+    public boolean hasActiveUpgrade(Upgrade upgrade) {
+        UpgradeCard card = getUpgrade(upgrade);
+        if (card != null) return card.isActive();
         return false;
     }
+
+    public void takeDamage(Player aggressor, Command damageType) {
+        if (aggressor != null) {
+            if (aggressor.hasActiveUpgrade(Upgrade.SCRAMBLER) && board.getStep() < 5) {
+                discardCommandCard(getProgramField(board.getStep()).getCard()); // Step has already been incremented
+                getProgramField(board.getStep()).setCard(drawCommandCard());
+            }
+
+            if (aggressor.hasActiveUpgrade(Upgrade.BLUE_SCREEN_OF_DEATH) &&
+                    (Math.abs(aggressor.space.x - space.x + aggressor.space.y - space.y) < 2) &&
+                    damageType == SPAM) {
+                addCommandCard(new CommandCard(WORM));
+            }
+
+            if (aggressor.hasActiveUpgrade(Upgrade.CORRUPTION_WAVE) && damageType == SPAM) {
+                drawPile.add(0, new CommandCard(SPAM));
+                return;
+            }
+        }
+        addCommandCard(new CommandCard(damageType));
+    }
+
+
 
     public String getName() {
         return name;
@@ -302,7 +333,7 @@ public class Player extends Subject {
     public void reboot(GameController gameController) {
         rebooting = true;
 
-        if (!hasUpgrade(Upgrade.FIREWALL)) {
+        if (!hasActiveUpgrade(Upgrade.FIREWALL)) {
             addCommandCard(new CommandCard(Command.SPAM));
             addCommandCard(new CommandCard(Command.SPAM));
         }

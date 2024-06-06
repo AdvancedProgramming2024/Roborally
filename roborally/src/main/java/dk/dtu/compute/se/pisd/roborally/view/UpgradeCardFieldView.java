@@ -116,10 +116,11 @@ public class UpgradeCardFieldView extends GridPane implements ViewObserver {
 
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.YES) {
-                System.out.println("buying upgrade");
-                gameController.buyUpgrade(field);
-            } else {
-                // Close the dialog (do nothing)
+                if (gameController.buyUpgrade(field)) {
+                    System.out.println("Upgrade bought successfully");
+                } else {
+                    System.out.println("Couldn't buy upgrade");
+                }
             }
         });
     }

@@ -34,8 +34,21 @@ public class CommandCardController {
                     gameController.moveForward(player);
                 case MOVE_1:
                     if (player.isRebooting()) break;
-                    gameController.moveForward(player);
-                    if (player.getSpace().isPit()) {
+
+                    if (command == Command.MOVE_1) {
+                        if (player.hasUpgrade(Upgrade.BRAKES) ||
+                                !player.getUpgrade(Upgrade.BRAKES).isActive()) {
+                            gameController.moveForward(player);
+                        }
+                        if (player.hasUpgrade(Upgrade.CRAB_LEGS) && player.getUpgrade(Upgrade.BRAKES).isActive()) {
+                            // TODO: Popup message to choose direction
+
+                            gameController.moveInDirection(player, player.getHeading().next(), true);
+                            gameController.moveForward(player);
+                        }
+                    } else gameController.moveForward(player);
+
+                    if (player.getSpace().isPit()) { // This is added here, since it is ignored in move if player has hover unit
                         player.reboot(gameController);
                         System.out.println(player.getName() + " fell into a pit and reboots...");
                     }

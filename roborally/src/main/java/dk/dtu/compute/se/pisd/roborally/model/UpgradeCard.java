@@ -33,6 +33,19 @@ import org.jetbrains.annotations.NotNull;
 public class UpgradeCard extends Subject {
 
     final public Upgrade upgrade;
+    private boolean active = true;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void deactivate() {
+        active = false;
+    }
+
+    public void activate() {
+        active = true;
+    }
 
     public UpgradeCard(@NotNull Upgrade upgrade) {
         this.upgrade = upgrade;

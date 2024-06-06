@@ -68,7 +68,7 @@ public class GameController {
 
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
-                if (target.isPit() && !player.hasUpgrade(Upgrade.HOVER_UNIT)) {
+                if (target.isPit() && !player.hasActiveUpgrade(Upgrade.HOVER_UNIT)) {
                     player.reboot(this);
                     System.out.println(player.getName() + " fell into a pit and reboots...");
                     return;
@@ -139,8 +139,8 @@ public class GameController {
                 if (target == space) throw new ImpossibleMoveException(player, space, heading);
 
                 move(other, target, heading);
-                if (player.hasUpgrade(Upgrade.RAMMING_GEAR)) other.addCommandCard(new CommandCard(Command.SPAM));
-                if (player.hasUpgrade(Upgrade.VIRUS_MODULE)) other.addCommandCard(new CommandCard(Command.VIRUS));
+                if (player.hasActiveUpgrade(Upgrade.RAMMING_GEAR)) other.takeDamage(player, SPAM);
+                if (player.hasActiveUpgrade(Upgrade.VIRUS_MODULE)) other.takeDamage(player, Command.VIRUS);
 
                 assert target.getPlayer() == null : target; // make sure target is free now
             } else {
@@ -323,25 +323,12 @@ public class GameController {
 
             //This is where the robot shoots
             for (int i = 0; i < board.getPlayersNumber(); i++) {
-                List<Space> LOS = new ArrayList<>();
                 Heading heading = board.getPlayer(i).getHeading();
-                Space space = board.getPlayer(i).getSpace().board.getNeighbour(board.getPlayer(i).getSpace(), heading);
+                shootRobotLaser(heading, i);
 
-                if (space != null) {
-                    LOS = board.getLOS(space, heading, LOS);
-
-                    SpaceView.drawLaser(LOS, heading);
-
-                    Space hit = LOS.get(LOS.size() - 1);
-                    Heading reverse = heading.next().next();
-
-                    if (!hit.getWalls().contains(reverse)) {
-                        Player player = hit.getPlayer();
-                        if (player != null) {
-                            player.addCommandCard(new CommandCard(SPAM));
-                            System.out.println("Headshot!");
-                        }
-                    }
+                if (board.getPlayer(i).hasActiveUpgrade(Upgrade.REAR_LASER)) {
+                    heading = heading.next().next();
+                    shootRobotLaser(heading, i);
                 }
             }
 
@@ -362,6 +349,42 @@ public class GameController {
                 board.setCurrentPlayer(playerOrder.get(0));
             } else {
                 startProgrammingPhase();
+            }
+        }
+    }
+
+    private void shootRobotLaser(Heading heading, int playerIndex) {
+        List<Space> LOS = new ArrayList<>();
+        Space space = board.getPlayer(playerIndex).getSpace().board.getNeighbour(board.getPlayer(playerIndex).getSpace(), heading);
+
+        if (space != null) {
+            LOS = board.getLOS(space, heading, LOS);
+
+            SpaceView.drawLaser(LOS, heading);
+
+            Space hit = LOS.get(LOS.size() - 1);
+            Heading reverse = heading.next().next();
+
+            if (!hit.getWalls().contains(reverse)) {
+                Player player = hit.getPlayer();
+
+                if (player != null) {
+                    if (!player.hasActiveUpgrade(Upgrade.DEFLECTOR_SHIELD)) {
+                        player.takeDamage(board.getPlayer(playerIndex), SPAM);
+                        if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.DOUBLE_BARREL_LASER)) {
+                            player.takeDamage(board.getPlayer(playerIndex), SPAM);
+                        }
+                        if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.PRESSOR_BEAM)) {
+                            moveInDirection(player, heading, true);
+                        }
+                        if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.MINI_HOWITZER)) {
+                            player.takeDamage(board.getPlayer(playerIndex), SPAM);
+                            player.takeDamage(board.getPlayer(playerIndex), SPAM);
+                            moveInDirection(player, heading, true);
+                        }
+                    }
+                    System.out.println("Headshot!");
+                }
             }
         }
     }
@@ -413,10 +436,12 @@ public class GameController {
         }
     }
 
-    public void buyUpgrade(UpgradeCardField field) {
+    public boolean buyUpgrade(UpgradeCardField field) {
         if (board.getCurrentPlayer().buyUpgradeCard(field.getCard())) {
             field.setCard(null);
+            return true;
         }
+        return false;
     }
 
     /**
