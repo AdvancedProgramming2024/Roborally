@@ -327,6 +327,9 @@ public class GameController {
 
                 if (space != null) {
                     LOS = board.getLOS(space, heading, LOS);
+                    if (LOS.get(0).equals(board.getPlayer(i).getSpace())) {
+                        break;
+                    }
 
                     SpaceView.drawLaser(LOS, heading);
 
