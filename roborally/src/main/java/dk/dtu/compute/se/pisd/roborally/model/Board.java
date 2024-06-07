@@ -309,10 +309,4 @@ public class Board extends Subject {
         //Check for player at neighbours neighbours neighbour...
         return getLOS(neighbour, heading, LOS);
     }
-
-    public String getStatusMessage() {
-        return "Phase: " + getPhase().name() +
-                ", Current Player = " + getCurrentPlayer().getName() +
-                ", Step: " + getStep();
-    }
 }

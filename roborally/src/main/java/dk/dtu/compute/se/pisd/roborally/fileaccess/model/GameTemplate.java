@@ -12,4 +12,5 @@ public class GameTemplate {
     public List<Integer> playerOrder = new ArrayList<>();
     public int playPhase;
     public int step;
+    public int currentCommand;
 }

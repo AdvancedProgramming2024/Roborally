@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -63,10 +64,10 @@ public class UpgradeCardFieldView extends GridPane implements ViewObserver {
 
     private Label label;
 
-    private GameController gameController;
+    private GameTemplate gameState;
 
-    public UpgradeCardFieldView(@NotNull GameController gameController, @NotNull UpgradeCardField field) {
-        this.gameController = gameController;
+    public UpgradeCardFieldView(@NotNull GameTemplate gameState, @NotNull UpgradeCardField field) {
+        this.gameState = gameState;
         this.field = field;
 
         this.setAlignment(Pos.CENTER);
@@ -91,7 +92,7 @@ public class UpgradeCardFieldView extends GridPane implements ViewObserver {
 
         this.setOnMouseClicked(event -> {
             //change this to phase UPGRADE
-            if (gameController.board.getPhase() == Phase.PROGRAMMING) {
+            if (gameState.playPhase == Phase.PROGRAMMING.ordinal()) {
                 showConfirmationDialog();
             } else {
                 System.out.println("Clicking is not allowed during this phase.");

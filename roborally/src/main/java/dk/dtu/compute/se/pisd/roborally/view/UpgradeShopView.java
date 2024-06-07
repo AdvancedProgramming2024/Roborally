@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -42,7 +43,6 @@ import java.util.ArrayList;
  */
 public class UpgradeShopView extends VBox implements ViewObserver {
 
-    private Board board;
     private VBox top;
     private Label cardsLabel;
     private GridPane cardsPane;
@@ -50,8 +50,7 @@ public class UpgradeShopView extends VBox implements ViewObserver {
     private UpgradeCardFieldView[] cardViews;
 
 
-    public UpgradeShopView(@NotNull GameController gameController) {
-        board = gameController.board;
+    public UpgradeShopView(@NotNull GameTemplate gameState) {
         top = new VBox();
         top.setSpacing(10.0);
         getChildren().add(top);
@@ -75,7 +74,7 @@ public class UpgradeShopView extends VBox implements ViewObserver {
             UpgradeCardField cardField = new UpgradeCardField();
             cardField.setCard(upgradePile.get(i));
 
-            cardViews[i] = new UpgradeCardFieldView(gameController, cardField);
+            cardViews[i] = new UpgradeCardFieldView(gameState, cardField);
             cardsPane.add(cardViews[i], 0, i);
 
         }
@@ -84,10 +83,6 @@ public class UpgradeShopView extends VBox implements ViewObserver {
         top.getChildren().add(cardsLabel);
         top.getChildren().add(cardsPane);
         top.setAlignment(Pos.CENTER);
-        board.attach(this);
-        update(board);
-
-
     }
 
     @Override

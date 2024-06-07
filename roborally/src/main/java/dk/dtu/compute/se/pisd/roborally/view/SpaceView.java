@@ -29,6 +29,9 @@ import dk.dtu.compute.se.pisd.roborally.controller.PushPanel;
 import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.controller.EnergyCubeField;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
@@ -53,14 +56,16 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     final public static int SPACE_SIZE = Toolkit.getDefaultToolkit().getScreenSize().height/20; // 75;
 
-    public final Space space;
+    public SpaceTemplate space;
+    public GameTemplate gameState;
 
     public static List<ImageView> lasers = new ArrayList<>();
 
     public ImageView eneryCubeImageView;
 
-    public SpaceView(@NotNull Space space) {
+    public SpaceView(@NotNull GameTemplate gameState, @NotNull SpaceTemplate space) {
         this.space = space;
+        this.gameState = gameState;
 
         // XXX the following styling should better be done with styles
         this.setPrefWidth(SPACE_SIZE);
@@ -70,10 +75,6 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMaxHeight(SPACE_SIZE);
 
         drawBoard();
-
-        // This space view should listen to changes of the space
-        space.attach(this);
-        update(space);
     }
     /**
      * Draws the lasers on the board for a given time
@@ -181,37 +182,35 @@ public class SpaceView extends StackPane implements ViewObserver {
     private void updatePlayer() {
         this.getChildren().removeIf(node -> node instanceof Polygon);
 
-        Player player = space.getPlayer();
+        PlayerTemplate player = gameState.players.get(space.player);
         if (player != null) {
             Polygon arrow = new Polygon(0.0, 0.0,
                     10.0, 20.0,
                     20.0, 0.0 );
             try {
-                arrow.setFill(Color.valueOf(player.getColor()));
+                arrow.setFill(Color.valueOf(player.color));
             } catch (Exception e) {
                 arrow.setFill(Color.MEDIUMPURPLE);
             }
 
-            arrow.setRotate((90*player.getHeading().ordinal())%360);
+            arrow.setRotate((90*player.heading)%360);
             this.getChildren().add(arrow);
         }
     }
 
     @Override
     public void updateView(Subject subject) {
-        if (subject == this.space) {
-            updatePlayer();
-        }
+        updatePlayer();
     }
     /**
      * @author Kresten (s235103)
      * @return pushPanel if the space contains one, null otherwise
      */
     private PushPanel getPushPanel() {
-        if (space.getActions().isEmpty()) {
+        if (space.actions.isEmpty()) {
             return null;
         }
-        for (FieldAction action : space.getActions()) {
+        for (FieldAction action : space.actions) {
             if (action instanceof PushPanel) {
                 return (PushPanel) action;
             }
@@ -227,12 +226,12 @@ public class SpaceView extends StackPane implements ViewObserver {
         Image spaceImage;
         spaceImageView.setFitHeight(SPACE_SIZE);
         spaceImageView.setFitWidth(SPACE_SIZE);
-        if (space.isPit()) {
+        if (space.isPit) {
             spaceImageView.setImage(new Image("images/pit.png"));
         } else {
             spaceImageView.setImage(new Image("images/empty.png"));
         }
-        for (FieldAction action : space.getActions()) {
+        for (FieldAction action : space.actions) {
             if (action instanceof ConveyorBelt) {
                 drawConveyorBelt(spaceImageView);
             } else if (action instanceof Checkpoint) {
@@ -245,8 +244,8 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
         this.getChildren().add(spaceImageView);
 
-        if (!space.getWalls().isEmpty()) {
-            for (Heading wall : space.getWalls()) {
+        if (!space.walls.isEmpty()) {
+            for (Heading wall : space.walls) {
                 ImageView wallImageView = new ImageView();
                 Image wallImage = new Image("images/wall.png");
                 wallImageView.setImage(wallImage);
@@ -277,12 +276,12 @@ public class SpaceView extends StackPane implements ViewObserver {
         ImageView fieldView = new ImageView();
         fieldView.setFitHeight(SPACE_SIZE);
         fieldView.setFitWidth(SPACE_SIZE);
-        if (space == space.board.getAntenna()) {
+        if (space.x == gameState.board.antennaX && space.y == gameState.board.antennaY) {
             spaceImage = new Image("images/antenna.png");
             fieldView.setImage(spaceImage);
-        } else if (space == space.board.getRebootStation()) {
+        } else if (space.x == gameState.board.rebootStationX && space.y == gameState.board.rebootStationY) {
             spaceImage = new Image("images/reboot.png");
-            switch (space.board.getRebootStationHeading()) {
+            switch (Heading.values()[gameState.board.rebootStationHeading]) {
                 case NORTH -> fieldView.setRotate(0);
                 case SOUTH -> fieldView.setRotate(180);
                 case EAST -> fieldView.setRotate(90);
@@ -365,48 +364,49 @@ public class SpaceView extends StackPane implements ViewObserver {
      */
     private void drawConveyorBelt(ImageView spaceImageView) {
         Image spaceImage;
-        if (((ConveyorBelt) space.getActions().get(0)).getCross() != null &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 2) {
+        // TODO: It shouldn't use conveyor
+        if (((ConveyorBelt) space.actions.get(0)).getCross() != null &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() >= 2) {
             spaceImage = new Image("images/tBlue.png");
-        } else if (((ConveyorBelt) space.getActions().get(0)).getCross() != null &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1) {
+        } else if (((ConveyorBelt) space.actions.get(0)).getCross() != null &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() == 1) {
             spaceImage = new Image("images/tGreen4.png");
-        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.WEST &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 2 &&
-                ((ConveyorBelt) space.getActions().get(0)).getTea() == Heading.SOUTH) {
+        }else if (((ConveyorBelt) space.actions.get(0)).getTurn() == Heading.WEST &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() >= 2 &&
+                ((ConveyorBelt) space.actions.get(0)).getTea() == Heading.SOUTH) {
             spaceImage = new Image("images/tBlue1.png");
-        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.WEST &&
-                    ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1 &&
-                    ((ConveyorBelt) space.getActions().get(0)).getTea() == Heading.SOUTH) {
+        }else if (((ConveyorBelt) space.actions.get(0)).getTurn() == Heading.WEST &&
+                    ((ConveyorBelt) space.actions.get(0)).getBelt() == 1 &&
+                    ((ConveyorBelt) space.actions.get(0)).getTea() == Heading.SOUTH) {
                 spaceImage = new Image("images/tGreen1.png");
-        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.EAST &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 2 &&
-                ((ConveyorBelt) space.getActions().get(0)).getTea() == Heading.NORTH) {
+        }else if (((ConveyorBelt) space.actions.get(0)).getTurn() == Heading.EAST &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() >= 2 &&
+                ((ConveyorBelt) space.actions.get(0)).getTea() == Heading.NORTH) {
             spaceImage = new Image("images/tBlue2.png");
-        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.EAST &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1 &&
-                ((ConveyorBelt) space.getActions().get(0)).getTea() == Heading.NORTH) {
+        }else if (((ConveyorBelt) space.actions.get(0)).getTurn() == Heading.EAST &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() == 1 &&
+                ((ConveyorBelt) space.actions.get(0)).getTea() == Heading.NORTH) {
             spaceImage = new Image("images/tGreen2.png");
-        } else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.WEST &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 2) {
+        } else if (((ConveyorBelt) space.actions.get(0)).getTurn() == Heading.WEST &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() >= 2) {
             spaceImage = new Image("images/blueTurnLeft.png");
-        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.EAST &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() >= 1) {
+        }else if (((ConveyorBelt) space.actions.get(0)).getTurn() == Heading.EAST &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() >= 1) {
             spaceImage = new Image("images/blueTurnRight.png");
-        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.EAST &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1) {
+        }else if (((ConveyorBelt) space.actions.get(0)).getTurn() == Heading.EAST &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() == 1) {
             spaceImage = new Image("images/greenTurnRight.png");
-        }else if (((ConveyorBelt) space.getActions().get(0)).getTurn() == Heading.WEST &&
-                ((ConveyorBelt) space.getActions().get(0)).getBelt() == 1) {
+        }else if (((ConveyorBelt) space.actions.get(0)).getTurn() == Heading.WEST &&
+                ((ConveyorBelt) space.actions.get(0)).getBelt() == 1) {
             spaceImage = new Image("images/greenTurnLeft.png");
-        } else if (((ConveyorBelt)space.getActions().get(0)).getBelt() >= 2) {
+        } else if (((ConveyorBelt)space.actions.get(0)).getBelt() >= 2) {
             spaceImage = new Image("images/blueConveyor.png");
         } else {
             spaceImage = new Image("images/greenConveyor.png");
         }
 
         spaceImageView.setImage(spaceImage);
-        switch (((ConveyorBelt)space.getActions().get(0)).getHeading()) {
+        switch (((ConveyorBelt)space.actions.get(0)).getHeading()) {
             case NORTH:
                 spaceImageView.setRotate(0);
                 break;
@@ -472,10 +472,10 @@ public class SpaceView extends StackPane implements ViewObserver {
      * @return Laser if the space contains one, null otherwise
      */
     private Laser getLaser() {
-        if (space.getActions().isEmpty()) {
+        if (space.actions.isEmpty()) {
             return null;
         }
-        for (FieldAction action : space.getActions()) {
+        for (FieldAction action : space.actions) {
             if (action instanceof Laser) {
                 return (Laser) action;
             }

@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dk.dtu.compute.se.pisd.roborally.controller.CommandCardController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
@@ -144,6 +145,7 @@ public class LoadSave {
 
             Board board = new Board(template.board.width, template.board.height);
             GameController gameController = new GameController(board);
+            gameController.commandCardController.setCurrentCommand(Command.values()[template.currentCommand]);
 
             board.setGameId(template.gameId);
 
@@ -155,12 +157,14 @@ public class LoadSave {
                 if (space != null) {
                     space.getActions().addAll(spaceTemplate.actions);
                     space.getWalls().addAll(spaceTemplate.walls);
+                    space.setPit(spaceTemplate.isPit);
                 }
             }
 
             for (PlayerTemplate playerTemplate: template.players) {
                 Player player = new Player(board, playerTemplate.color, playerTemplate.name, playerTemplate.id);
                 player.setSpace(board.getSpace(playerTemplate.xPosition, playerTemplate.yPosition));
+                board.getSpace(playerTemplate.xPosition, playerTemplate.yPosition).setPlayer(player);
                 player.setHeading(Heading.values()[playerTemplate.heading]);
 
                 for (int card : playerTemplate.drawPile) {
@@ -223,6 +227,7 @@ public class LoadSave {
         GameTemplate gameTemplate = new GameTemplate();
         gameTemplate.gameId = gameController.board.getGameId();
         gameTemplate.board = createBoardTemplate(gameController.board);
+        gameTemplate.currentCommand = gameController.commandCardController.getCurrentCommand().ordinal();
 
         for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
             PlayerTemplate playerTemplate = new PlayerTemplate();
@@ -317,6 +322,7 @@ public class LoadSave {
                     spaceTemplate.actions.addAll(space.getActions());
                     spaceTemplate.walls.addAll(space.getWalls());
                     spaceTemplate.isPit = space.isPit();
+                    spaceTemplate.player = board.getPlayerNumber(space.getPlayer());
                     template.spaces.add(spaceTemplate);
                 }
             }

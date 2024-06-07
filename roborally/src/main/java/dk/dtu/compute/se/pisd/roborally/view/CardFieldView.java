@@ -23,6 +23,8 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.CommandCard;
 import dk.dtu.compute.se.pisd.roborally.model.CommandCardField;
 import dk.dtu.compute.se.pisd.roborally.model.Phase;
@@ -61,15 +63,15 @@ public class CardFieldView extends GridPane implements ViewObserver {
     final public static Background BG_ACTIVE = new Background(new BackgroundFill(Color.YELLOW, null, null));
     final public static Background BG_DONE = new Background(new BackgroundFill(Color.GREENYELLOW,  null, null));
 
-    private CommandCardField field;
+    private PlayerTemplate player;
 
     private Label label;
 
-    private GameController gameController;
+    private GameTemplate gameState;
 
-    public CardFieldView(@NotNull GameController gameController, @NotNull CommandCardField field) {
-        this.gameController = gameController;
-        this.field = field;
+    public CardFieldView(@NotNull GameTemplate gameState, @NotNull PlayerTemplate player, int cardIndex) {
+        this.gameState = gameState;
+        this.player = player;
 
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(5, 5, 5, 5));
@@ -95,9 +97,6 @@ public class CardFieldView extends GridPane implements ViewObserver {
         this.setOnDragExited(new OnDragExitedHandler());
         this.setOnDragDropped(new OnDragDroppedHandler());
         this.setOnDragDone(new OnDragDoneHandler());
-
-        field.attach(this);
-        update(field);
     }
 
     private String cardFieldRepresentation(CommandCardField cardField) {
@@ -122,17 +121,17 @@ public class CardFieldView extends GridPane implements ViewObserver {
     }
 
     private CommandCardField cardFieldFromRepresentation(String rep) {
-        if (rep != null && field.player != null) {
+        if (rep != null && player != null) {
             String[] strings = rep.split(",");
             if (strings.length == 2) {
                 int i = Integer.parseInt(strings[1]);
                 if ("P".equals(strings[0])) {
                     if (i < Player.NO_REGISTERS) {
-                        return field.player.getProgramField(i);
+                        return player.program[i];
                     }
                 } else if ("C".equals(strings[0])) {
                     if (i < Player.NO_CARDS) {
-                        return field.player.getCardField(i);
+                        return player.getCardField(i);
                     }
                 }
             }

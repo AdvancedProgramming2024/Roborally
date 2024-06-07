@@ -23,6 +23,8 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -43,7 +45,7 @@ import javax.swing.text.html.Option;
  */
 public class PlayerView extends Tab implements ViewObserver {
 
-    private Player player;
+    private PlayerTemplate player;
 
     private VBox top;
 
@@ -65,17 +67,17 @@ public class PlayerView extends Tab implements ViewObserver {
 
     private VBox playerInteractionPanel;
 
-    private GameController gameController;
+    private GameTemplate gameState;
 
-    public PlayerView(@NotNull GameController gameController, @NotNull Player player) {
-        super(player.getName());
-        this.setStyle("-fx-text-base-color: " + player.getColor() + ";");
+    public PlayerView(@NotNull GameTemplate gameState, @NotNull PlayerTemplate player) {
+        super(player.name);
+        this.setStyle("-fx-text-base-color: " + player.color + ";");
 
         top = new VBox();
         top.setPrefHeight(600);
         this.setContent(top);
 
-        this.gameController = gameController;
+        this.gameState = gameState;
         this.player = player;
 
         programLabel = new Label("Program");
@@ -84,19 +86,16 @@ public class PlayerView extends Tab implements ViewObserver {
         programPane.setVgap(2.0);
         programPane.setHgap(2.0);
 
-        checkPointLabel = new Label("Checkpoint\n" + player.getCheckpoints());
-        energyCubeLabel = new Label("Energy Cubes\n" + player.getEnergyCubes());
+        checkPointLabel = new Label("Checkpoint\n" + player.checkpoints);
+        energyCubeLabel = new Label("Energy Cubes\n" + player.energyBank);
 
         programPane.add(checkPointLabel, Player.NO_REGISTERS+1, 0);
         programPane.add(energyCubeLabel, Player.NO_REGISTERS+1, 1);
 
         programCardViews = new CardFieldView[Player.NO_REGISTERS];
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
-            CommandCardField cardField = player.getProgramField(i);
-            if (cardField != null) {
-                programCardViews[i] = new CardFieldView(gameController, cardField);
-                programPane.add(programCardViews[i], i, 0);
-            }
+            programCardViews[i] = new CardFieldView(gameState, player, i);
+            programPane.add(programCardViews[i], i, 0);
         }
 
 
@@ -106,12 +105,15 @@ public class PlayerView extends Tab implements ViewObserver {
 
         finishButton = new Button("Finish Programming");
         finishButton.setOnAction( e -> gameController.finishProgrammingPhase());
+        // TODO: Send signal for done with programming with Rest
 
         executeButton = new Button("Execute Program");
         executeButton.setOnAction( e-> gameController.executePrograms());
+        // TODO: Probably delete
 
         stepButton = new Button("Execute Current Register");
         stepButton.setOnAction( e-> gameController.executeStep());
+        // TODO: Send signal for execute next step, but only if it is the current players turn
 
         buttonPanel = new VBox(finishButton, executeButton, stepButton);
         buttonPanel.setAlignment(Pos.CENTER_LEFT);
@@ -128,101 +130,91 @@ public class PlayerView extends Tab implements ViewObserver {
         cardsPane.setHgap(2.0);
         cardViews = new CardFieldView[Player.NO_CARDS];
         for (int i = 0; i < Player.NO_CARDS; i++) {
-            CommandCardField cardField = player.getCardField(i);
-            if (cardField != null) {
-                cardViews[i] = new CardFieldView(gameController, cardField);
-                cardsPane.add(cardViews[i], i, 0);
-            }
+            cardViews[i] = new CardFieldView(gameState, player, i);
+            cardsPane.add(cardViews[i], i, 0);
         }
 
         top.getChildren().add(programLabel);
         top.getChildren().add(programPane);
         top.getChildren().add(cardsLabel);
         top.getChildren().add(cardsPane);
-
-        if (player.board != null) {
-            player.board.attach(this);
-            update(player.board);
-        }
     }
 
     @Override
     public void updateView(Subject subject) {
-        if (subject == player.board) {
-            checkPointLabel.setText("Checkpoint\n" + player.getCheckpoints());
-            energyCubeLabel.setText("Energy Cubes\n" + player.getEnergyCubes());
-            for (int i = 0; i < Player.NO_REGISTERS; i++) {
-                CardFieldView cardFieldView = programCardViews[i];
-                if (cardFieldView != null) {
-                    if (player.board.getPhase() == Phase.PROGRAMMING ) {
-                        cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
-                    } else {
-                        if (i < player.board.getStep()) {
+        checkPointLabel.setText("Checkpoint\n" + player.checkpoints);
+        energyCubeLabel.setText("Energy Cubes\n" + player.energyBank);
+        for (int i = 0; i < Player.NO_REGISTERS; i++) {
+            CardFieldView cardFieldView = programCardViews[i];
+            if (cardFieldView != null) {
+                if (gameState.playPhase == Phase.PROGRAMMING.ordinal()) {
+                    cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
+                } else {
+                    if (i < gameState.step) {
+                        cardFieldView.setBackground(CardFieldView.BG_DONE);
+                    } else if (i == gameState.step) {
+                        if (gameState.currentPlayer == player.id) {
+                            cardFieldView.setBackground(CardFieldView.BG_ACTIVE);
+                        } else if (gameState.playerOrder.indexOf(player.id) < gameState.playerOrder.indexOf(gameState.currentPlayer)) {
                             cardFieldView.setBackground(CardFieldView.BG_DONE);
-                        } else if (i == player.board.getStep()) {
-                            if (player.board.getCurrentPlayer() == player) {
-                                cardFieldView.setBackground(CardFieldView.BG_ACTIVE);
-                            } else if (gameController.getPlayerOrder().indexOf(player) <
-                                    gameController.getPlayerOrder().indexOf(player.board.getCurrentPlayer())) {
-                                cardFieldView.setBackground(CardFieldView.BG_DONE);
-                            } else {
-                                cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
-                            }
                         } else {
                             cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
                         }
+                    } else {
+                        cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
                     }
                 }
             }
+        }
 
-            if (player.board.getPhase() != Phase.PLAYER_INTERACTION) {
-                if (!programPane.getChildren().contains(buttonPanel)) {
-                    programPane.getChildren().remove(playerInteractionPanel);
-                    programPane.add(buttonPanel, Player.NO_REGISTERS, 0);
-                }
-                switch (player.board.getPhase()) {
-                    case INITIALISATION:
-                        finishButton.setDisable(true);
-                        // XXX just to make sure that there is a way for the player to get
-                        //     from the initialization phase to the programming phase somehow!
-                        executeButton.setDisable(false);
-                        stepButton.setDisable(true);
-                        break;
+        if (gameState.playPhase != Phase.PLAYER_INTERACTION.ordinal()) {
+            if (!programPane.getChildren().contains(buttonPanel)) {
+                programPane.getChildren().remove(playerInteractionPanel);
+                programPane.add(buttonPanel, Player.NO_REGISTERS, 0);
+            }
+            switch (Phase.values()[gameState.playPhase]) {
+                case INITIALISATION:
+                    finishButton.setDisable(true);
+                    // XXX just to make sure that there is a way for the player to get
+                    //     from the initialization phase to the programming phase somehow!
+                    executeButton.setDisable(false);
+                    stepButton.setDisable(true);
+                    break;
 
-                    case PROGRAMMING:
-                        finishButton.setDisable(false);
-                        executeButton.setDisable(true);
-                        stepButton.setDisable(true);
-                        break;
+                case PROGRAMMING:
+                    finishButton.setDisable(false);
+                    executeButton.setDisable(true);
+                    stepButton.setDisable(true);
+                    break;
 
-                    case ACTIVATION:
-                        finishButton.setDisable(true);
-                        executeButton.setDisable(false);
-                        stepButton.setDisable(false);
-                        break;
+                case ACTIVATION:
+                    finishButton.setDisable(true);
+                    executeButton.setDisable(false);
+                    stepButton.setDisable(false);
+                    break;
 
-                    default:
-                        finishButton.setDisable(true);
-                        executeButton.setDisable(true);
-                        stepButton.setDisable(true);
-                }
+                default:
+                    finishButton.setDisable(true);
+                    executeButton.setDisable(true);
+                    stepButton.setDisable(true);
+            }
 
 
-            } else {
-                if (!programPane.getChildren().contains(playerInteractionPanel)) {
-                    programPane.getChildren().remove(buttonPanel);
-                    programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
-                }
-                playerInteractionPanel.getChildren().clear();
+        } else {
+            if (!programPane.getChildren().contains(playerInteractionPanel)) {
+                programPane.getChildren().remove(buttonPanel);
+                programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
+            }
+            playerInteractionPanel.getChildren().clear();
 
-                if (player.board.getCurrentPlayer() == player) {
-                    Command command = gameController.commandCardController.getCurrentCommand();
-                    for (Command option : command.getOptions()) {
-                        Button optionButton = new Button(option.displayName);
-                        optionButton.setOnAction(e -> gameController.makeChoice(option));
-                        optionButton.setDisable(false);
-                        playerInteractionPanel.getChildren().add(optionButton);
-                    }
+            if (gameState.currentPlayer == player.id) {
+                Command command = Command.values()[gameState.currentCommand];
+                for (Command option : command.getOptions()) {
+                    Button optionButton = new Button(option.displayName);
+                    optionButton.setOnAction(e -> gameController.makeChoice(option));
+                    // Todo: Send signal for choice via Rest
+                    optionButton.setDisable(false);
+                    playerInteractionPanel.getChildren().add(optionButton);
                 }
             }
         }

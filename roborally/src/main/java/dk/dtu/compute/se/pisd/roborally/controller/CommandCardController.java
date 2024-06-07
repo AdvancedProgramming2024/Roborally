@@ -10,6 +10,9 @@ public class CommandCardController {
     public Command getCurrentCommand() {
         return currentCommand;
     }
+    public void setCurrentCommand(Command command) {
+        currentCommand = command;
+    }
 
     /**
      * Execute command boolean.
