@@ -21,6 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
@@ -30,6 +31,7 @@ import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
+import dk.dtu.compute.se.pisd.roborally.online.Response;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -39,9 +41,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatusCode;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -70,19 +74,101 @@ public class AppController implements Observer {
     }
 
 
-    public void newLobby() throws IOException, InterruptedException {
+    public void newLobby() {
         TextInputDialog nameInput = new TextInputDialog();
         nameInput.setTitle("Player name");
         nameInput.setHeaderText("Please state your name");
         Optional<String> name = nameInput.showAndWait();
 
-        if (name.isPresent()) {
-            RequestCenter.postRequest(URI.create(baseLocation+lobbies), name.get());
-            Text playerList = new Text(RequestCenter.getRequestJson(URI.create(baseLocation+lobbyState)));
+        try {
+            while (name.isEmpty()) {
+                name = nameInput.showAndWait();
+            }
+            Response<String> lobbyResponse = RequestCenter.postRequest(makeUri(lobbies), name.get());
+            roboRally.setLobbyId(lobbyResponse.getItem());
+            roboRally.createLobbyView(name.get());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        // TODO: Add new thread to wait for players to join, delete thread when starting game
+        Thread waitForPlayers = new Thread(this::waitForPlayers);
+        waitForPlayers.start();
+    }
 
+    public void joinLobby() {
+        TextInputDialog idInput = new TextInputDialog();
+        idInput.setTitle("Join lobby");
+        idInput.setHeaderText("Enter a lobby ID");
+        Optional<String> id = idInput.showAndWait();
+        try {
+            while (id.isEmpty()) {
+                id = idInput.showAndWait();
+            }
+            Response<String> lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id.get())));
+            while (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
+                lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id.get())));
+                if (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(lobbyResponse.getItem());
+                    alert.showAndWait();
+
+                    id = idInput.showAndWait();
+                    while (id.isEmpty()) {
+                        id = idInput.showAndWait();
+                    }
+                }
+            }
+            roboRally.setLobbyId(id.get());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        TextInputDialog nameInput = new TextInputDialog();
+        nameInput.setTitle("Player name");
+        nameInput.setHeaderText("Please state your name");
+        Optional<String> name = nameInput.showAndWait();
+
+        try {
+            while (name.isEmpty()) {
+                name = nameInput.showAndWait();
+            }
+            Response<String> joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(roboRally.getLobbyId())), name.get());
+            while (!joinResponse.getStatusCode().is2xxSuccessful()) {
+                joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(roboRally.getLobbyId())), name.get());
+                if (!joinResponse.getStatusCode().is2xxSuccessful()) {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(joinResponse.getItem());
+                    alert.showAndWait();
+
+                    name = nameInput.showAndWait();
+                    while (name.isEmpty()) {
+                        name = nameInput.showAndWait();
+                    }
+                }
+            }
+            roboRally.createLobbyView(name.get());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        // TODO: Add new thread to wait for players to join, delete thread when starting game
+        Thread waitForPlayers = new Thread(this::waitForPlayers);
+        waitForPlayers.start();
+    }
+
+    private void waitForPlayers() {
+        while (true) {
+            try {
+                Response<JsonObject> response = RequestCenter.getRequestJson(makeUri(lobbyStatePath(roboRally.getLobbyId())));
+                roboRally.updateLobbyView(response.getItem());
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
-    public void newGame() {
+
+    /*public void newGame() {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
         dialog.setHeaderText("Select number of players");
@@ -145,7 +231,7 @@ public class AppController implements Observer {
             if (gameController == null) return;
             roboRally.createBoardView(gameController);
         }
-    }
+    }*/
 
     /**
      * Create a dialog box for the user to input a filename.

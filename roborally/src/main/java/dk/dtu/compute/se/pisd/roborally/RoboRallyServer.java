@@ -45,6 +45,10 @@ public class RoboRallyServer {
         return gameController;
     }
 
+    public void stopGame() {
+        // TODO: Do something
+    }
+
     public void waitForAcks() {
         // wait until the other players are also done
         boolean waiting = true;

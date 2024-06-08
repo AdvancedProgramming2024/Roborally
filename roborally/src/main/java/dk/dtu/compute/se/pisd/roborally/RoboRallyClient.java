@@ -21,6 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally;
 
+import com.google.gson.*;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
@@ -34,9 +35,12 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ...
@@ -47,6 +51,7 @@ import javax.swing.*;
 public class RoboRallyClient extends Application {
 
     private static final int MIN_APP_WIDTH = 600;
+    private String lobbyId;
 
     private static Stage stage;
     private BorderPane boardRoot;
@@ -58,6 +63,14 @@ public class RoboRallyClient extends Application {
     @Override
     public void init() throws Exception {
         super.init();
+    }
+
+    public String getLobbyId() {
+        return lobbyId;
+    }
+
+    public void setLobbyId(String lobbyId) {
+        this.lobbyId = lobbyId;
     }
 
     /**
@@ -83,10 +96,10 @@ public class RoboRallyClient extends Application {
         gameRoot.setMinWidth(MIN_APP_WIDTH);
         menuPane = new TilePane(Orientation.VERTICAL);
         menuPane.getChildren().add(menuButtons.newGameButton);
+        menuPane.getChildren().add(menuButtons.joinGameButton);
         menuPane.getChildren().add(menuButtons.loadGameButton);
         menuPane.getChildren().add(menuButtons.exitGameButton);
         lobbyPane = new TilePane(Orientation.VERTICAL);
-        lobbyPane.getChildren().add(LobbyContent.playerList);
 
         //style for the menu
         menuPane.setAlignment(Pos.CENTER);
@@ -109,6 +122,27 @@ public class RoboRallyClient extends Application {
         stage.setResizable(true);
         stage.setMaximized(true);
         stage.show();
+    }
+
+    public void createLobbyView(String playerName) {
+        boardRoot.getChildren().clear();
+
+        lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId));
+        lobbyPane.getChildren().add(new Text("Players: " + playerName));
+        scene.setRoot(lobbyPane);
+    }
+
+    public void updateLobbyView(JsonObject lobbyContent) {
+        JsonArray players = lobbyContent.get("players").getAsJsonArray();
+        Text text = ((Text) lobbyPane.getChildren().get(1));
+        StringBuilder newText = new StringBuilder();
+        newText.append("Players:");
+        for (JsonElement player : players) {
+            newText.append("\n").append(player.getAsString());
+        }
+        if (!text.getText().contentEquals(newText)) {
+            text.setText(newText.toString());
+        }
     }
 
     public void createBoardView(GameTemplate gameState) {

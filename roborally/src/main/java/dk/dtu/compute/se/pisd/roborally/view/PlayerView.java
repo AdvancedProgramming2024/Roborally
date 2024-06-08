@@ -103,7 +103,7 @@ public class PlayerView extends Tab implements ViewObserver {
         //      players, but on the PlayersView (view for all players). This should be
         //      refactored.
 
-        finishButton = new Button("Finish Programming");
+        /*finishButton = new Button("Finish Programming");
         finishButton.setOnAction( e -> gameController.finishProgrammingPhase());
         // TODO: Send signal for done with programming with Rest
 
@@ -113,7 +113,7 @@ public class PlayerView extends Tab implements ViewObserver {
 
         stepButton = new Button("Execute Current Register");
         stepButton.setOnAction( e-> gameController.executeStep());
-        // TODO: Send signal for execute next step, but only if it is the current players turn
+        // TODO: Send signal for execute next step, but only if it is the current players turn*/
 
         buttonPanel = new VBox(finishButton, executeButton, stepButton);
         buttonPanel.setAlignment(Pos.CENTER_LEFT);
@@ -211,7 +211,7 @@ public class PlayerView extends Tab implements ViewObserver {
                 Command command = Command.values()[gameState.currentCommand];
                 for (Command option : command.getOptions()) {
                     Button optionButton = new Button(option.displayName);
-                    optionButton.setOnAction(e -> gameController.makeChoice(option));
+                    //optionButton.setOnAction(e -> gameController.makeChoice(option));
                     // Todo: Send signal for choice via Rest
                     optionButton.setDisable(false);
                     playerInteractionPanel.getChildren().add(optionButton);

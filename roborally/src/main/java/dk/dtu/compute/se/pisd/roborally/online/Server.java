@@ -1,13 +1,13 @@
 package dk.dtu.compute.se.pisd.roborally.online;
 
 
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.online.ResponseCenter;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +17,11 @@ import java.util.Random;
 @RestController
 public class Server {
     private final List<Lobby> lobbies = new ArrayList<>();
+    private static final JsonParser jsonParser = new JsonParser();
+    private final static ResponseCenter<String> responseCenter = new ResponseCenter<>();
 
     @PostMapping(ResourceLocation.lobbies)
-    public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-
+    public ResponseEntity<String> lobbyCreateRequest(@RequestBody String playerName) {
         Random rand = new Random();
         StringBuilder lobbyId = new StringBuilder();
         boolean lobbyIdExists = false;
@@ -37,109 +37,121 @@ public class Server {
         Lobby lobby = new Lobby(lobbyId.toString());
         lobbies.add(lobby);
 
-        int playerId = lobby.addPlayer(info.get("playerName").getAsString());
+        lobby.addPlayer(playerName);
 
+        return responseCenter.response(lobbyId.toString());
+    }
+
+    @GetMapping(ResourceLocation.lobbies)
+    public ResponseEntity<String> getLobbies() {
         JsonObject response = new JsonObject();
-        response.addProperty("lobbyId", lobbyId.toString());
-        response.addProperty("playerId", playerId);
+        JsonArray ids = new JsonArray();
+        for (Lobby lobby : lobbies) {
+            ids.add(lobby.getID());
+        }
 
-        return responseMaker.created(response.toString());
+        return responseCenter.response(response.toString());
+    }
+    @GetMapping(ResourceLocation.lobby)
+    public ResponseEntity<String> getLobby(@PathVariable String lobbyId) {
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        if (lobby == null) {
+            return responseCenter.badRequest("Lobby does not exist");
+        }
+        if (lobby.isInGame()) {
+            return responseCenter.badRequest("Lobby is in a game");
+        }
+
+        return responseCenter.ok();
     }
 
     @PostMapping(ResourceLocation.joinLobby)
-    public ResponseEntity<String> joinGameRequest(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject) jsonParser.parse(stringInfo);
-
-        String lobbyId = info.get("lobbyId").getAsString();
-        String playerName = info.get("playerName").getAsString();
-
+    public ResponseEntity<String> joinGameRequest(@PathVariable String lobbyId, @RequestBody String playerName) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         if (lobby == null) {
-            return responseMaker.notFound();
+            return responseCenter.notFound();
         }
         if (lobby.isInGame()) {
-            return responseMaker.badRequest("Lobby is in a game");
+            return responseCenter.badRequest("Lobby is in a game");
         }
 
         int playerId = lobby.addPlayer(playerName);
         switch (playerId) {
             case -1:
-                return responseMaker.badRequest("Lobby is full");
+                return responseCenter.badRequest("Lobby is full");
             case -2:
-                return responseMaker.badRequest("Name already taken");
+                return responseCenter.badRequest("Name already taken");
         }
 
         JsonObject response = new JsonObject();
         response.addProperty("lobbyId", lobbyId);
         response.addProperty("playerId", playerId);
 
-        return responseMaker.itemResponse(response.toString());
+        return responseCenter.response(response.toString());
     }
 
     @GetMapping(ResourceLocation.lobbyState)
-    public void lobbyStateRequest(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject) jsonParser.parse(stringInfo);
-
-        String lobbyId = info.get("lobbyId").getAsString();
+    public ResponseEntity<String> lobbyStateRequest(@PathVariable String lobbyId) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         if (lobby == null) {
-            return responseMaker.notFound();
+            return responseCenter.notFound();
         }
 
         JsonObject response = new JsonObject();
-        response.addProperty("players", lobby.getPlayers().toString());
+        JsonArray players = new JsonArray();
+        for (String player : lobby.getPlayers()) {
+            players.add(player);
+        }
+        response.add("players", players);
 
-        return responseMaker.itemResponse(response.toString());
+        return responseCenter.response(response.toString());
     }
 
-    @PostMapping(ResourceLocation.games)
-    public ResponseEntity<String> gameCreateRequest(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject) jsonParser.parse(stringInfo);
-
-        String lobbyId = info.get("lobbyId").getAsString();
+    @PostMapping(ResourceLocation.game)
+    public ResponseEntity<String> gameCreateRequest(@PathVariable String lobbyId, @RequestBody String mapName) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         if (lobby == null) {
-            return responseMaker.notFound();
+            return responseCenter.notFound();
         }
 
-        if (!lobby.startGame(info.get("mapName").getAsString())) {
-            return responseMaker.badRequest("Not enough players");
+        if (!lobby.startGame(mapName)) {
+            return responseCenter.badRequest("Not enough players");
         }
 
-        return responseMaker.itemResponse();
+
+        GsonBuilder simpleBuilder = new GsonBuilder().
+                registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
+                setPrettyPrinting();
+        Gson gson = simpleBuilder.create();
+
+        JsonObject response = new JsonObject();
+        response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
+        return responseCenter.response(response.toString());
     }
 
     @GetMapping(ResourceLocation.gameState)
-    public ResponseEntity<String> gameStateRequest(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject) jsonParser.parse(stringInfo);
-
-        String lobbyId = info.get("lobbyId").getAsString();
+    public ResponseEntity<String> gameStateRequest(@PathVariable String lobbyId) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         if (lobby == null) {
-            return responseMaker.notFound();
+            return responseCenter.notFound();
         }
 
         if (!lobby.isInGame()) {
-            return responseMaker.badRequest("Game not started");
+            return responseCenter.badRequest("Game not started");
         }
 
         JsonObject response = new JsonObject();
         GameTemplate gameState = lobby.getGameServer().getGameState();
         if (gameState == null) {
-            return responseMaker.badRequest("No new game state available");
+            return responseCenter.badRequest("No new game state available");
         }
         response.addProperty("gameState", gameState.toString());
-        return responseMaker.itemResponse(response.toString());
+        return responseCenter.response(response.toString());
     }
 
     @PostMapping(ResourceLocation.playerReady)
-    public void playerReadySignal(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject) jsonParser.parse(stringInfo);
-
-        String lobbyId = info.get("lobbyId").getAsString();
+    public void playerReadySignal(@PathVariable String lobbyId, @PathVariable int playerId) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
-
-        int playerId = info.get("playerId").getAsInt();
 
         assert lobby != null;
         lobby.getGameServer().getGameController().board.getPlayer(playerId).setReady(true);

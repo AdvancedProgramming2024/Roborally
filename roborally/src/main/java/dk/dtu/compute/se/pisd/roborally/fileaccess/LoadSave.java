@@ -144,7 +144,7 @@ public class LoadSave {
             GameTemplate template = gson.fromJson(reader, GameTemplate.class);
 
             Board board = new Board(template.board.width, template.board.height);
-            GameController gameController = new GameController(board);
+            GameController gameController = null;//new GameController(board);
             gameController.commandCardController.setCurrentCommand(Command.values()[template.currentCommand]);
 
             board.setGameId(template.gameId);

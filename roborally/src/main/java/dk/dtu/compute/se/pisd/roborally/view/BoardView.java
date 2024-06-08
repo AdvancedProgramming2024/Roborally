@@ -93,7 +93,7 @@ public class BoardView extends BorderPane implements ViewObserver {
         for (int x = 0; x < board.width; x++) {
             for (int y = 0; y < board.height; y++) {
                 SpaceTemplate space = board.spaces.get(x + y * board.width);
-                SpaceView spaceView = new SpaceView(space);
+                SpaceView spaceView = new SpaceView(gameState, space);
                 spaces[x][y] = spaceView;
                 spaceViewMap.put(space, spaceView);
                 mainBoardPane.add(spaceView, x, y);

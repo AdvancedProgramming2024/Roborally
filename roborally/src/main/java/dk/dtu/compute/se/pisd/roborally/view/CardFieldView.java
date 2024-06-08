@@ -91,15 +91,20 @@ public class CardFieldView extends GridPane implements ViewObserver {
         label.setMouseTransparent(true);
         this.add(label, 0, 0);
 
-        this.setOnDragDetected(new OnDragDetectedHandler());
+        /*this.setOnDragDetected(new OnDragDetectedHandler());
         this.setOnDragOver(new OnDragOverHandler());
         this.setOnDragEntered(new OnDragEnteredHandler());
         this.setOnDragExited(new OnDragExitedHandler());
         this.setOnDragDropped(new OnDragDroppedHandler());
-        this.setOnDragDone(new OnDragDoneHandler());
+        this.setOnDragDone(new OnDragDoneHandler());*/
     }
 
-    private String cardFieldRepresentation(CommandCardField cardField) {
+    @Override
+    public void updateView(Subject subject) {
+
+    }
+
+    /*private String cardFieldRepresentation(CommandCardField cardField) {
         if (cardField.player != null) {
 
             for (int i = 0; i < Player.NO_REGISTERS; i++) {
@@ -299,7 +304,7 @@ public class CardFieldView extends GridPane implements ViewObserver {
             event.consume();
         }
 
-    }
+    }*/
 
 }
 

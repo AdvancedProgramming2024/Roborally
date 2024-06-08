@@ -156,7 +156,7 @@ public class Player extends Subject {
             winnerAlert.setHeaderText("Congratulations " + name + "!\nYou have won the game!");
             winnerAlert.setContentText("Returning to main menu.");
             winnerAlert.showAndWait();
-            server.stopGame(false);
+            server.stopGame();
         }
     }
 
