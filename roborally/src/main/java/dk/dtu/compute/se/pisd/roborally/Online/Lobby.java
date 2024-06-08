@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Lobby {
     private final String id;
 
-    private int
     private boolean inGame = false;
 
     private ArrayList<String> players = new ArrayList<>();

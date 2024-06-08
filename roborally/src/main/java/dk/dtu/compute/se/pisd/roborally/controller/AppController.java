@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
+import dk.dtu.compute.se.pisd.roborally.Online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
 import dk.dtu.compute.se.pisd.roborally.model.Board;
@@ -35,13 +36,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.catalina.connector.Response;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static dk.dtu.compute.se.pisd.roborally.Online.ResourceLocation.*;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGameState;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGameState;
@@ -65,6 +73,19 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
 
+
+    public void newLobby() throws IOException, InterruptedException {
+        TextInputDialog nameInput = new TextInputDialog();
+        nameInput.setTitle("Player name");
+        nameInput.setHeaderText("Please state your name");
+        Optional<String> name = nameInput.showAndWait();
+
+        if (name.isPresent()) {
+            RequestCenter.postRequest(URI.create(baseLocation+lobbies), name.get());
+            Text playerList = new Text(RequestCenter.getRequestJson(URI.create(baseLocation+lobbyState)));
+
+        }
+    }
     public void newGame() {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");

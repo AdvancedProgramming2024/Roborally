@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
+import dk.dtu.compute.se.pisd.roborally.view.LobbyContent;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
@@ -34,6 +35,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import javax.swing.*;
 
 /**
  * ...
@@ -49,6 +52,7 @@ public class RoboRallyClient extends Application {
     private BorderPane boardRoot;
     private VBox gameRoot;
     private static TilePane menuPane;
+    private static TilePane lobbyPane;
     private static Scene scene;
 
     @Override
@@ -81,10 +85,16 @@ public class RoboRallyClient extends Application {
         menuPane.getChildren().add(menuButtons.newGameButton);
         menuPane.getChildren().add(menuButtons.loadGameButton);
         menuPane.getChildren().add(menuButtons.exitGameButton);
+        lobbyPane = new TilePane(Orientation.VERTICAL);
+        lobbyPane.getChildren().add(LobbyContent.playerList);
 
         //style for the menu
         menuPane.setAlignment(Pos.CENTER);
         menuPane.setVgap(15);
+
+        //style for the lobby
+        lobbyPane.setAlignment(Pos.CENTER);
+        lobbyPane.setVgap(15);
 
         //placeholder indtil vi har et billede
         menuPane.setStyle("-fx-background-color: green;");
