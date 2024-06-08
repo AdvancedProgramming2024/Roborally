@@ -24,7 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
-import dk.dtu.compute.se.pisd.roborally.Online.RequestCenter;
+import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
 import dk.dtu.compute.se.pisd.roborally.model.Board;
@@ -38,18 +38,15 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.apache.catalina.connector.Response;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static dk.dtu.compute.se.pisd.roborally.Online.ResourceLocation.*;
+import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.*;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGameState;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGameState;
@@ -63,7 +60,6 @@ import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGameState
 public class AppController implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
-    final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRallyClient roboRally;
 
@@ -118,7 +114,7 @@ public class AppController implements Observer {
             //saveBoard(board, "test");
 
             gameController = new GameController(board);
-            Player.appController = this;
+            Player.server = this;
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1), i);

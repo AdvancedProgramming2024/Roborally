@@ -21,6 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +44,11 @@ public class GameController {
     final public CommandCardController commandCardController;
     private List<Player> playerOrder;
 
-    public GameController(Board board) {
+    private final RoboRallyServer server;
+
+    public GameController(Board board, RoboRallyServer server) {
         this.board = board;
+        this.server = server;
         // Count the number of checkpoints on the board
         for (int x = 0; x < board.width; x++) {
             for(int y = 0; y < board.height; y++) {

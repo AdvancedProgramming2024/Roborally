@@ -221,9 +221,9 @@ public class LoadSave {
      * Save the current state of the game to a file with the given name.
      * @author Jonathan (s235115)
      * @param gameController of the current game
-     * @param fileName of the file to save to
+     * @return GameTemplate of the current game state
      */
-    public static void saveGameState(GameController gameController, String fileName) {
+    public static GameTemplate saveGameState(GameController gameController) {
         GameTemplate gameTemplate = new GameTemplate();
         gameTemplate.gameId = gameController.board.getGameId();
         gameTemplate.board = createBoardTemplate(gameController.board);
@@ -270,9 +270,10 @@ public class LoadSave {
         gameTemplate.step = gameController.board.getStep();
 
         // Get resource folder, create folder if it doesn't exist
-        String filename = getFilePath(fileName, GAMESFOLDER);
+        //String filename = getFilePath(fileName, GAMESFOLDER);
 
-        writeToFile(gameTemplate, filename);
+        //writeToFile(gameTemplate, filename);
+        return gameTemplate;
     }
 
     /**

@@ -174,9 +174,9 @@ public class Board extends Subject {
         }
     }
 
-    public Player getPlayer(int i) {
-        if (i >= 0 && i < players.size()) {
-            return players.get(i);
+    public Player getPlayer(int id) {
+        if (id >= 0 && id < players.size()) {
+            return players.get(id);
         } else {
             return null;
         }

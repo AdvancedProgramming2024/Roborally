@@ -1,4 +1,4 @@
-package dk.dtu.compute.se.pisd.roborally.Online;
+package dk.dtu.compute.se.pisd.roborally.online;
 
 import org.springframework.stereotype.Component;
 
@@ -14,4 +14,6 @@ public abstract class ResourceLocation {
     public static final String joinLobby = lobbies + "/join";
     public static final String lobbyState = lobbies + "/state";
     public static final String gameState = games + "/state";
+    public static final String players = games + "/players";
+    public static final String playerReady = players + "/ready";
 }

@@ -22,7 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.controller.AppController;
+import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import javafx.scene.control.Alert;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +46,7 @@ public class Player extends Subject {
     final public Board board;
 
     final private int id;
+    private boolean ready = false;
 
     private String name;
     private String color;
@@ -63,7 +64,7 @@ public class Player extends Subject {
 
     boolean rebooting = false;
 
-    public static AppController appController;
+    public static RoboRallyServer server;
 
     public Player(@NotNull Board board, String color, @NotNull String name, int id) {
         this.board = board;
@@ -91,6 +92,14 @@ public class Player extends Subject {
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new CommandCardField(this);
         }
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    public boolean isReady() {
+        return ready;
     }
 
     public int getId() {
@@ -147,7 +156,7 @@ public class Player extends Subject {
             winnerAlert.setHeaderText("Congratulations " + name + "!\nYou have won the game!");
             winnerAlert.setContentText("Returning to main menu.");
             winnerAlert.showAndWait();
-            appController.stopGame(false);
+            server.stopGame(false);
         }
     }
 
