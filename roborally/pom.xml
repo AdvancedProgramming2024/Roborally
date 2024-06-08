@@ -138,7 +138,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>dk.dtu.compute.se.pisd.roborally.RoboRally</mainClass>
+                            <mainClass>dk.dtu.compute.se.pisd.roborally.RoboRallyClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

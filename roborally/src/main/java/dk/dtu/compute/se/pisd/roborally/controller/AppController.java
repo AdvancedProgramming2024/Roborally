@@ -24,7 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
-import dk.dtu.compute.se.pisd.roborally.RoboRally;
+import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveBoard;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGameState;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGameState;
 
@@ -58,11 +57,11 @@ public class AppController implements Observer {
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
-    final private RoboRally roboRally;
+    final private RoboRallyClient roboRally;
 
     private GameController gameController;
 
-    public AppController(@NotNull RoboRally roboRally) {
+    public AppController(@NotNull RoboRallyClient roboRally) {
         this.roboRally = roboRally;
     }
 
@@ -184,7 +183,7 @@ public class AppController implements Observer {
                 }
             }
 
-            RoboRally.returnToMenu();
+            RoboRallyClient.returnToMenu();
             gameController = null;
             roboRally.createBoardView(null);
             return true;

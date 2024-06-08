@@ -22,7 +22,6 @@
 package dk.dtu.compute.se.pisd.roborally;
 
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
-import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
@@ -42,7 +41,7 @@ import javafx.stage.Stage;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class RoboRally extends Application {
+public class RoboRallyClient extends Application {
 
     private static final int MIN_APP_WIDTH = 600;
 
