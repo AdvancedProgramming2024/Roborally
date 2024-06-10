@@ -1,11 +1,10 @@
-package dk.dtu.compute.se.pisd.roborally.online;
+package dk.dtu.compute.se.pisd.roborally.Online;
 
 
 import com.google.gson.*;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
-import dk.dtu.compute.se.pisd.roborally.online.ResponseCenter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

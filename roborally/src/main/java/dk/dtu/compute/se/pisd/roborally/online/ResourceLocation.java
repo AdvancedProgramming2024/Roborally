@@ -1,4 +1,4 @@
-package dk.dtu.compute.se.pisd.roborally.online;
+package dk.dtu.compute.se.pisd.roborally.Online;
 
 import org.springframework.stereotype.Component;
 
