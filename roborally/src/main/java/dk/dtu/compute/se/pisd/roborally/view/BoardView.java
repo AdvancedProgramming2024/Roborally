@@ -87,14 +87,14 @@ public class BoardView extends BorderPane implements ViewObserver {
         // Add statusLabel to the bottom of the BorderPane
         //setBottom(statusLabel);
 
-        spaces = new SpaceView[board.width][board.height];
+        spaces = new SpaceView[board.height][board.width];
 
 
         for (int x = 0; x < board.width; x++) {
             for (int y = 0; y < board.height; y++) {
-                SpaceTemplate space = board.spaces.get(x + y * board.width);
+                SpaceTemplate space = board.spaces.get(x * board.height + y);
                 SpaceView spaceView = new SpaceView(gameState, space);
-                spaces[x][y] = spaceView;
+                spaces[y][x] = spaceView;
                 spaceViewMap.put(space, spaceView);
                 mainBoardPane.add(spaceView, x, y);
             }

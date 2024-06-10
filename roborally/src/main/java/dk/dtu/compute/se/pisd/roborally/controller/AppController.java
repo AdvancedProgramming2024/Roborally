@@ -21,10 +21,17 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
+import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
+import dk.dtu.compute.se.pisd.roborally.model.CommandCard;
+import dk.dtu.compute.se.pisd.roborally.model.CommandCardField;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
@@ -39,10 +46,7 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.*;
 
@@ -98,7 +102,7 @@ public class AppController implements Observer {
             }
             roboRally.setLobbyId(lobbyResponse.getItem());
             roboRally.setPlayerName(name.get());
-            roboRally.createLobbyView(name.get());
+            roboRally.createLobbyView();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -179,7 +183,7 @@ public class AppController implements Observer {
             }
             roboRally.setLobbyId(id.get());
             roboRally.setPlayerName(name.get());
-            roboRally.createLobbyView(name.get());
+            roboRally.createLobbyView();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -237,21 +241,54 @@ public class AppController implements Observer {
     }
 
     public void startGame() {
+        ChoiceDialog<String> mapDialog = new ChoiceDialog<>("dizzy_highway", "defaultboard", "dizzy_highway", "high_octane");
+        mapDialog.setTitle("Map selection");
+        mapDialog.setHeaderText("Select map to play on");
+        Optional<String> mapName = mapDialog.showAndWait();
+        if (mapName.isEmpty()) {
+            return;
+        }
         try {
-            Map<String, Object> args = Map.of("mapName", "dizzy_highway", "playerName", roboRally.getPlayerName());
+            JsonObject info = new JsonObject();
+            info.addProperty("mapName", mapName.get());
+            info.addProperty("playerName", roboRally.getPlayerName());
 
-            Response<String> response = RequestCenter.postRequest(makeUri(gamePath(roboRally.getLobbyId())), args);
+            Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(gamePath(roboRally.getLobbyId())), info);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
-                alert.setHeaderText(response.getItem());
+                alert.setHeaderText(response.getItem().getAsString());
                 alert.showAndWait();
             } else {
                 stopWaitingForPlayers();
-                //roboRally.createBoardView(null);
+
+                GsonBuilder simpleBuilder = new GsonBuilder().
+                        registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
+                        setPrettyPrinting();
+                Gson gson = simpleBuilder.create();
+
+                System.out.println(response.getItem().getAsJsonObject().get("gameState").getAsString());
+                GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+                roboRally.createBoardView(gameState);
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean moveCards(@NotNull String source, @NotNull String target, PlayerTemplate player) {
+        int sourceIndex = Integer.parseInt(source.split(",")[1]);
+        boolean sourceIsProgrammingCard = source.split(",")[0].equals("P");
+        int targetIndex = Integer.parseInt(target.split(",")[1]);
+        boolean targetIsProgrammingCard = target.split(",")[0].equals("P");
+        if ((sourceIsProgrammingCard ? player.program : player.hand)[sourceIndex] != -1 &&
+                (targetIsProgrammingCard ? player.program : player.hand)[targetIndex] == -1) {
+            (targetIsProgrammingCard ? player.program : player.hand)[targetIndex] =
+                    (sourceIsProgrammingCard ? player.program : player.hand)[sourceIndex];
+            (sourceIsProgrammingCard ? player.program : player.hand)[sourceIndex] = -1;
+            return true;
+        } else {
+            return false;
         }
     }
 

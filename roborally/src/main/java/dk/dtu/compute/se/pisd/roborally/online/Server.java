@@ -137,13 +137,13 @@ public class Server {
             return responseCenter.badRequest("There should be 2-6 players to start the game");
         }
 
-
         GsonBuilder simpleBuilder = new GsonBuilder().
                 registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                 setPrettyPrinting();
         Gson gson = simpleBuilder.create();
 
         JsonObject response = new JsonObject();
+        lobby.getGameServer().setReady(true);
         response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
         return responseCenter.response(response.toString());
     }

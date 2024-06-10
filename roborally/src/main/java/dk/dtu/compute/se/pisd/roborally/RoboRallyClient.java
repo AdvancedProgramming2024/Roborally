@@ -133,12 +133,12 @@ public class RoboRallyClient extends Application {
         stage.show();
     }
 
-    public void createLobbyView(String playerName) {
+    public void createLobbyView() {
         boardRoot.getChildren().clear();
         lobbyPane.getChildren().clear();
 
         lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId + "\nYour username: " + getPlayerName()));
-        lobbyPane.getChildren().add(new Text("Players:\nPlayer1: " + playerName));
+        lobbyPane.getChildren().add(new Text("Players:"));
         Button startBtn = new Button("Start Game");
         Button leaveBtn = new Button("Leave Lobby");
         startBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.startGame());

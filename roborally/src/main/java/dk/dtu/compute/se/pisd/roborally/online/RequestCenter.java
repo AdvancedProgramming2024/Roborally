@@ -37,16 +37,18 @@ public abstract class RequestCenter {
         return new Response<>(httpResponse);
     }
 
-    public static Response<JsonObject> postRequestJson(URI location, Map<String, JsonElement> args) throws IOException, InterruptedException{
-        Map<String, Object> args2 = new HashMap<>(args.size());
-        args.forEach((key, value) -> {
-            args2.put(key, value.toString());
-        });
-        Response<String> response = postRequest(location, args2);
+    public static Response<JsonObject> postRequestJson(URI location, JsonElement json) throws IOException, InterruptedException{
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(location)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
+                .build();
+        HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Response<String> response = new Response<>(httpResponse);
         try {
             return new Response<>(response.getStatusCode(), jsonParser.parse(response.item).getAsJsonObject());
         } catch (IllegalStateException e) {
-            System.out.println("posted to: " + location + "with payload: " + args);
+            System.out.println("posted to: " + location + "with payload: " + json);
             System.out.println("response: " + response);
             throw e;
         }

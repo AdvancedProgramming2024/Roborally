@@ -145,7 +145,6 @@ public class LoadSave {
 
             Board board = new Board(template.board.width, template.board.height);
             GameController gameController = null;//new GameController(board);
-            gameController.commandCardController.setCurrentCommand(Command.values()[template.currentCommand]);
 
             board.setGameId(template.gameId);
 
@@ -227,7 +226,6 @@ public class LoadSave {
         GameTemplate gameTemplate = new GameTemplate();
         gameTemplate.gameId = gameController.board.getGameId();
         gameTemplate.board = createBoardTemplate(gameController.board);
-        gameTemplate.currentCommand = gameController.commandCardController.getCurrentCommand().ordinal();
 
         for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
             PlayerTemplate playerTemplate = new PlayerTemplate();
@@ -316,16 +314,14 @@ public class LoadSave {
         for (int i=0; i<board.width; i++) {
             for (int j=0; j<board.height; j++) {
                 Space space = board.getSpace(i,j);
-                if (!space.getWalls().isEmpty() || !space.getActions().isEmpty()) {
-                    SpaceTemplate spaceTemplate = new SpaceTemplate();
-                    spaceTemplate.x = space.x;
-                    spaceTemplate.y = space.y;
-                    spaceTemplate.actions.addAll(space.getActions());
-                    spaceTemplate.walls.addAll(space.getWalls());
-                    spaceTemplate.isPit = space.isPit();
-                    spaceTemplate.player = board.getPlayerNumber(space.getPlayer());
-                    template.spaces.add(spaceTemplate);
-                }
+                SpaceTemplate spaceTemplate = new SpaceTemplate();
+                spaceTemplate.x = space.x;
+                spaceTemplate.y = space.y;
+                spaceTemplate.actions.addAll(space.getActions());
+                spaceTemplate.walls.addAll(space.getWalls());
+                spaceTemplate.isPit = space.isPit();
+                spaceTemplate.player = space.getPlayer() == null ? -1 : board.getPlayerNumber(space.getPlayer());
+                template.spaces.add(spaceTemplate);
             }
         }
         return template;

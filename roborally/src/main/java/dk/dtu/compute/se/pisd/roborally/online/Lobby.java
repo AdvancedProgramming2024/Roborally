@@ -39,11 +39,11 @@ public class Lobby {
     }
 
     public boolean startGame(String mapName) {
-        if (players.size() < 2 || players.size() > 6) return false;
+        if (players.size() < 1 || players.size() > 6) return false;
         inGame = true;
 
         // TODO: Make new thread with game
-        gameServer = new RoboRallyServer(players, mapName);
+        gameServer = new RoboRallyServer(players, mapName, id);
 
         return true;
     }

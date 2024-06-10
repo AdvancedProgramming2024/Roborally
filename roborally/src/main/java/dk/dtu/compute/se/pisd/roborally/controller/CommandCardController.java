@@ -5,15 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class CommandCardController {
 
-    private Command currentCommand = null;
-
-    public Command getCurrentCommand() {
-        return currentCommand;
-    }
-    public void setCurrentCommand(Command command) {
-        currentCommand = command;
-    }
-
     /**
      * Execute command boolean.
      *
@@ -25,7 +16,6 @@ public class CommandCardController {
      */
     public boolean executeCommand(GameController gameController, @NotNull Player player, Command command) {
         if (player.board == gameController.board && command != null) {
-            currentCommand = command;
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
             //     (this concerns the way cards are modelled as well as the way they are executed).

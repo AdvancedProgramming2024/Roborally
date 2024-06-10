@@ -94,7 +94,7 @@ public class PlayerView extends Tab implements ViewObserver {
 
         programCardViews = new CardFieldView[Player.NO_REGISTERS];
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
-            programCardViews[i] = new CardFieldView(gameState, player, i);
+            programCardViews[i] = new CardFieldView(gameState, player, i, true);
             programPane.add(programCardViews[i], i, 0);
         }
 
@@ -103,17 +103,17 @@ public class PlayerView extends Tab implements ViewObserver {
         //      players, but on the PlayersView (view for all players). This should be
         //      refactored.
 
-        /*finishButton = new Button("Finish Programming");
-        finishButton.setOnAction( e -> gameController.finishProgrammingPhase());
+        finishButton = new Button("Finish Programming");
+        //finishButton.setOnAction( e -> gameController.finishProgrammingPhase());
         // TODO: Send signal for done with programming with Rest
 
         executeButton = new Button("Execute Program");
-        executeButton.setOnAction( e-> gameController.executePrograms());
+        //executeButton.setOnAction( e-> gameController.executePrograms());
         // TODO: Probably delete
 
         stepButton = new Button("Execute Current Register");
-        stepButton.setOnAction( e-> gameController.executeStep());
-        // TODO: Send signal for execute next step, but only if it is the current players turn*/
+        //stepButton.setOnAction( e-> gameController.executeStep());
+        // TODO: Send signal for execute next step, but only if it is the current players turn
 
         buttonPanel = new VBox(finishButton, executeButton, stepButton);
         buttonPanel.setAlignment(Pos.CENTER_LEFT);
@@ -130,7 +130,7 @@ public class PlayerView extends Tab implements ViewObserver {
         cardsPane.setHgap(2.0);
         cardViews = new CardFieldView[Player.NO_CARDS];
         for (int i = 0; i < Player.NO_CARDS; i++) {
-            cardViews[i] = new CardFieldView(gameState, player, i);
+            cardViews[i] = new CardFieldView(gameState, player, i, false);
             cardsPane.add(cardViews[i], i, 0);
         }
 

@@ -20,9 +20,10 @@ public class RoboRallyServer {
     private GameController gameController;
     private boolean ready = false;
 
-    public RoboRallyServer(ArrayList<String> players, String mapName) {
+    public RoboRallyServer(ArrayList<String> players, String mapName, String lobbyId) {
         Board board = loadBoard(mapName);
         assert board != null;
+        board.setGameId(Integer.parseInt(lobbyId));
 
         gameController = new GameController(board, this);
         Player.server = this;
@@ -47,6 +48,10 @@ public class RoboRallyServer {
 
     public void stopGame() {
         // TODO: Do something
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
     }
 
     public void waitForAcks() {
