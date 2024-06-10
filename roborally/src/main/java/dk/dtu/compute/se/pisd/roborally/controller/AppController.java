@@ -25,13 +25,13 @@ import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
-import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
+import dk.dtu.compute.se.pisd.roborally.Online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
-import dk.dtu.compute.se.pisd.roborally.online.Response;
+import dk.dtu.compute.se.pisd.roborally.Online.Response;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -50,7 +50,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.*;
+import static dk.dtu.compute.se.pisd.roborally.Online.ResourceLocation.*;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGameState;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGameState;
