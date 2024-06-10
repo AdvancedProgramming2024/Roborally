@@ -201,6 +201,11 @@ public class SpaceView extends StackPane implements ViewObserver {
     @Override
     public void updateView(Subject subject) {
         updatePlayer();
+        for (FieldAction action : space.actions) {
+            if (action instanceof EnergyCubeField) {
+                eneryCubeImageView.setVisible(((EnergyCubeField) action).getEnergyCubes() != 0);
+            }
+        }
     }
     /**
      * @author Kresten (s235103)
