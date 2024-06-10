@@ -44,6 +44,14 @@ public class RoboRallyServer {
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
         gameController.startProgrammingPhase();
+        while (true) {
+            waitForAcks(); // Wait for players to have sent their programming registers
+            gameController.finishProgrammingPhase();
+            for (int i = 0; i < 5; i++) {
+                gameController.executeStep();
+                waitForAcks();
+            }
+        }
     }
 
     public GameController getGameController() {
@@ -91,4 +99,7 @@ public class RoboRallyServer {
         laser.put(temp, heading);
     }
 
+    public Map<List<SpaceTemplate>, Heading> getLaser() {
+        return laser;
+    }
 }

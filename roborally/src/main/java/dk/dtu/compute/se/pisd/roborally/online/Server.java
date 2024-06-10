@@ -7,6 +7,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -148,6 +149,7 @@ public class Server {
         JsonObject response = new JsonObject();
         lobby.getGameServer().setReady(true);
         response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
+        lobby.getGameServer().setReady(false);
         JsonArray lasers = new JsonArray();
         for (Map.Entry<List<SpaceTemplate>, Heading> entry : lobby.getGameServer().getLaser().entrySet()) {
             JsonObject laser = new JsonObject();
@@ -180,11 +182,27 @@ public class Server {
         return responseCenter.response(response.toString());
     }
 
-    @PostMapping(ResourceLocation.playerReady)
-    public void playerReadySignal(@PathVariable String lobbyId, @PathVariable int playerId) {
+    @PostMapping(ResourceLocation.playerProgram)
+    public ResponseEntity<String> playerProgram(@PathVariable String lobbyId, @PathVariable int playerId) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
 
         assert lobby != null;
+        if (lobby.getGameServer().getGameController().board.getPhase() != Phase.PROGRAMMING) {
+            return responseCenter.badRequest("Player can only send program during programming phase");
+        }
+        // TODO: Change player to match the post request player template
         lobby.getGameServer().getGameController().board.getPlayer(playerId).setReady(true);
+        return responseCenter.ok();
+    }
+
+    @PostMapping(ResourceLocation.playerReady)
+    public ResponseEntity<String> playerReadySignal(@PathVariable String lobbyId, @PathVariable int playerId) {
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        assert lobby != null;
+        if (lobby.getGameServer().getGameController().board.getPhase() == Phase.PROGRAMMING) {
+            return responseCenter.badRequest("Player needs to send thier program");
+        }
+        lobby.getGameServer().getGameController().board.getPlayer(playerId).setReady(true);
+        return responseCenter.ok();
     }
 }
