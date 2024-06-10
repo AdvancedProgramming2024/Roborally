@@ -138,6 +138,7 @@ public class RoboRallyClient extends Application {
         lobbyPane.getChildren().clear();
 
         lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId + "\nYour username: " + getPlayerName()));
+        lobbyPane.getChildren().add(new Text("Host: "));
         lobbyPane.getChildren().add(new Text("Players:"));
         Button startBtn = new Button("Start Game");
         Button leaveBtn = new Button("Leave Lobby");
@@ -154,7 +155,13 @@ public class RoboRallyClient extends Application {
             return;
         }
         JsonArray players = lobbyContent.get("players").getAsJsonArray();
-        Text text = ((Text) lobbyPane.getChildren().get(1));
+        String host = players.get(0).getAsString();
+        Text info = ((Text) lobbyPane.getChildren().get(1));
+        StringBuilder newInfo = new StringBuilder();
+        newInfo.append("\nHost: ").append(host);
+        info.setText(newInfo.toString());
+
+        Text text = ((Text) lobbyPane.getChildren().get(2));
         StringBuilder newText = new StringBuilder();
         newText.append("Players:");
         for (int i = 0; i < players.size(); i++) {
