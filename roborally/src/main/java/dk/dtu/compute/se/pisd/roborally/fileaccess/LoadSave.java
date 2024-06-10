@@ -313,18 +313,21 @@ public class LoadSave {
 
         for (int i=0; i<board.width; i++) {
             for (int j=0; j<board.height; j++) {
-                Space space = board.getSpace(i,j);
-                SpaceTemplate spaceTemplate = new SpaceTemplate();
-                spaceTemplate.x = space.x;
-                spaceTemplate.y = space.y;
-                spaceTemplate.actions.addAll(space.getActions());
-                spaceTemplate.walls.addAll(space.getWalls());
-                spaceTemplate.isPit = space.isPit();
-                spaceTemplate.player = space.getPlayer() == null ? -1 : board.getPlayerNumber(space.getPlayer());
-                template.spaces.add(spaceTemplate);
+                template.spaces.add(createSpaceTemplate(board.getSpace(i,j), board));
             }
         }
         return template;
+    }
+
+    public static SpaceTemplate createSpaceTemplate(Space space, Board board) {
+        SpaceTemplate spaceTemplate = new SpaceTemplate();
+        spaceTemplate.x = space.x;
+        spaceTemplate.y = space.y;
+        spaceTemplate.actions.addAll(space.getActions());
+        spaceTemplate.walls.addAll(space.getWalls());
+        spaceTemplate.isPit = space.isPit();
+        spaceTemplate.player = space.getPlayer() == null ? -1 : board.getPlayerNumber(space.getPlayer());
+        return spaceTemplate;
     }
 
     public static void writeToFile(Object template, String filename) {
