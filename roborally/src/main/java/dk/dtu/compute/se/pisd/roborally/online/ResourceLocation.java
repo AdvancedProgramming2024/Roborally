@@ -29,6 +29,15 @@ public class ResourceLocation {
     public static String gamePath(String lobbyId) {
         return game.replace("{lobbyId}", lobbyId);
     }
+    public static String gameStatePath(String lobbyId) {
+        return gameState.replace("{lobbyId}", lobbyId);
+    }
+    public static String playerProgramPath(String lobbyId, String playerId) {
+        return playerProgram.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId);
+    }
+    public static String playerReadyPath(String lobbyId, String playerId) {
+        return playerReady.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId);
+    }
 
     public static final String baseLocation = "http://localhost:8080";
     public static final String lobbies = "/lobbies";
