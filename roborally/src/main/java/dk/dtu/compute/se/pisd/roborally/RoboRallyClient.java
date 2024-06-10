@@ -137,7 +137,7 @@ public class RoboRallyClient extends Application {
         boardRoot.getChildren().clear();
         lobbyPane.getChildren().clear();
 
-        lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId));
+        lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId + "\nYour username: " + getPlayerName()));
         lobbyPane.getChildren().add(new Text("Players:\nPlayer1: " + playerName));
         Button startBtn = new Button("Start Game");
         Button leaveBtn = new Button("Leave Lobby");
