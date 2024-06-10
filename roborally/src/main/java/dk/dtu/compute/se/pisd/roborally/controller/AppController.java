@@ -25,35 +25,26 @@ import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
-import dk.dtu.compute.se.pisd.roborally.Online.RequestCenter;
+import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-
-import dk.dtu.compute.se.pisd.roborally.Online.Response;
+import dk.dtu.compute.se.pisd.roborally.online.Response;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatusCode;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import static dk.dtu.compute.se.pisd.roborally.Online.ResourceLocation.*;
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadGameState;
-import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.saveGameState;
+import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.*;
 
 /**
  * ...
@@ -66,6 +57,7 @@ public class AppController implements Observer {
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
 
     final private RoboRallyClient roboRally;
+    private volatile Thread waitForPlayers;
 
     private GameController gameController;
 
@@ -81,18 +73,37 @@ public class AppController implements Observer {
         Optional<String> name = nameInput.showAndWait();
 
         try {
-            while (name.isEmpty()) {
-                name = nameInput.showAndWait();
+            if (name.isEmpty()) {
+                return;
             }
-            Response<String> lobbyResponse = RequestCenter.postRequest(makeUri(lobbies), name.get());
+            while (name.get().trim().isEmpty()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("You must enter a name");
+                alert.showAndWait();
+
+                name = nameInput.showAndWait();
+                if (name.isEmpty()) {
+                    return;
+                }
+            }
+            Map<String, Object> playerName = Map.of("playerName", name.get());
+            Response<String> lobbyResponse = RequestCenter.postRequest(makeUri(lobbies), playerName);
+            if (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(lobbyResponse.getItem());
+                alert.showAndWait();
+                return;
+            }
             roboRally.setLobbyId(lobbyResponse.getItem());
+            roboRally.setPlayerName(name.get());
             roboRally.createLobbyView(name.get());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        // TODO: Add new thread to wait for players to join, delete thread when starting game
-        Thread waitForPlayers = new Thread(this::waitForPlayers);
-        waitForPlayers.start();
+
+        startWaitingForPlayers();
     }
 
     public void joinLobby() {
@@ -101,25 +112,33 @@ public class AppController implements Observer {
         idInput.setHeaderText("Enter a lobby ID");
         Optional<String> id = idInput.showAndWait();
         try {
-            while (id.isEmpty()) {
-                id = idInput.showAndWait();
-            }
-            Response<String> lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id.get())));
-            while (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
-                lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id.get())));
+            boolean successful = false;
+            while (!successful) {
+                if (id.isEmpty()) {
+                    return;
+                }
+                while (id.get().length() != 4) {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Lobby ID must be 4 digits long");
+                    alert.showAndWait();
+
+                    id = idInput.showAndWait();
+                    if (id.isEmpty()) {
+                        return;
+                    }
+                }
+                Response<String> lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id.get())));
                 if (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(lobbyResponse.getItem());
                     alert.showAndWait();
-
                     id = idInput.showAndWait();
-                    while (id.isEmpty()) {
-                        id = idInput.showAndWait();
-                    }
+                } else {
+                    successful = true;
                 }
             }
-            roboRally.setLobbyId(id.get());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -130,41 +149,109 @@ public class AppController implements Observer {
         Optional<String> name = nameInput.showAndWait();
 
         try {
-            while (name.isEmpty()) {
-                name = nameInput.showAndWait();
-            }
-            Response<String> joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(roboRally.getLobbyId())), name.get());
-            while (!joinResponse.getStatusCode().is2xxSuccessful()) {
-                joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(roboRally.getLobbyId())), name.get());
+            boolean successful = false;
+            while (!successful) {
+                if (name.isEmpty()) {
+                    return;
+                }
+                while (name.get().trim().isEmpty()) {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("You must enter a name");
+                    alert.showAndWait();
+
+                    name = nameInput.showAndWait();
+                    if (name.isEmpty()) {
+                        return;
+                    }
+                }
+                Map<String, Object> playerName = Map.of("playerName", name.get());
+                Response<String> joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(id.get())), playerName);
                 if (!joinResponse.getStatusCode().is2xxSuccessful()) {
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(joinResponse.getItem());
                     alert.showAndWait();
-
                     name = nameInput.showAndWait();
-                    while (name.isEmpty()) {
-                        name = nameInput.showAndWait();
-                    }
+                } else {
+                    successful = true;
                 }
             }
+            roboRally.setLobbyId(id.get());
+            roboRally.setPlayerName(name.get());
             roboRally.createLobbyView(name.get());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        // TODO: Add new thread to wait for players to join, delete thread when starting game
-        Thread waitForPlayers = new Thread(this::waitForPlayers);
-        waitForPlayers.start();
+
+        startWaitingForPlayers();
+    }
+
+    public void leaveLobby() {
+        try {
+            Map<String, Object> playerName = Map.of("playerName", roboRally.getPlayerName());
+            Response<String> response = RequestCenter.postRequest(makeUri(leaveLobbyPath(roboRally.getLobbyId())), playerName);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(response.getItem());
+                alert.showAndWait();
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        stopWaitingForPlayers();
+        roboRally.returnToMenu();
     }
 
     private void waitForPlayers() {
-        while (true) {
+        Thread thisThread = Thread.currentThread();
+        while (waitForPlayers == thisThread) {
             try {
                 Response<JsonObject> response = RequestCenter.getRequestJson(makeUri(lobbyStatePath(roboRally.getLobbyId())));
                 roboRally.updateLobbyView(response.getItem());
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        }
+        System.out.println("Thread has stopped");
+    }
+
+    public void startWaitingForPlayers() {
+        if (waitForPlayers == null) {
+            waitForPlayers = new Thread(this::waitForPlayers);
+            waitForPlayers.start();
+        }
+    }
+
+    public void stopWaitingForPlayers() {
+        if (waitForPlayers != null) {
+            Thread tempThread = waitForPlayers;
+            waitForPlayers = null;
+            try {
+                tempThread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public void startGame() {
+        try {
+            Map<String, Object> args = Map.of("mapName", "dizzy_highway", "playerName", roboRally.getPlayerName());
+
+            Response<String> response = RequestCenter.postRequest(makeUri(gamePath(roboRally.getLobbyId())), args);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(response.getItem());
+                alert.showAndWait();
+            } else {
+                stopWaitingForPlayers();
+                //roboRally.createBoardView(null);
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -286,7 +373,7 @@ public class AppController implements Observer {
                 }
             }
 
-            RoboRallyClient.returnToMenu();
+            roboRally.returnToMenu();
             gameController = null;
             roboRally.createBoardView(null);
             return true;

@@ -25,22 +25,21 @@ import com.google.gson.*;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
-import dk.dtu.compute.se.pisd.roborally.view.LobbyContent;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.*;
 
 /**
  * ...
@@ -52,6 +51,8 @@ public class RoboRallyClient extends Application {
 
     private static final int MIN_APP_WIDTH = 600;
     private String lobbyId;
+    private String playerName;
+    private AppController appController;
 
     private static Stage stage;
     private BorderPane boardRoot;
@@ -73,6 +74,14 @@ public class RoboRallyClient extends Application {
         this.lobbyId = lobbyId;
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
     /**
      * Creates the stage and scene. The input into the scene changes depending on if the start menu is needed or the in game menu is needed.
      * @author Oscar (224752)
@@ -84,7 +93,7 @@ public class RoboRallyClient extends Application {
         double screenWidth = stage.getMaxWidth();
         double screenHeight = stage.getMaxHeight();
 
-        AppController appController = new AppController(this);
+        appController = new AppController(this);
 
         // create the primary scene with the a menu bar and a pane for
         // the board view (which initially is empty); it will be filled
@@ -126,19 +135,30 @@ public class RoboRallyClient extends Application {
 
     public void createLobbyView(String playerName) {
         boardRoot.getChildren().clear();
+        lobbyPane.getChildren().clear();
 
         lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId));
-        lobbyPane.getChildren().add(new Text("Players: " + playerName));
+        lobbyPane.getChildren().add(new Text("Players:\nPlayer1: " + playerName));
+        Button startBtn = new Button("Start Game");
+        Button leaveBtn = new Button("Leave Lobby");
+        startBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.startGame());
+        leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.leaveLobby());
+
+        lobbyPane.getChildren().add(startBtn);
+        lobbyPane.getChildren().add(leaveBtn);
         scene.setRoot(lobbyPane);
     }
 
     public void updateLobbyView(JsonObject lobbyContent) {
+        if (lobbyContent == null) {
+            return;
+        }
         JsonArray players = lobbyContent.get("players").getAsJsonArray();
         Text text = ((Text) lobbyPane.getChildren().get(1));
         StringBuilder newText = new StringBuilder();
         newText.append("Players:");
-        for (JsonElement player : players) {
-            newText.append("\n").append(player.getAsString());
+        for (int i = 0; i < players.size(); i++) {
+            newText.append("\nPlayer ").append(i+1).append(": ").append(players.get(i).getAsString());
         }
         if (!text.getText().contentEquals(newText)) {
             text.setText(newText.toString());
@@ -162,7 +182,9 @@ public class RoboRallyClient extends Application {
      * changes the menu from the in game menu to the start menu.
      * @author Oscar (224752)
      */
-    public static void returnToMenu() {
+    public void returnToMenu() {
+        setPlayerName(null);
+        setLobbyId(null);
         scene.setRoot(menuPane);
         stage.show();
     }

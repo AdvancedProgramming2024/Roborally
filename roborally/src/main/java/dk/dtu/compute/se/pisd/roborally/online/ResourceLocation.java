@@ -1,4 +1,4 @@
-package dk.dtu.compute.se.pisd.roborally.Online;
+package dk.dtu.compute.se.pisd.roborally.online;
 
 import org.springframework.stereotype.Component;
 
@@ -20,8 +20,14 @@ public class ResourceLocation {
     public static String joinLobbyPath(String lobbyId) {
         return joinLobby.replace("{lobbyId}", lobbyId);
     }
+    public static String leaveLobbyPath(String lobbyId) {
+        return leaveLobby.replace("{lobbyId}", lobbyId);
+    }
     public static String lobbyStatePath(String lobbyId) {
         return lobbyState.replace("{lobbyId}", lobbyId);
+    }
+    public static String gamePath(String lobbyId) {
+        return game.replace("{lobbyId}", lobbyId);
     }
 
     public static final String baseLocation = "http://localhost:8080";
@@ -29,6 +35,7 @@ public class ResourceLocation {
     public static final String lobby = lobbies + "/{lobbyId}";
     public static final String game = lobby + "/game";
     public static final String joinLobby = lobby + "/join";
+    public static final String leaveLobby = lobby + "/leave";
     public static final String lobbyState = lobby + "/state";
     public static final String gameState = game + "/state";
     public static final String players = game + "/players";

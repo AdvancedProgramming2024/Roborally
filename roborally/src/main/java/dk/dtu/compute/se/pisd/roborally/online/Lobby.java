@@ -1,4 +1,4 @@
-package dk.dtu.compute.se.pisd.roborally.Online;
+package dk.dtu.compute.se.pisd.roborally.online;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
 
@@ -23,7 +23,11 @@ public class Lobby {
         if (players.size() >= 6) return -1;
         if (players.contains(name)) return -2;
         players.add(name);
-        return players.size()-1;
+        return 0;
+    }
+
+    public void removePlayer(String playerName) {
+        players.remove(playerName);
     }
 
     public ArrayList<String> getPlayers() {
@@ -35,7 +39,7 @@ public class Lobby {
     }
 
     public boolean startGame(String mapName) {
-        if (players.size() < 2) return false;
+        if (players.size() < 2 || players.size() > 6) return false;
         inGame = true;
 
         // TODO: Make new thread with game

@@ -1,4 +1,4 @@
-package dk.dtu.compute.se.pisd.roborally.Online;
+package dk.dtu.compute.se.pisd.roborally.online;
 
 
 import com.google.gson.*;
@@ -20,10 +20,12 @@ public class Server {
     private final static ResponseCenter<String> responseCenter = new ResponseCenter<>();
 
     @PostMapping(ResourceLocation.lobbies)
-    public ResponseEntity<String> lobbyCreateRequest(@RequestBody String playerName) {
+    public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        String playerName = info.get("playerName").getAsString();
         Random rand = new Random();
         StringBuilder lobbyId = new StringBuilder();
-        boolean lobbyIdExists = false;
+        boolean lobbyIdExists;
 
         do {
             lobbyId.delete(0, lobbyId.length());
@@ -38,7 +40,7 @@ public class Server {
 
         lobby.addPlayer(playerName);
 
-        return responseCenter.response(lobbyId.toString());
+        return responseCenter.response(lobby.getID());
     }
 
     @GetMapping(ResourceLocation.lobbies)
@@ -65,7 +67,9 @@ public class Server {
     }
 
     @PostMapping(ResourceLocation.joinLobby)
-    public ResponseEntity<String> joinGameRequest(@PathVariable String lobbyId, @RequestBody String playerName) {
+    public ResponseEntity<String> joinGameRequest(@PathVariable String lobbyId, @RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        String playerName = info.get("playerName").getAsString();
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         if (lobby == null) {
             return responseCenter.notFound();
@@ -74,19 +78,28 @@ public class Server {
             return responseCenter.badRequest("Lobby is in a game");
         }
 
-        int playerId = lobby.addPlayer(playerName);
-        switch (playerId) {
-            case -1:
-                return responseCenter.badRequest("Lobby is full");
-            case -2:
-                return responseCenter.badRequest("Name already taken");
+        return switch (lobby.addPlayer(playerName)) {
+            case -1 -> responseCenter.badRequest("Lobby is full");
+            case -2 -> responseCenter.badRequest("Name already taken");
+            default -> responseCenter.ok();
+        };
+    }
+
+    @PostMapping(ResourceLocation.leaveLobby)
+    public ResponseEntity<String> leaveGameRequest(@PathVariable String lobbyId, @RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        String playerName = info.get("playerName").getAsString();
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        if (lobby == null) {
+            return responseCenter.notFound();
         }
 
-        JsonObject response = new JsonObject();
-        response.addProperty("lobbyId", lobbyId);
-        response.addProperty("playerId", playerId);
+        lobby.removePlayer(playerName);
+        if (lobby.getPlayers().isEmpty()) {
+            lobbies.remove(lobby);
+        }
 
-        return responseCenter.response(response.toString());
+        return responseCenter.ok();
     }
 
     @GetMapping(ResourceLocation.lobbyState)
@@ -107,14 +120,21 @@ public class Server {
     }
 
     @PostMapping(ResourceLocation.game)
-    public ResponseEntity<String> gameCreateRequest(@PathVariable String lobbyId, @RequestBody String mapName) {
+    public ResponseEntity<String> gameCreateRequest(@PathVariable String lobbyId, @RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        String playerName = info.get("playerName").getAsString();
+        String mapName = info.get("mapName").getAsString();
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         if (lobby == null) {
             return responseCenter.notFound();
         }
 
+        if (!playerName.equals(lobby.getPlayers().get(0))) {
+            return responseCenter.badRequest("Only player 1 can start the game");
+        }
+
         if (!lobby.startGame(mapName)) {
-            return responseCenter.badRequest("Not enough players");
+            return responseCenter.badRequest("There should be 2-6 players to start the game");
         }
 
 

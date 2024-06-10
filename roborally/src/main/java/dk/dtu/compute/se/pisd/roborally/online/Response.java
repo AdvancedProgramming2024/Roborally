@@ -1,4 +1,4 @@
-package dk.dtu.compute.se.pisd.roborally.Online;
+package dk.dtu.compute.se.pisd.roborally.online;
 
 import org.springframework.http.HttpStatusCode;
 
