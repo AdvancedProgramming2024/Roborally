@@ -105,7 +105,7 @@ public class BoardView extends BorderPane implements ViewObserver {
     public void updateView(Subject subject) {
         statusLabel.setText(getStatusMessage());
     }
-    public static SpaceView getSpaceView(Space space) {
+    public static SpaceView getSpaceView(SpaceTemplate space) {
         return spaceViewMap.get(space);
     }
 

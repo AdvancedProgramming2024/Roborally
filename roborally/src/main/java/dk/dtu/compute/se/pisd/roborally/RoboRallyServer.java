@@ -4,21 +4,25 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.Space;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.createSpaceTemplate;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
 
 public class RoboRallyServer {
     private GameController gameController;
     private boolean ready = false;
+    @Getter
+    private Map<List<SpaceTemplate>,Heading> laser = new HashMap<>();
 
     public RoboRallyServer(ArrayList<String> players, String mapName, String lobbyId) {
         Board board = loadBoard(mapName);
@@ -78,4 +82,13 @@ public class RoboRallyServer {
         }
         return null;
     }
+
+    public void addLaser(List<Space> los, Heading heading) {
+        List<SpaceTemplate> temp = new ArrayList<>();
+        for (Space space : los) {
+            temp.add(createSpaceTemplate(space, gameController.board));
+        }
+        laser.put(temp, heading);
+    }
+
 }

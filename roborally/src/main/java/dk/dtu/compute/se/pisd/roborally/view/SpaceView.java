@@ -81,9 +81,9 @@ public class SpaceView extends StackPane implements ViewObserver {
      * @author Kresten (s235103)
      * @param LOS List of spaces the laser passes through
      */
-    public static void drawLaser(List<Space> LOS, Heading heading) {
+    public static void drawLaser(List<SpaceTemplate> LOS, Heading heading) {
         Laser laser;
-        for (FieldAction action : LOS.get(0).getActions()) {
+        for (FieldAction action : LOS.get(0).actions) {
             if (action instanceof Laser) {
                 laser = (Laser) action;
                 heading = laser.getHeading();
@@ -133,14 +133,14 @@ public class SpaceView extends StackPane implements ViewObserver {
             BoardView.getSpaceView(LOS.get(i)).getChildren().add(laserImageView2);
         }
         // Determine if and how the last laser should be drawn
-        Space hit = LOS.get(LOS.size() -1);
+        SpaceTemplate hit = LOS.get(LOS.size() -1);
         Heading reverse = heading.next().next();
 
-        if (hit.getWalls().contains(reverse)) {
+        if (hit.walls.contains(reverse)) {
             return;
         }
 
-        if (hit.getPlayer() != null) {
+        if (hit.player != -1) {
             // Draw half-length laser
             ImageView laserImageView3 = new ImageView();
             laserImageView3.setCache(true);

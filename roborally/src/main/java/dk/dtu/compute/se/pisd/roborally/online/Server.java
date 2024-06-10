@@ -5,11 +5,14 @@ import com.google.gson.*;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -145,6 +148,15 @@ public class Server {
         JsonObject response = new JsonObject();
         lobby.getGameServer().setReady(true);
         response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
+        JsonArray lasers = new JsonArray();
+        for (Map.Entry<List<SpaceTemplate>, Heading> entry : lobby.getGameServer().getLaser().entrySet()) {
+            JsonObject laser = new JsonObject();
+            laser.addProperty("laser", gson.toJson(entry.getKey()));
+            laser.addProperty("heading", entry.getValue().ordinal());
+            lasers.add(laser);
+        }
+        response.addProperty("lasers", lasers.toString());
+        lobby.getGameServer().getLaser().clear();
         return responseCenter.response(response.toString());
     }
 

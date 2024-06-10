@@ -27,8 +27,6 @@ public class EnergyCubeField extends FieldAction {
             player.addEnergyCubes(1);
             if (gameController.board.getStep() % 4 != 0 || gameController.board.getStep() == 0) {
                 energyCubes--;
-                // Destroy the energy cube image
-                BoardView.getSpaceView(space).eneryCubeImageView.setVisible(false);
             }
             return true;
         }

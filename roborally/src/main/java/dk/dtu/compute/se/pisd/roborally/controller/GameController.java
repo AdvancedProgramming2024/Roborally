@@ -44,7 +44,7 @@ public class GameController {
     final public CommandCardController commandCardController;
     private List<Player> playerOrder;
 
-    private final RoboRallyServer server;
+    public final RoboRallyServer server;
 
     public GameController(Board board, RoboRallyServer server) {
         this.board = board;
@@ -335,7 +335,7 @@ public class GameController {
                         break;
                     }
 
-                    SpaceView.drawLaser(LOS, heading);
+                    server.addLaser(LOS, heading);
 
                     Space hit = LOS.get(LOS.size() - 1);
                     Heading reverse = heading.next().next();
@@ -349,17 +349,6 @@ public class GameController {
                     }
                 }
             }
-
-
-            // Destroy lasers after 500ms
-            new Thread(() -> {
-            try {
-                TimeUnit.MILLISECONDS.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                SpaceView.destroyLasers();
-            }}).start();
 
             if (step < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(step);
