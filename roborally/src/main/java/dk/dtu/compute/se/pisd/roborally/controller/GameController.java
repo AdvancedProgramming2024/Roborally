@@ -377,6 +377,11 @@ public class GameController {
                         if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.PRESSOR_BEAM)) {
                             moveInDirection(player, heading, true);
                         }
+                        if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.TRACTOR_BEAM) &&
+                                Math.abs(player.getSpace().x - board.getPlayer(playerIndex).getSpace().x +
+                                        player.getSpace().y - board.getPlayer(playerIndex).getSpace().y) > 1) {
+                            moveInDirection(player, heading.next().next(), true);
+                        }
                         if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.MINI_HOWITZER)) {
                             player.takeDamage(board.getPlayer(playerIndex), SPAM);
                             player.takeDamage(board.getPlayer(playerIndex), SPAM);
