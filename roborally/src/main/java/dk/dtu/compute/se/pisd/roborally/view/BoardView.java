@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
@@ -46,9 +47,10 @@ import java.util.Map;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class BoardView extends BorderPane implements ViewObserver {
+public class BoardView extends BorderPane {
 
     private GameTemplate gameState;
+    private final RoboRallyClient client;
     private BoardTemplate board;
 
     private GridPane mainBoardPane;
@@ -60,8 +62,8 @@ public class BoardView extends BorderPane implements ViewObserver {
 
     private static Map<SpaceTemplate, SpaceView> spaceViewMap = new HashMap<>();
 
-    public BoardView(@NotNull GameTemplate gameState) {
-
+    public BoardView(@NotNull GameTemplate gameState, @NotNull RoboRallyClient client) {
+        this.client = client;
         this.gameState = gameState;
         board = gameState.board;
         mainBoardPane = new GridPane();
@@ -101,9 +103,16 @@ public class BoardView extends BorderPane implements ViewObserver {
         }
     }
 
-    @Override
-    public void updateView(Subject subject) {
+    public void updateView(GameTemplate gameState) {
+        this.gameState = gameState;
         statusLabel.setText(getStatusMessage());
+        playersView.updateView(gameState);
+        upgradeShopView.updateView();
+        for (SpaceView[] spaceRow : spaces) {
+            for (SpaceView space : spaceRow) {
+                space.updateView(gameState);
+            }
+        }
     }
     public static SpaceView getSpaceView(SpaceTemplate space) {
         return spaceViewMap.get(space);

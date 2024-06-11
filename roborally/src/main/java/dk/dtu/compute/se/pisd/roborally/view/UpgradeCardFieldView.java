@@ -46,7 +46,7 @@ import java.awt.*;
  * @author Jamie (s236939)
  *
  */
-public class UpgradeCardFieldView extends GridPane implements ViewObserver {
+public class UpgradeCardFieldView extends GridPane {
 
     final public static int CARDFIELD_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width/20;
     final public static int CARDFIELD_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height/15;
@@ -98,9 +98,6 @@ public class UpgradeCardFieldView extends GridPane implements ViewObserver {
                 System.out.println("Clicking is not allowed during this phase.");
             }
         });
-
-        field.attach(this);
-        update(field);
     }
 
     private void showConfirmationDialog() {
@@ -121,9 +118,9 @@ public class UpgradeCardFieldView extends GridPane implements ViewObserver {
             }
         });
     }
-    @Override
-    public void updateView(Subject subject) {
-        if (subject == field && subject != null) {
+
+    public void updateView() {
+        if (true) { //TODO: Only run if the card is not null, it should be saved in game state
             UpgradeCard card = field.getCard();
             if (card != null && field.isVisible()) {
                 StringBuilder labelText = new StringBuilder();

@@ -43,7 +43,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class CardFieldView extends GridPane implements ViewObserver {
+public class CardFieldView extends GridPane {
 
     // This data format helps avoiding transfers of e.g. Strings from other
     // programs which can copy/paste Strings.
@@ -109,11 +109,11 @@ public class CardFieldView extends GridPane implements ViewObserver {
         }
     }
 
-    @Override
-    public void updateView(Subject subject) {
+    public void updateView(GameTemplate gameState) {
+        this.gameState = gameState;
         int card = (isProgramField ? player.program : player.hand)[id];
         if (card != -1) {
-            label.setText(Command.values()[card] + ""); // TODO: Add card image from card id
+            label.setText(Command.values()[card].displayName); // TODO: Add card image from card id
         } else {
             label.setText("");
         }

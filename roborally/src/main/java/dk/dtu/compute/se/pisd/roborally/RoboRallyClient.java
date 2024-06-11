@@ -39,8 +39,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 
-import java.awt.*;
-
 /**
  * ...
  *
@@ -178,12 +176,20 @@ public class RoboRallyClient extends Application {
 
         if (gameState != null) {
             // create and add view for new board
-            BoardView boardView = new BoardView(gameState);
+            BoardView boardView = new BoardView(gameState, this);
             boardRoot.setCenter(boardView);
             //boardView.updateView(gameState.board); // TODO figure out what to do
             scene.setRoot(gameRoot);
+            updateBoardView(gameState);
         }
         //stage.setMaximized(true);
+    }
+
+    public void updateBoardView(GameTemplate gameState) {
+        if (gameState != null) {
+            BoardView boardView = (BoardView) boardRoot.getCenter();
+            boardView.updateView(gameState);
+        }
     }
     /**
      * changes the menu from the in game menu to the start menu.
@@ -209,5 +215,4 @@ public class RoboRallyClient extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

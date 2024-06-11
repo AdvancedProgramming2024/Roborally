@@ -43,7 +43,7 @@ import javax.swing.text.html.Option;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class PlayerView extends Tab implements ViewObserver {
+public class PlayerView extends Tab {
 
     private PlayerTemplate player;
 
@@ -140,8 +140,8 @@ public class PlayerView extends Tab implements ViewObserver {
         top.getChildren().add(cardsPane);
     }
 
-    @Override
-    public void updateView(Subject subject) {
+    public void updateView(GameTemplate gameState) {
+        this.gameState = gameState;
         checkPointLabel.setText("Checkpoint\n" + player.checkpoints);
         energyCubeLabel.setText("Energy Cubes\n" + player.energyBank);
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
@@ -217,6 +217,12 @@ public class PlayerView extends Tab implements ViewObserver {
                     playerInteractionPanel.getChildren().add(optionButton);
                 }
             }
+        }
+        for (CardFieldView cardFieldView : cardViews) {
+            cardFieldView.updateView(gameState);
+        }
+        for (CardFieldView cardFieldView : programCardViews) {
+            cardFieldView.updateView(gameState);
         }
     }
 }

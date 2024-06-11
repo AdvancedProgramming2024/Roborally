@@ -41,7 +41,7 @@ import java.util.ArrayList;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class UpgradeShopView extends VBox implements ViewObserver {
+public class UpgradeShopView extends VBox {
 
     private VBox top;
     private Label cardsLabel;
@@ -85,8 +85,8 @@ public class UpgradeShopView extends VBox implements ViewObserver {
         top.setAlignment(Pos.CENTER);
     }
 
-    @Override
-    public void updateView(Subject subject) {
+    public void updateView() {
+
     }
-    }
+}
 

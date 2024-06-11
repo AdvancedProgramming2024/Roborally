@@ -52,7 +52,7 @@ import java.util.List;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class SpaceView extends StackPane implements ViewObserver {
+public class SpaceView extends StackPane {
 
     final public static int SPACE_SIZE = Toolkit.getDefaultToolkit().getScreenSize().height/20; // 75;
 
@@ -182,8 +182,8 @@ public class SpaceView extends StackPane implements ViewObserver {
     private void updatePlayer() {
         this.getChildren().removeIf(node -> node instanceof Polygon);
 
-        PlayerTemplate player = gameState.players.get(space.player);
-        if (player != null) {
+        if (space.player != -1) {
+            PlayerTemplate player = gameState.players.get(space.player);
             Polygon arrow = new Polygon(0.0, 0.0,
                     10.0, 20.0,
                     20.0, 0.0 );
@@ -198,8 +198,8 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
     }
 
-    @Override
-    public void updateView(Subject subject) {
+    public void updateView(GameTemplate gameState) {
+        this.gameState = gameState;
         updatePlayer();
         for (FieldAction action : space.actions) {
             if (action instanceof EnergyCubeField) {

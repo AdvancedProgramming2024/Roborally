@@ -36,7 +36,7 @@ import javafx.scene.control.TabPane;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class PlayersView extends TabPane implements ViewObserver {
+public class PlayersView extends TabPane {
 
     private GameTemplate gameState;
 
@@ -53,10 +53,12 @@ public class PlayersView extends TabPane implements ViewObserver {
         }
     }
 
-    @Override
-    public void updateView(Subject subject) {
-        PlayerTemplate current = gameState.players.get(gameState.currentPlayer);
+    public void updateView(GameTemplate gameState) {
+        this.gameState = gameState;
         this.getSelectionModel().select(gameState.currentPlayer);
+        for (PlayerView playerView: playerViews) {
+            playerView.updateView(gameState);
+        }
     }
 
 }
