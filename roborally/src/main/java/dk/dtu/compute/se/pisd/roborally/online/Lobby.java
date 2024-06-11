@@ -1,13 +1,18 @@
 package dk.dtu.compute.se.pisd.roborally.online;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 
+@Setter
+@Getter
 public class Lobby {
     private final String id;
     private boolean inGame = false;
     private RoboRallyServer gameServer = null;
+    private Thread gameThread;
 
     private ArrayList<String> players = new ArrayList<>();
 
@@ -30,25 +35,22 @@ public class Lobby {
         players.remove(playerName);
     }
 
-    public ArrayList<String> getPlayers() {
-        return players;
-    }
-
-    public boolean isInGame() {
-        return inGame;
-    }
-
     public boolean startGame(String mapName) {
         if (players.size() < 1 || players.size() > 6) return false;
         inGame = true;
 
-        // TODO: Make new thread with game
-        gameServer = new RoboRallyServer(players, mapName, id);
+        gameThread = new Thread(() -> {
+            gameServer = new RoboRallyServer(players, mapName, this);
+            gameServer.startGameLoop();
+        });
+        gameThread.start();
 
         return true;
     }
 
-    public RoboRallyServer getGameServer() {
-        return gameServer;
+    public void stopGame() {
+        gameServer = null;
+        inGame = false;
+        gameThread.interrupt();
     }
 }

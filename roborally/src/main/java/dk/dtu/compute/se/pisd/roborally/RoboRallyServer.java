@@ -1,33 +1,31 @@
 package dk.dtu.compute.se.pisd.roborally;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.online.Lobby;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.*;
 
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.createSpaceTemplate;
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
-
+@Setter
+@Getter
 public class RoboRallyServer {
-    private GameController gameController;
-    private boolean ready = false;
-    @Getter
+    private final GameController gameController;
+    private Lobby lobby;
+    private boolean gameWon;
+    private GameTemplate gameState = null;
     private Map<List<SpaceTemplate>,Heading> laser = new HashMap<>();
 
-    public RoboRallyServer(ArrayList<String> players, String mapName, String lobbyId) {
+    public RoboRallyServer(ArrayList<String> players, String mapName, Lobby lobby) {
         Board board = loadBoard(mapName);
         assert board != null;
-        board.setGameId(Integer.parseInt(lobbyId));
+        board.setGameId(Integer.parseInt(lobby.getID()));
 
         gameController = new GameController(board, this);
         Player.server = this;
@@ -43,15 +41,26 @@ public class RoboRallyServer {
 
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
+
         gameController.startProgrammingPhase();
-        while (true) {
+        gameState = LoadSave.saveGameState(gameController);
+    }
+
+    public void startGameLoop() {
+        boolean gameRunning = true;
+        while (gameRunning) {
             waitForAcks(); // Wait for players to have sent their programming registers
             gameController.finishProgrammingPhase();
-            for (int i = 0; i < 5; i++) {
+            while (gameController.board.getPhase() == Phase.ACTIVATION) {
                 gameController.executeStep();
                 waitForAcks();
+                if (gameWon) {
+                    gameRunning = false;
+                    break;
+                }
             }
         }
+        lobby.stopGame();
     }
 
     public GameController getGameController() {
@@ -62,14 +71,9 @@ public class RoboRallyServer {
         // TODO: Do something
     }
 
-    public void setReady(boolean ready) {
-        this.ready = ready;
-    }
-
     public void waitForAcks() {
         // wait until the other players are also done
         boolean waiting = true;
-        ready = true;
         while (waiting) {
             waiting = false;
             for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
@@ -78,17 +82,10 @@ public class RoboRallyServer {
                 }
             }
         }
-        ready = false;
+        gameState = LoadSave.saveGameState(gameController);
         for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
             gameController.board.getPlayer(i).setReady(false);
         }
-    }
-
-    public GameTemplate getGameState() {
-        if (ready) {
-            return LoadSave.saveGameState(gameController);
-        }
-        return null;
     }
 
     public void addLaser(List<Space> los, Heading heading) {

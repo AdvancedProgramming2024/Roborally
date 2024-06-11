@@ -25,6 +25,8 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import javafx.scene.control.Alert;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
+@Setter
+@Getter
 public class Player extends Subject {
 
     final public static int NO_REGISTERS = 5;
@@ -46,6 +50,7 @@ public class Player extends Subject {
     final public Board board;
 
     final private int id;
+
     private boolean ready = false;
 
     private String name;
@@ -56,8 +61,20 @@ public class Player extends Subject {
 
     private List<CommandCard> drawPile;
     private List<CommandCard> discardPile;
-      
+
     private int checkpoints = 0;
+    /**
+     * -- GETTER --
+     *
+     * @return the amount of energy cubes the player has in their energy bank.
+     *
+     * -- SETTER --
+     *  Sets the amount of energy cubes the player has in their energy bank to a wished amount.
+     *
+
+     */
+    @Setter
+    @Getter
     public int energyCubes = 0;
     private CommandCardField[] program;
     private CommandCardField[] cards;
@@ -92,18 +109,6 @@ public class Player extends Subject {
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new CommandCardField(this);
         }
-    }
-
-    public void setReady(boolean ready) {
-        this.ready = ready;
-    }
-
-    public boolean isReady() {
-        return ready;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public void shuffleDrawPile() {
@@ -142,10 +147,6 @@ public class Player extends Subject {
             }
         }
     }
-      
-    public int getCheckpoints() {
-        return checkpoints;
-    }
 
     public void reachCheckpoint() {
         checkpoints++;
@@ -158,27 +159,6 @@ public class Player extends Subject {
             winnerAlert.showAndWait();
             server.stopGame();
         }
-    }
-
-    public void setCheckpoints(int checkpoints) {
-        this.checkpoints = checkpoints;
-    }
-
-    //energy cube functions
-    /**
-     * @return the amount of energy cubes the player has in their energy bank.
-     * @author Oscar (224752)
-     */
-    public int getEnergyCubes() {
-        return energyCubes;
-    }
-
-    /**
-     * Sets the amount of energy cubes the player has in their energy bank to a wished amount.
-     * @author Oscar (224752)
-     */
-    public void setEnergyCubes(int energyCubes) {
-        this.energyCubes = energyCubes;
     }
 
     /**

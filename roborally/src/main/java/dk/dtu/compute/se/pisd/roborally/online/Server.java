@@ -147,9 +147,15 @@ public class Server {
         Gson gson = simpleBuilder.create();
 
         JsonObject response = new JsonObject();
-        lobby.getGameServer().setReady(true);
+
+        try {
+            while (lobby.getGameServer() == null) Thread.sleep(100);
+            while (lobby.getGameServer().getGameState() == null) Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
-        lobby.getGameServer().setReady(false);
+
         JsonArray lasers = new JsonArray();
         for (Map.Entry<List<SpaceTemplate>, Heading> entry : lobby.getGameServer().getLaser().entrySet()) {
             JsonObject laser = new JsonObject();
