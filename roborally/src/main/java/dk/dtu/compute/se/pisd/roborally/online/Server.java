@@ -3,11 +3,14 @@ package dk.dtu.compute.se.pisd.roborally.online;
 
 import com.google.gson.*;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
+import dk.dtu.compute.se.pisd.roborally.model.CommandCardField;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Phase;
+import dk.dtu.compute.se.pisd.roborally.model.Player;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -188,16 +191,26 @@ public class Server {
         return responseCenter.response(response.toString());
     }
 
-    @PostMapping(ResourceLocation.playerProgram)
-    public ResponseEntity<String> playerProgram(@PathVariable String lobbyId, @PathVariable int playerId) {
+    @PostMapping(ResourceLocation.playerCardMovement)
+    public ResponseEntity<String> playerProgram(@PathVariable String lobbyId, @PathVariable int playerId, @RequestBody String stringInfo) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
 
         assert lobby != null;
         if (lobby.getGameServer().getGameController().board.getPhase() != Phase.PROGRAMMING) {
             return responseCenter.badRequest("Player can only send program during programming phase");
         }
-        // TODO: Change player to match the post request player template
-        lobby.getGameServer().getGameController().board.getPlayer(playerId).setReady(true);
+        
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        int sourceIndex = info.get("sourceIndex").getAsInt();
+        int targetIndex = info.get("targetIndex").getAsInt();
+        boolean sourceIsProgram = info.get("sourceIsProgram").getAsBoolean();
+        boolean targetIsProgram = info.get("targetIsProgram").getAsBoolean();
+
+        GameController gameController = lobby.getGameServer().getGameController();
+        Player player = gameController.board.getPlayer(playerId);
+        CommandCardField source = sourceIsProgram ? player.getProgramField(sourceIndex) : player.getCardField(sourceIndex);
+        CommandCardField target = targetIsProgram ? player.getProgramField(targetIndex) : player.getCardField(targetIndex);
+        lobby.getGameServer().getGameController().moveCards(source, target);
         return responseCenter.ok();
     }
 
