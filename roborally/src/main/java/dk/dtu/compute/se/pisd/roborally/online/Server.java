@@ -197,9 +197,9 @@ public class Server {
 
         assert lobby != null;
         if (lobby.getGameServer().getGameController().board.getPhase() != Phase.PROGRAMMING) {
-            return responseCenter.badRequest("Player can only send program during programming phase");
+            return responseCenter.badRequest("Player can only move cards during the programming phase");
         }
-        
+
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         int sourceIndex = info.get("sourceIndex").getAsInt();
         int targetIndex = info.get("targetIndex").getAsInt();
@@ -210,8 +210,11 @@ public class Server {
         Player player = gameController.board.getPlayer(playerId);
         CommandCardField source = sourceIsProgram ? player.getProgramField(sourceIndex) : player.getCardField(sourceIndex);
         CommandCardField target = targetIsProgram ? player.getProgramField(targetIndex) : player.getCardField(targetIndex);
-        lobby.getGameServer().getGameController().moveCards(source, target);
-        return responseCenter.ok();
+        if (lobby.getGameServer().getGameController().moveCards(source, target)) {
+            return responseCenter.ok();
+        } else {
+            return responseCenter.badRequest("Invalid card movement");
+        }
     }
 
     @PostMapping(ResourceLocation.playerReady)
