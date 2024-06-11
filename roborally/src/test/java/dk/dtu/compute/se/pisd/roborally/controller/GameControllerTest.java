@@ -20,7 +20,7 @@ class GameControllerTest {
     @BeforeEach
     void setUp() {
         Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
-        gameController = new GameController(board);
+        gameController = new GameController(board, null);
         for (int i = 0; i < 6; i++) {
             Player player = new Player(board, null,"Player " + i, i);
             board.addPlayer(player);

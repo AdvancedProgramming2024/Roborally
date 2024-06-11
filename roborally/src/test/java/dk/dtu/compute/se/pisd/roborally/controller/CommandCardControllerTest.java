@@ -15,7 +15,7 @@ class CommandCardControllerTest {
         int TEST_HEIGHT = 8;
         int TEST_WIDTH = 8;
         Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
-        gameController = new GameController(board);
+        gameController = new GameController(board, null);
         for (int i = 0; i < 6; i++) {
             Player player = new Player(board, null,"Player " + i, i);
             board.addPlayer(player);
