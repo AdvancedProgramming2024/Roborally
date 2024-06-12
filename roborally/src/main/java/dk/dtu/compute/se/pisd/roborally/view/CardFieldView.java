@@ -152,7 +152,7 @@ public class CardFieldView extends GridPane {
         public void handle(DragEvent event) {
             Object t = event.getTarget();
             if (t instanceof CardFieldView target) {
-                if ((isProgramField ? player.program : player.hand)[id] != -1 || event.getGestureSource() == target) {
+                if ((isProgramField ? player.program : player.hand)[id] == -1 || event.getGestureSource() == target) {
                     if (event.getDragboard().hasContent(ROBO_RALLY_CARD)) {
                         event.acceptTransferModes(TransferMode.MOVE);
                     }
@@ -169,7 +169,7 @@ public class CardFieldView extends GridPane {
         public void handle(DragEvent event) {
             Object t = event.getTarget();
             if (t instanceof CardFieldView target) {
-                if ((isProgramField ? player.program : player.hand)[id] != -1) {
+                if ((isProgramField ? player.program : player.hand)[id] == -1) {
                     if (event.getGestureSource() != target &&
                             event.getDragboard().hasContent(ROBO_RALLY_CARD)) {
                         target.setBackground(BG_DROP);
@@ -187,7 +187,7 @@ public class CardFieldView extends GridPane {
         public void handle(DragEvent event) {
             Object t = event.getTarget();
             if (t instanceof CardFieldView target) {
-                if ((isProgramField ? player.program : player.hand)[id] != -1) {
+                if ((isProgramField ? player.program : player.hand)[id] == -1) {
                     if (event.getGestureSource() != target &&
                             event.getDragboard().hasContent(ROBO_RALLY_CARD)) {
                         target.setBackground(BG_DEFAULT);
@@ -207,7 +207,7 @@ public class CardFieldView extends GridPane {
             if (t instanceof CardFieldView target) {
                 Dragboard db = event.getDragboard();
                 boolean success = false;
-                if ((isProgramField ? player.program : player.hand)[id] != -1) {
+                if ((isProgramField ? player.program : player.hand)[id] == -1) {
                     if (event.getGestureSource() != target &&
                             db.hasContent(ROBO_RALLY_CARD)) {
                         Object object = db.getContent(ROBO_RALLY_CARD);
