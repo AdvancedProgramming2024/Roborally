@@ -28,14 +28,16 @@ import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 
@@ -88,12 +90,13 @@ public class RoboRallyClient extends Application {
     public void start(Stage primaryStage) {
         stage = primaryStage;
         stage.setMaximized(true);
-        double screenWidth = stage.getMaxWidth();
-        double screenHeight = stage.getMaxHeight();
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        double screenWidth = screenBounds.getWidth();
+        double screenHeight = screenBounds.getHeight();
 
         appController = new AppController(this);
 
-        // create the primary scene with the a menu bar and a pane for
+        // create the primary scene with the menu bar and a pane for
         // the board view (which initially is empty); it will be filled
         // when the user creates a new game or loads a game
         RoboRallyMenuBar menuBar = new RoboRallyMenuBar(appController);
@@ -102,6 +105,7 @@ public class RoboRallyClient extends Application {
         gameRoot = new VBox(menuBar, boardRoot);
         gameRoot.setMinWidth(MIN_APP_WIDTH);
         menuPane = new TilePane(Orientation.VERTICAL);
+        menuPane.setPrefSize(screenBounds.getWidth(), screenBounds.getHeight());
         menuPane.getChildren().add(menuButtons.newGameButton);
         menuPane.getChildren().add(menuButtons.joinGameButton);
         menuPane.getChildren().add(menuButtons.loadGameButton);
@@ -116,10 +120,25 @@ public class RoboRallyClient extends Application {
         lobbyPane.setAlignment(Pos.CENTER);
         lobbyPane.setVgap(15);
 
-        //placeholder indtil vi har et billede
-        menuPane.setStyle("-fx-background-color: green;");
+        //Menu Background image
+        Image menu = new Image("images/RoboRallyBackground.png");
+        BackgroundImage backgroundMenu = new BackgroundImage(
+                menu, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                new BackgroundSize(100, 100, true, true, true, true)
+        );
+        menuPane.setBackground(new Background(backgroundMenu));
 
-        scene = new Scene(menuPane, screenWidth, screenHeight);
+        //Lobby Background image
+        Image lobby = new Image("images/empty.png");
+        BackgroundImage backgroundLobby = new BackgroundImage(
+                lobby, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
+                BackgroundPosition.DEFAULT,
+                new BackgroundSize(100, 100, false, false, false, false)
+        );
+        lobbyPane.setBackground(new Background(backgroundLobby));
+
+        scene = new Scene(menuPane, screenWidth/1.5, screenHeight/1.5);
         stage.setScene(scene);
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
@@ -127,14 +146,15 @@ public class RoboRallyClient extends Application {
                     e.consume();
                     appController.exit();} );
         stage.setResizable(true);
-        stage.setMaximized(true);
+        stage.setMaximized(false);
         stage.show();
     }
 
     public void createLobbyView() {
         boardRoot.getChildren().clear();
         lobbyPane.getChildren().clear();
-
+        stage.setMaximized(false);
+        
         lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId + "\nYour username: " + getPlayerName()));
         lobbyPane.getChildren().add(new Text("Host: "));
         lobbyPane.getChildren().add(new Text("Players:"));
@@ -180,6 +200,7 @@ public class RoboRallyClient extends Application {
             boardRoot.setCenter(boardView);
             //boardView.updateView(gameState.board); // TODO figure out what to do
             scene.setRoot(gameRoot);
+            stage.setMaximized(true);
             updateBoardView(gameState);
         }
         //stage.setMaximized(true);

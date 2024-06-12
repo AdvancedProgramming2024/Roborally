@@ -232,7 +232,7 @@ public class Server {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         assert lobby != null;
         if (lobby.getGameServer().getGameController().board.getPhase() == Phase.PROGRAMMING) {
-            return responseCenter.badRequest("Player needs to send thier program");
+            return responseCenter.badRequest("Player needs to send their program");
         }
         lobby.getGameServer().getGameController().board.getPlayer(playerId).setReady(true);
         return responseCenter.ok();
