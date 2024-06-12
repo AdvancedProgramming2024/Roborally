@@ -73,7 +73,7 @@ public class RoboRallyServer {
     }
 
     public void updateGameState() {
-        gameState = LoadSave.saveGameState(gameController);
+        gameState = LoadSave.saveGameState(gameController, false);
     }
 
     public void waitForAcks() {
@@ -103,5 +103,20 @@ public class RoboRallyServer {
 
     public Map<List<SpaceTemplate>, Heading> getLaser() {
         return laser;
+    }
+
+    public GameTemplate getGameState(String playerName) {
+        GameTemplate tmp = gameState.clone();
+        tmp.players.forEach(player -> {
+            if (player.name.equals(playerName)) {
+                for (int card : player.program) {
+                    card = -1;
+                }
+                for (int card : player.hand) {
+                    card = -1;
+                }
+            }
+        });
+        return tmp;
     }
 }

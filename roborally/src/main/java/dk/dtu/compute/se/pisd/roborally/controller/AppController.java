@@ -35,6 +35,7 @@ import dk.dtu.compute.se.pisd.roborally.model.CommandCardField;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
+import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
 import dk.dtu.compute.se.pisd.roborally.view.PlayerView;
 import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
@@ -207,7 +208,7 @@ public class AppController implements Observer {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        stopWaitingForPlayers();
+        stopWaiting();
         roboRally.returnToMenu();
     }
 
@@ -223,6 +224,33 @@ public class AppController implements Observer {
         }
         System.out.println("Thread has stopped");
     }
+/*
+    private void waitForGame() {
+        Thread thisThread = Thread.currentThread();
+        while (waitForGame == thisThread) {
+            try {
+                Thread.sleep(2000);
+                Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(
+                        ResourceLocation.gameStatePath(roboRally.getLobbyId())+"/"+roboRally.getPlayerName()));
+                if (!response.getStatusCode().is2xxSuccessful()) {
+                    continue;
+                }
+
+                GsonBuilder simpleBuilder = new GsonBuilder().
+                        registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
+                        setPrettyPrinting();
+                Gson gson = simpleBuilder.create();
+
+                GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+                roboRally.createBoardView(gameState);
+
+                stopWaiting();
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println("Thread has stopped");
+    }*/
 
     public void startWaitingForPlayers() {
         if (waitForPlayers == null) {
@@ -231,7 +259,7 @@ public class AppController implements Observer {
         }
     }
 
-    public void stopWaitingForPlayers() {
+    public void stopWaiting() {
         if (waitForPlayers != null) {
             Thread tempThread = waitForPlayers;
             waitForPlayers = null;
@@ -260,10 +288,10 @@ public class AppController implements Observer {
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
-                alert.setHeaderText(response.getItem().getAsString());
+                alert.setHeaderText(response.getItem().getAsJsonObject().get("info").getAsString());
                 alert.showAndWait();
             } else {
-                stopWaitingForPlayers();
+                stopWaiting();
 
                 GsonBuilder simpleBuilder = new GsonBuilder().
                         registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
@@ -309,6 +337,7 @@ public class AppController implements Observer {
         info.addProperty("targetIndex", targetIndex);
         info.addProperty("sourceIsProgram", sourceIsProgrammingCard);
         info.addProperty("targetIsProgram", targetIsProgrammingCard);
+        info.addProperty("playerName", roboRally.getPlayerName());
         try {
             Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(playerCardMovementPath(roboRally.getLobbyId(), player.id)), info);
             if (!response.getStatusCode().is2xxSuccessful()) {

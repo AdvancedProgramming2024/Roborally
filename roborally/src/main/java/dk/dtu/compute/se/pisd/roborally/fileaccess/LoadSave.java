@@ -222,7 +222,7 @@ public class LoadSave {
      * @param gameController of the current game
      * @return GameTemplate of the current game state
      */
-    public static GameTemplate saveGameState(GameController gameController) {
+    public static GameTemplate saveGameState(GameController gameController, boolean asSaveFile) {
         GameTemplate gameTemplate = new GameTemplate();
         gameTemplate.gameId = gameController.board.getGameId();
         gameTemplate.board = createBoardTemplate(gameController.board);
@@ -237,20 +237,23 @@ public class LoadSave {
             playerTemplate.yPosition = player.getSpace().y;
             playerTemplate.heading = player.getHeading().ordinal();
 
-
-            for (CommandCard card : player.getDrawPile()) {
-                playerTemplate.drawPile.add(card.command.ordinal());
-            }
-            for (CommandCard card : player.getDiscardPile()) {
-                playerTemplate.discardPile.add(card.command.ordinal());
+            if (asSaveFile) {
+                for (CommandCard card : player.getDrawPile()) {
+                    playerTemplate.drawPile.add(card.command.ordinal());
+                }
+                for (CommandCard card : player.getDiscardPile()) {
+                    playerTemplate.discardPile.add(card.command.ordinal());
+                }
             }
             for (int j = 0; j < player.getProgram().length; j++) {
                 CommandCardField field = player.getProgram()[j];
-                playerTemplate.program[j] = field.getCard() == null ? -1 : field.getCard().command.ordinal();
+                boolean ignore = !asSaveFile && !field.isVisible();
+                playerTemplate.program[j] = (field.getCard() == null || ignore) ? -1 : field.getCard().command.ordinal();
             }
             for (int j = 0; j < player.getCards().length; j++) {
                 CommandCardField field = player.getCards()[j];
-                playerTemplate.hand[j] = field.getCard() == null ? -1 : field.getCard().command.ordinal();
+                boolean ignore = !asSaveFile && !field.isVisible();
+                playerTemplate.hand[j] = (field.getCard() == null || ignore) ? -1 : field.getCard().command.ordinal();
             }
 
             playerTemplate.checkpoints = player.getCheckpoints();
@@ -267,6 +270,7 @@ public class LoadSave {
         gameTemplate.playPhase = gameController.board.getPhase().ordinal();
         gameTemplate.step = gameController.board.getStep();
 
+        // TODO add new method to handle save to file which uses saveGameState
         // Get resource folder, create folder if it doesn't exist
         //String filename = getFilePath(fileName, GAMESFOLDER);
 

@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static dk.dtu.compute.se.pisd.roborally.online.ResponseCenter.asJson;
+
 
 @RestController
 public class Server {
@@ -146,11 +148,11 @@ public class Server {
         }
 
         if (!playerName.equals(lobby.getPlayers().get(0))) {
-            return responseCenter.badRequest("Only player 1 can start the game");
+            return responseCenter.badRequest(asJson("Only player 1 can start the game"));
         }
 
         if (!lobby.startGame(mapName)) {
-            return responseCenter.badRequest("There should be 2-6 players to start the game");
+            return responseCenter.badRequest(asJson("There should be 2-6 players to start the game"));
         }
 
         JsonObject response = new JsonObject();
@@ -161,29 +163,34 @@ public class Server {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
+        response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameController().board.getPhase()
+                == Phase.ACTIVATION ?
+                lobby.getGameServer().getGameState(playerName) : lobby.getGameServer().getGameState()));
 
         lobby.getGameServer().getLaser().clear();
         return responseCenter.response(response.toString());
     }
 
-    @GetMapping(ResourceLocation.gameState)
-    public ResponseEntity<String> gameStateRequest(@PathVariable String lobbyId) {
+    @GetMapping(ResourceLocation.gameState+"/{playerName}")
+    public ResponseEntity<String> gameStateRequest(@PathVariable String lobbyId, @PathVariable String playerName) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         if (lobby == null) {
             return responseCenter.notFound();
         }
 
-        if (!lobby.isInGame()) {
-            return responseCenter.badRequest("Game not started");
+        if (!lobby.isInGame() || lobby.getGameServer() == null || lobby.getGameServer().getGameState() == null) {
+            return responseCenter.badRequest(asJson("Game has not started yet"));
         }
 
         JsonObject response = new JsonObject();
-        GameTemplate gameState = lobby.getGameServer().getGameState();
+        GameTemplate gameState = lobby.getGameServer().getGameController().board.getPhase() == Phase.ACTIVATION ?
+                lobby.getGameServer().getGameState(playerName) : lobby.getGameServer().getGameState();
+
         if (gameState == null) {
-            return responseCenter.badRequest("No new game state available");
+            return responseCenter.badRequest(asJson("No new game state available"));
         }
-        response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
+
+        response.addProperty("gameState", gson.toJson(gameState));
 
         JsonArray lasers = new JsonArray();
         for (Map.Entry<List<SpaceTemplate>, Heading> entry : lobby.getGameServer().getLaser().entrySet()) {
@@ -197,12 +204,12 @@ public class Server {
     }
 
     @PostMapping(ResourceLocation.playerCardMovement)
-    public ResponseEntity<String> playerProgram(@PathVariable String lobbyId, @PathVariable int playerId, @RequestBody String stringInfo) {
+    public ResponseEntity<String> playerCardMovement(@PathVariable String lobbyId, @PathVariable int playerId, @RequestBody String stringInfo) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
 
         assert lobby != null;
         if (lobby.getGameServer().getGameController().board.getPhase() != Phase.PROGRAMMING) {
-            return responseCenter.badRequest("Player can only move cards during the programming phase");
+            return responseCenter.badRequest(asJson("Player can only move cards during the programming phase"));
         }
 
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
@@ -210,6 +217,7 @@ public class Server {
         int targetIndex = info.get("targetIndex").getAsInt();
         boolean sourceIsProgram = info.get("sourceIsProgram").getAsBoolean();
         boolean targetIsProgram = info.get("targetIsProgram").getAsBoolean();
+        String playerName = info.get("playerName").getAsString();
 
         GameController gameController = lobby.getGameServer().getGameController();
         Player player = gameController.board.getPlayer(playerId);
@@ -217,14 +225,14 @@ public class Server {
         CommandCardField target = targetIsProgram ? player.getProgramField(targetIndex) : player.getCardField(targetIndex);
         if (lobby.getGameServer().getGameController().moveCards(source, target)) {
             JsonObject response = new JsonObject();
-            GameTemplate gameState = lobby.getGameServer().getGameState();
+            GameTemplate gameState = lobby.getGameServer().getGameState(playerName);
             if (gameState == null) {
-                return responseCenter.badRequest("No new game state available");
+                return responseCenter.badRequest(asJson("No new game state available"));
             }
             response.addProperty("gameState", gson.toJson(gameState));
             return responseCenter.response(response.toString());
         } else {
-            return responseCenter.badRequest("Invalid card movement");
+            return responseCenter.badRequest(asJson("Invalid card movement"));
         }
     }
 
