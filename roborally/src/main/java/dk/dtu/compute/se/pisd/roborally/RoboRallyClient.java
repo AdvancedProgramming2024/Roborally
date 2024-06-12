@@ -33,6 +33,7 @@ import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -41,7 +42,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -143,8 +147,8 @@ public class RoboRallyClient extends Application {
         Image lobby = new Image("images/empty.png");
         BackgroundImage backgroundLobby = new BackgroundImage(
                 lobby, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
-                BackgroundPosition.DEFAULT,
-                new BackgroundSize(100, 100, false, false, false, false)
+                BackgroundPosition.CENTER,
+                new BackgroundSize(240, 240, false, false, false, false)
         );
         lobbyPane.setBackground(new Background(backgroundLobby));
 
@@ -192,16 +196,22 @@ public class RoboRallyClient extends Application {
         lobbyPane.getChildren().clear();
         stage.setMaximized(false);
 
-        lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId + "\nYour username: " + getPlayerName()));
-        lobbyPane.getChildren().add(new Text("Host: "));
-        lobbyPane.getChildren().add(new Text("Players:"));
+        Text lobbyInfo = new Text("Lobby: " + lobbyId + "\nYour username: " + getPlayerName());
+        lobbyInfo.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+        lobbyInfo.setTextAlignment(TextAlignment.LEFT);
+        lobbyPane.getChildren().add(lobbyInfo);
+
+        Text playersText = new Text("Players:");
+        playersText.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+        playersText.setTextAlignment(TextAlignment.LEFT);
+        lobbyPane.getChildren().add(playersText);
+
         Button startBtn = new Button("Start Game");
         Button leaveBtn = new Button("Leave Lobby");
         startBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.startGame());
         leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.leaveLobby());
 
-        lobbyPane.getChildren().add(startBtn);
-        lobbyPane.getChildren().add(leaveBtn);
+        lobbyPane.getChildren().add(new HBox(15, startBtn, leaveBtn));
         scene.setRoot(lobbyPane);
     }
 
@@ -211,12 +221,15 @@ public class RoboRallyClient extends Application {
         }
         JsonArray players = lobbyContent.get("players").getAsJsonArray();
         String host = players.get(0).getAsString();
-        Text info = ((Text) lobbyPane.getChildren().get(1));
-        StringBuilder newInfo = new StringBuilder();
-        newInfo.append("\nHost: ").append(host);
-        info.setText(newInfo.toString());
+        Text info = (Text) lobbyPane.getChildren().get(0);
+        String infoContent = info.getText();
+        int hostStartIndex = infoContent.indexOf("\nHost: ");
+        if (infoContent.contains("Host: ")) {
+            infoContent = infoContent.substring(0, hostStartIndex);
+        }
+        info.setText(infoContent + "\nHost: " + host);
 
-        Text text = ((Text) lobbyPane.getChildren().get(2));
+        Text text = ((Text) lobbyPane.getChildren().get(1));
         StringBuilder newText = new StringBuilder();
         newText.append("Players:");
         for (int i = 0; i < players.size(); i++) {
