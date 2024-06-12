@@ -23,23 +23,32 @@ package dk.dtu.compute.se.pisd.roborally;
 
 import com.google.gson.*;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
+import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
+import dk.dtu.compute.se.pisd.roborally.online.Response;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
+
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ...
@@ -60,6 +69,8 @@ public class RoboRallyClient extends Application {
     private static TilePane menuPane;
     private static TilePane lobbyPane;
     private static Scene scene;
+
+    private ScheduledExecutorService executorService;
 
     @Override
     public void init() throws Exception {
@@ -90,13 +101,12 @@ public class RoboRallyClient extends Application {
     public void start(Stage primaryStage) {
         stage = primaryStage;
         stage.setMaximized(true);
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        double screenWidth = screenBounds.getWidth();
-        double screenHeight = screenBounds.getHeight();
+        double screenWidth = stage.getMaxWidth();
+        double screenHeight = stage.getMaxHeight();
 
         appController = new AppController(this);
 
-        // create the primary scene with the menu bar and a pane for
+        // create the primary scene with the a menu bar and a pane for
         // the board view (which initially is empty); it will be filled
         // when the user creates a new game or loads a game
         RoboRallyMenuBar menuBar = new RoboRallyMenuBar(appController);
@@ -105,7 +115,6 @@ public class RoboRallyClient extends Application {
         gameRoot = new VBox(menuBar, boardRoot);
         gameRoot.setMinWidth(MIN_APP_WIDTH);
         menuPane = new TilePane(Orientation.VERTICAL);
-        menuPane.setPrefSize(screenBounds.getWidth(), screenBounds.getHeight());
         menuPane.getChildren().add(menuButtons.newGameButton);
         menuPane.getChildren().add(menuButtons.joinGameButton);
         menuPane.getChildren().add(menuButtons.loadGameButton);
@@ -146,15 +155,41 @@ public class RoboRallyClient extends Application {
                     e.consume();
                     appController.exit();} );
         stage.setResizable(true);
-        stage.setMaximized(false);
+        stage.setMaximized(true);
         stage.show();
+
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(this::pollServer, 0, 1, TimeUnit.SECONDS);
+    }
+
+    private void pollServer() {
+        if (lobbyId == null) {
+            return;
+        }
+        try {
+            Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameStatePath(lobbyId)));
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(response.getItem().getAsString());
+                alert.showAndWait();
+                return;
+            }
+            GsonBuilder simpleBuilder = new GsonBuilder().
+                    registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
+                    setPrettyPrinting().setLenient();
+            Gson gson = simpleBuilder.create();
+            GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+            updateBoardView(gameState);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void createLobbyView() {
         boardRoot.getChildren().clear();
         lobbyPane.getChildren().clear();
-        stage.setMaximized(false);
-        
+
         lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId + "\nYour username: " + getPlayerName()));
         lobbyPane.getChildren().add(new Text("Host: "));
         lobbyPane.getChildren().add(new Text("Players:"));
@@ -200,7 +235,6 @@ public class RoboRallyClient extends Application {
             boardRoot.setCenter(boardView);
             //boardView.updateView(gameState.board); // TODO figure out what to do
             scene.setRoot(gameRoot);
-            stage.setMaximized(true);
             updateBoardView(gameState);
         }
         //stage.setMaximized(true);

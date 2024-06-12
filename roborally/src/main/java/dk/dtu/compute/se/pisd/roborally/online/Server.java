@@ -163,14 +163,6 @@ public class Server {
         }
         response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
 
-        JsonArray lasers = new JsonArray();
-        for (Map.Entry<List<SpaceTemplate>, Heading> entry : lobby.getGameServer().getLaser().entrySet()) {
-            JsonObject laser = new JsonObject();
-            laser.addProperty("laser", gson.toJson(entry.getKey()));
-            laser.addProperty("heading", entry.getValue().ordinal());
-            lasers.add(laser);
-        }
-        response.addProperty("lasers", lasers.toString());
         lobby.getGameServer().getLaser().clear();
         return responseCenter.response(response.toString());
     }
@@ -192,6 +184,15 @@ public class Server {
             return responseCenter.badRequest("No new game state available");
         }
         response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
+
+        JsonArray lasers = new JsonArray();
+        for (Map.Entry<List<SpaceTemplate>, Heading> entry : lobby.getGameServer().getLaser().entrySet()) {
+            JsonObject laser = new JsonObject();
+            laser.addProperty("laser", gson.toJson(entry.getKey()));
+            laser.addProperty("heading", entry.getValue().ordinal());
+            lasers.add(laser);
+        }
+        response.addProperty("lasers", lasers.toString());
         return responseCenter.response(response.toString());
     }
 
