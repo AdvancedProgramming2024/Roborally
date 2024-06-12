@@ -66,6 +66,7 @@ public class AppController implements Observer {
 
     final private RoboRallyClient roboRally;
     private volatile Thread waitForPlayers;
+    private volatile Thread waitForGame;
 
     private GameController gameController; // TODO: Remove later and fix functions depending on this
 
@@ -112,6 +113,7 @@ public class AppController implements Observer {
         }
 
         startWaitingForPlayers();
+        startWaitingForGame();
     }
 
     public void joinLobby() {
@@ -193,6 +195,7 @@ public class AppController implements Observer {
         }
 
         startWaitingForPlayers();
+        startWaitingForGame();
     }
 
     public void leaveLobby() {
@@ -224,7 +227,7 @@ public class AppController implements Observer {
         }
         System.out.println("Thread has stopped");
     }
-/*
+
     private void waitForGame() {
         Thread thisThread = Thread.currentThread();
         while (waitForGame == thisThread) {
@@ -242,20 +245,25 @@ public class AppController implements Observer {
                 Gson gson = simpleBuilder.create();
 
                 GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
-                roboRally.createBoardView(gameState);
 
-                stopWaiting();
+                Platform.runLater(() -> startGame(gameState));
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
         System.out.println("Thread has stopped");
-    }*/
+    }
 
     public void startWaitingForPlayers() {
         if (waitForPlayers == null) {
             waitForPlayers = new Thread(this::waitForPlayers);
             waitForPlayers.start();
+        }
+    }
+    public void startWaitingForGame() {
+        if (waitForGame == null) {
+            waitForGame = new Thread(this::waitForGame);
+            waitForGame.start();
         }
     }
 
@@ -269,6 +277,20 @@ public class AppController implements Observer {
                 Thread.currentThread().interrupt();
             }
         }
+        if (waitForGame != null) {
+            Thread tempThread = waitForGame;
+            waitForGame = null;
+            try {
+                tempThread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public void startGame(GameTemplate gameState) {
+        stopWaiting();
+        roboRally.createBoardView(gameState);
     }
 
     public void startGame() {
