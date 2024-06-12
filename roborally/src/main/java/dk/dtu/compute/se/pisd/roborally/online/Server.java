@@ -26,6 +26,15 @@ public class Server {
     private static final JsonParser jsonParser = new JsonParser();
     private final static ResponseCenter<String> responseCenter = new ResponseCenter<>();
 
+    private final Gson gson;
+
+    public Server() {
+        GsonBuilder simpleBuilder = new GsonBuilder().
+                registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
+                setPrettyPrinting();
+        gson = simpleBuilder.create();
+    }
+
     @PostMapping(ResourceLocation.lobbies)
     public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
@@ -144,11 +153,6 @@ public class Server {
             return responseCenter.badRequest("There should be 2-6 players to start the game");
         }
 
-        GsonBuilder simpleBuilder = new GsonBuilder().
-                registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
-                setPrettyPrinting();
-        Gson gson = simpleBuilder.create();
-
         JsonObject response = new JsonObject();
 
         try {
@@ -187,7 +191,7 @@ public class Server {
         if (gameState == null) {
             return responseCenter.badRequest("No new game state available");
         }
-        response.addProperty("gameState", gameState.toString());
+        response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState()));
         return responseCenter.response(response.toString());
     }
 
@@ -216,7 +220,7 @@ public class Server {
             if (gameState == null) {
                 return responseCenter.badRequest("No new game state available");
             }
-            response.addProperty("gameState", gameState.toString());
+            response.addProperty("gameState", gson.toJson(gameState));
             return responseCenter.response(response.toString());
         } else {
             return responseCenter.badRequest("Invalid card movement");

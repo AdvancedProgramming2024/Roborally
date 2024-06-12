@@ -112,8 +112,9 @@ public class CardFieldView extends GridPane {
         }
     }
 
-    public void updateView(GameTemplate gameState) {
+    public void updateView(GameTemplate gameState, int playerId) {
         this.gameState = gameState;
+        this.player = gameState.players.get(playerId);
         int card = (isProgramField ? player.program : player.hand)[id];
         if (card != -1) {
             label.setText(Command.values()[card].displayName); // TODO: Add card image from card id

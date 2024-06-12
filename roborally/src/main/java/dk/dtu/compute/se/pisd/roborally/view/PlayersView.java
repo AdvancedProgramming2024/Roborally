@@ -58,8 +58,8 @@ public class PlayersView extends TabPane {
     public void updateView(GameTemplate gameState) {
         this.gameState = gameState;
         this.getSelectionModel().select(gameState.currentPlayer);
-        for (PlayerView playerView: playerViews) {
-            playerView.updateView(gameState);
+        for (int i = 0; i < playerViews.length; i++) {
+            playerViews[i].updateView(gameState, i);
         }
     }
 

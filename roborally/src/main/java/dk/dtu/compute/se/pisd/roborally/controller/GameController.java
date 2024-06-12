@@ -376,6 +376,7 @@ public class GameController {
         if (sourceCard != null && targetCard == null) {
             target.setCard(sourceCard);
             source.setCard(null);
+            server.updateGameState();
             return true;
         } else {
             return false;

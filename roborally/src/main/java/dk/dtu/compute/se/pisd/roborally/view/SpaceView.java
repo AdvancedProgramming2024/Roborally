@@ -198,8 +198,9 @@ public class SpaceView extends StackPane {
         }
     }
 
-    public void updateView(GameTemplate gameState) {
+    public void updateView(GameTemplate gameState, SpaceTemplate space) {
         this.gameState = gameState;
+        this.space = space;
         updatePlayer();
         for (FieldAction action : space.actions) {
             if (action instanceof EnergyCubeField) {

@@ -46,8 +46,6 @@ import javax.swing.text.html.Option;
  */
 public class PlayerView extends Tab {
 
-    private PlayerTemplate player;
-
     private VBox top;
 
     private Label programLabel;
@@ -69,6 +67,7 @@ public class PlayerView extends Tab {
     private VBox playerInteractionPanel;
 
     private GameTemplate gameState;
+    private PlayerTemplate player;
     private final AppController appController;
 
     public PlayerView(@NotNull AppController appController, @NotNull GameTemplate gameState, @NotNull PlayerTemplate player) {
@@ -143,8 +142,9 @@ public class PlayerView extends Tab {
         top.getChildren().add(cardsPane);
     }
 
-    public void updateView(GameTemplate gameState) {
+    public void updateView(GameTemplate gameState, int playerId) {
         this.gameState = gameState;
+        this.player = gameState.players.get(playerId);
         checkPointLabel.setText("Checkpoint\n" + player.checkpoints);
         energyCubeLabel.setText("Energy Cubes\n" + player.energyBank);
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
@@ -222,10 +222,10 @@ public class PlayerView extends Tab {
             }
         }
         for (CardFieldView cardFieldView : cardViews) {
-            cardFieldView.updateView(gameState);
+            cardFieldView.updateView(gameState, playerId);
         }
         for (CardFieldView cardFieldView : programCardViews) {
-            cardFieldView.updateView(gameState);
+            cardFieldView.updateView(gameState, playerId);
         }
     }
 }

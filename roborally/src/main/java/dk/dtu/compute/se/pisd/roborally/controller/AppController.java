@@ -263,7 +263,6 @@ public class AppController implements Observer {
                 alert.setHeaderText(response.getItem().getAsString());
                 alert.showAndWait();
             } else {
-                System.out.println(response.getItem().getAsJsonObject().get("gameState").getAsString());
                 stopWaitingForPlayers();
 
                 GsonBuilder simpleBuilder = new GsonBuilder().
@@ -271,7 +270,6 @@ public class AppController implements Observer {
                         setPrettyPrinting();
                 Gson gson = simpleBuilder.create();
 
-                System.out.println(response.getItem().getAsJsonObject().get("gameState").getAsString());
                 GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
                 roboRally.createBoardView(gameState);
             }
@@ -320,16 +318,13 @@ public class AppController implements Observer {
                 alert.showAndWait();
                 return false;
             } else {
-                System.out.println(response.getItem().getAsJsonObject().get("gameState").getAsString());
 
                 GsonBuilder simpleBuilder = new GsonBuilder().
                         registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                         setPrettyPrinting();
                 Gson gson = simpleBuilder.create();
 
-                System.out.println(response.getItem().getAsJsonObject().get("gameState").getAsString());
                 gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
-                roboRally.createBoardView(gameState);
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);

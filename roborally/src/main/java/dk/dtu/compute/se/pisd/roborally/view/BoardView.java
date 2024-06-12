@@ -111,9 +111,9 @@ public class BoardView extends BorderPane {
         statusLabel.setText(getStatusMessage());
         playersView.updateView(gameState);
         upgradeShopView.updateView();
-        for (SpaceView[] spaceRow : spaces) {
-            for (SpaceView space : spaceRow) {
-                space.updateView(gameState);
+        for (int x = 0; x < board.width; x++) {
+            for (int y = 0; y < board.height; y++) {
+                spaces[y][x].updateView(gameState, gameState.board.spaces.get(x * board.height + y));
             }
         }
     }

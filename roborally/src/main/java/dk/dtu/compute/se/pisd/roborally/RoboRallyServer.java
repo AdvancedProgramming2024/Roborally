@@ -43,13 +43,14 @@ public class RoboRallyServer {
         // board.setCurrentPlayer(board.getPlayer(0));
 
         gameController.startProgrammingPhase();
-        gameState = LoadSave.saveGameState(gameController);
+        updateGameState();
     }
 
     public void startGameLoop() {
         boolean gameRunning = true;
         while (gameRunning) {
             waitForAcks(); // Wait for players to have sent their programming registers
+            System.out.println("Starting activation phase");
             gameController.finishProgrammingPhase();
             while (gameController.board.getPhase() == Phase.ACTIVATION) {
                 gameController.executeStep();
@@ -71,18 +72,22 @@ public class RoboRallyServer {
         // TODO: Do something
     }
 
+    public void updateGameState() {
+        gameState = LoadSave.saveGameState(gameController);
+    }
+
     public void waitForAcks() {
         // wait until the other players are also done
         boolean waiting = true;
         while (waiting) {
             waiting = false;
             for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
-                if (gameController.board.getPlayer(i).isReady()) {
+                if (!gameController.board.getPlayer(i).isReady()) {
                     waiting = true;
                 }
             }
         }
-        gameState = LoadSave.saveGameState(gameController);
+        updateGameState();
         for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
             gameController.board.getPlayer(i).setReady(false);
         }
