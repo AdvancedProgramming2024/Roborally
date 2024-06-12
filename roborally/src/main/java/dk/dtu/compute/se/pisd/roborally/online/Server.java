@@ -211,7 +211,13 @@ public class Server {
         CommandCardField source = sourceIsProgram ? player.getProgramField(sourceIndex) : player.getCardField(sourceIndex);
         CommandCardField target = targetIsProgram ? player.getProgramField(targetIndex) : player.getCardField(targetIndex);
         if (lobby.getGameServer().getGameController().moveCards(source, target)) {
-            return responseCenter.ok();
+            JsonObject response = new JsonObject();
+            GameTemplate gameState = lobby.getGameServer().getGameState();
+            if (gameState == null) {
+                return responseCenter.badRequest("No new game state available");
+            }
+            response.addProperty("gameState", gameState.toString());
+            return responseCenter.response(response.toString());
         } else {
             return responseCenter.badRequest("Invalid card movement");
         }
