@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
+import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
@@ -57,17 +58,19 @@ public class BoardView extends BorderPane {
     private SpaceView[][] spaces;
     private PlayersView playersView;
     private UpgradeShopView upgradeShopView;
+    private final AppController appController;
 
     private Label statusLabel;
 
     private static Map<SpaceTemplate, SpaceView> spaceViewMap = new HashMap<>();
 
-    public BoardView(@NotNull GameTemplate gameState, @NotNull RoboRallyClient client) {
+    public BoardView(@NotNull AppController appController, @NotNull GameTemplate gameState, @NotNull RoboRallyClient client) {
         this.client = client;
+        this.appController = appController;
         this.gameState = gameState;
         board = gameState.board;
         mainBoardPane = new GridPane();
-        playersView = new PlayersView(gameState);
+        playersView = new PlayersView(appController, gameState);
         upgradeShopView = new UpgradeShopView(gameState);
         statusLabel = new Label("<no status>");
 

@@ -32,11 +32,11 @@ public class ResourceLocation {
     public static String gameStatePath(String lobbyId) {
         return gameState.replace("{lobbyId}", lobbyId);
     }
-    public static String playerCardMovementPath(String lobbyId, String playerId) {
-        return playerCardMovement.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId);
+    public static String playerCardMovementPath(String lobbyId, int playerId) {
+        return playerCardMovement.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId + "");
     }
-    public static String playerReadyPath(String lobbyId, String playerId) {
-        return playerReady.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId);
+    public static String playerReadyPath(String lobbyId, int playerId) {
+        return playerReady.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId + "");
     }
 
     public static final String baseLocation = "http://localhost:8080";

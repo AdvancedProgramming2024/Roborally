@@ -52,6 +52,8 @@ public class CardFieldView extends GridPane {
     final public static int CARDFIELD_WIDTH = 65;
     final public static int CARDFIELD_HEIGHT = 100;
 
+    private final AppController appController;
+
     final public static Border BORDER = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(2)));
 
     final public static Background BG_DEFAULT = new Background(new BackgroundFill(Color.WHITE, null, null));
@@ -69,8 +71,9 @@ public class CardFieldView extends GridPane {
 
     private GameTemplate gameState;
 
-    public CardFieldView(@NotNull GameTemplate gameState, @NotNull PlayerTemplate player, int cardIndex, boolean isProgramField) {
+    public CardFieldView(@NotNull AppController appController, @NotNull GameTemplate gameState, @NotNull PlayerTemplate player, int cardIndex, boolean isProgramField) {
         this.gameState = gameState;
+        this.appController = appController;
         this.player = player;
         this.id = cardIndex;
         this.isProgramField = isProgramField;
@@ -210,7 +213,7 @@ public class CardFieldView extends GridPane {
                         Object object = db.getContent(ROBO_RALLY_CARD);
                         if (object instanceof String source) {
 
-                            if (!source.isEmpty() && AppController.moveCards(source, cardFieldRepresentation(), player)) {
+                            if (!source.isEmpty() && appController.moveCards(source, cardFieldRepresentation(), player)) {
                                 // CommandCard card = source.getCard();
                                 // if (card != null) {
                                 // if (gameController.moveCards(source, cardField)) {

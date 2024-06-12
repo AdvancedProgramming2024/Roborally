@@ -176,7 +176,7 @@ public class RoboRallyClient extends Application {
 
         if (gameState != null) {
             // create and add view for new board
-            BoardView boardView = new BoardView(gameState, this);
+            BoardView boardView = new BoardView(appController, gameState, this);
             boardRoot.setCenter(boardView);
             //boardView.updateView(gameState.board); // TODO figure out what to do
             scene.setRoot(gameRoot);

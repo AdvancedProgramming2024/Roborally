@@ -36,6 +36,7 @@ import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
 import dk.dtu.compute.se.pisd.roborally.online.Response;
+import dk.dtu.compute.se.pisd.roborally.view.PlayerView;
 import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -65,7 +66,7 @@ public class AppController implements Observer {
     final private RoboRallyClient roboRally;
     private volatile Thread waitForPlayers;
 
-    private GameController gameController;
+    private GameController gameController; // TODO: Remove later and fix functions depending on this
 
     public AppController(@NotNull RoboRallyClient roboRally) {
         this.roboRally = roboRally;
@@ -287,26 +288,55 @@ public class AppController implements Observer {
             try {
                 TimeUnit.MILLISECONDS.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             } finally {
                 SpaceView.destroyLasers();
             }}).start();
     }
 
-    public static boolean moveCards(@NotNull String source, @NotNull String target, PlayerTemplate player) {
+    public boolean moveCards(@NotNull String source, @NotNull String target, PlayerTemplate player) {
+        GameTemplate gameState;
+
         int sourceIndex = Integer.parseInt(source.split(",")[1]);
         boolean sourceIsProgrammingCard = source.split(",")[0].equals("P");
         int targetIndex = Integer.parseInt(target.split(",")[1]);
         boolean targetIsProgrammingCard = target.split(",")[0].equals("P");
-        if ((sourceIsProgrammingCard ? player.program : player.hand)[sourceIndex] != -1 &&
-                (targetIsProgrammingCard ? player.program : player.hand)[targetIndex] == -1) {
-            (targetIsProgrammingCard ? player.program : player.hand)[targetIndex] =
-                    (sourceIsProgrammingCard ? player.program : player.hand)[sourceIndex];
-            (sourceIsProgrammingCard ? player.program : player.hand)[sourceIndex] = -1;
-            return true;
-        } else {
+        if ((sourceIsProgrammingCard ? player.program : player.hand)[sourceIndex] == -1 ||
+                (targetIsProgrammingCard ? player.program : player.hand)[targetIndex] != -1) {
             return false;
         }
+
+        JsonObject info = new JsonObject();
+        info.addProperty("sourceIndex", sourceIndex);
+        info.addProperty("targetIndex", targetIndex);
+        info.addProperty("sourceIsProgram", sourceIsProgrammingCard);
+        info.addProperty("targetIsProgram", targetIsProgrammingCard);
+        try {
+            Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(playerCardMovementPath(roboRally.getLobbyId(), player.id)), info);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(response.getItem().getAsString());
+                alert.showAndWait();
+                return false;
+            } else {
+                System.out.println(response.getItem().getAsJsonObject().get("gameState").getAsString());
+
+                GsonBuilder simpleBuilder = new GsonBuilder().
+                        registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
+                        setPrettyPrinting();
+                Gson gson = simpleBuilder.create();
+
+                System.out.println(response.getItem().getAsJsonObject().get("gameState").getAsString());
+                gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+                roboRally.createBoardView(gameState);
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        roboRally.updateBoardView(gameState);
+        return true;
     }
 
     /*public void newGame() {

@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
@@ -41,14 +42,15 @@ public class PlayersView extends TabPane {
     private GameTemplate gameState;
 
     private PlayerView[] playerViews;
+    private final AppController appController;
 
-    public PlayersView(GameTemplate gameState) {
-
+    public PlayersView(AppController appController, GameTemplate gameState) {
+        this.appController = appController;
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
         playerViews = new PlayerView[gameState.players.size()];
         for (int i = 0; i < gameState.players.size();  i++) {
-            playerViews[i] = new PlayerView(gameState, gameState.players.get(i));
+            playerViews[i] = new PlayerView(appController, gameState, gameState.players.get(i));
             this.getTabs().add(playerViews[i]);
         }
     }

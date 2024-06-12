@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
@@ -68,9 +69,11 @@ public class PlayerView extends Tab {
     private VBox playerInteractionPanel;
 
     private GameTemplate gameState;
+    private final AppController appController;
 
-    public PlayerView(@NotNull GameTemplate gameState, @NotNull PlayerTemplate player) {
+    public PlayerView(@NotNull AppController appController, @NotNull GameTemplate gameState, @NotNull PlayerTemplate player) {
         super(player.name);
+        this.appController = appController;
         this.setStyle("-fx-text-base-color: " + player.color + ";");
 
         top = new VBox();
@@ -94,7 +97,7 @@ public class PlayerView extends Tab {
 
         programCardViews = new CardFieldView[Player.NO_REGISTERS];
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
-            programCardViews[i] = new CardFieldView(gameState, player, i, true);
+            programCardViews[i] = new CardFieldView(appController, gameState, player, i, true);
             programPane.add(programCardViews[i], i, 0);
         }
 
@@ -130,7 +133,7 @@ public class PlayerView extends Tab {
         cardsPane.setHgap(2.0);
         cardViews = new CardFieldView[Player.NO_CARDS];
         for (int i = 0; i < Player.NO_CARDS; i++) {
-            cardViews[i] = new CardFieldView(gameState, player, i, false);
+            cardViews[i] = new CardFieldView(appController, gameState, player, i, false);
             cardsPane.add(cardViews[i], i, 0);
         }
 
