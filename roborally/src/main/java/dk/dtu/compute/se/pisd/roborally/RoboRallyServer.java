@@ -31,7 +31,7 @@ public class RoboRallyServer {
         Player.server = this;
         List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
         for (int i = 0; i < players.size(); i++) {
-            Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1), i);
+            Player player = new Player(board, PLAYER_COLORS.get(i), players.get(i), i);
             board.addPlayer(player);
             player.setSpace(board.getSpace(0, i));
             player.setHeading(Heading.EAST);
@@ -108,13 +108,9 @@ public class RoboRallyServer {
     public GameTemplate getGameState(String playerName) {
         GameTemplate tmp = gameState.clone();
         tmp.players.forEach(player -> {
-            if (player.name.equals(playerName)) {
-                for (int card : player.program) {
-                    card = -1;
-                }
-                for (int card : player.hand) {
-                    card = -1;
-                }
+            if (!player.name.equals(playerName)) {
+                Arrays.fill(player.program, -1);
+                Arrays.fill(player.hand, -1);
             }
         });
         return tmp;

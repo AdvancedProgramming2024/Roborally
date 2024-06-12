@@ -33,7 +33,6 @@ import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -49,6 +48,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -61,6 +62,8 @@ import java.util.concurrent.TimeUnit;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
+@Getter
+@Setter
 public class RoboRallyClient extends Application {
 
     private static final int MIN_APP_WIDTH = 600;
@@ -76,26 +79,11 @@ public class RoboRallyClient extends Application {
     private static Scene scene;
 
     private ScheduledExecutorService executorService;
+    private BoardView boardView;
 
     @Override
     public void init() throws Exception {
         super.init();
-    }
-
-    public String getLobbyId() {
-        return lobbyId;
-    }
-
-    public void setLobbyId(String lobbyId) {
-        this.lobbyId = lobbyId;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
     }
 
     /**
@@ -174,10 +162,6 @@ public class RoboRallyClient extends Application {
         try {
             Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameStatePath(lobbyId)+"/"+getPlayerName()));
             if (!response.getStatusCode().is2xxSuccessful()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(response.getItem().getAsString());
-                alert.showAndWait();
                 return;
             }
             GsonBuilder simpleBuilder = new GsonBuilder().
@@ -185,6 +169,7 @@ public class RoboRallyClient extends Application {
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
             GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+            if (gameState == null || boardView == null) return;
             updateBoardView(gameState);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -208,7 +193,7 @@ public class RoboRallyClient extends Application {
 
         Button startBtn = new Button("Start Game");
         Button leaveBtn = new Button("Leave Lobby");
-        startBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.startGame());
+        startBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.createGame());
         leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.leaveLobby());
 
         lobbyPane.getChildren().add(new HBox(15, startBtn, leaveBtn));
@@ -247,7 +232,7 @@ public class RoboRallyClient extends Application {
 
         if (gameState != null) {
             // create and add view for new board
-            BoardView boardView = new BoardView(appController, gameState, this);
+            boardView = new BoardView(appController, gameState, this);
             boardRoot.setCenter(boardView);
             //boardView.updateView(gameState.board); // TODO figure out what to do
             scene.setRoot(gameRoot);

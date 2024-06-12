@@ -164,7 +164,7 @@ public class Server {
             throw new RuntimeException(e);
         }
         response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameController().board.getPhase()
-                == Phase.ACTIVATION ?
+                == Phase.PROGRAMMING ?
                 lobby.getGameServer().getGameState(playerName) : lobby.getGameServer().getGameState()));
 
         lobby.getGameServer().getLaser().clear();
@@ -183,7 +183,7 @@ public class Server {
         }
 
         JsonObject response = new JsonObject();
-        GameTemplate gameState = lobby.getGameServer().getGameController().board.getPhase() == Phase.ACTIVATION ?
+        GameTemplate gameState = lobby.getGameServer().getGameController().board.getPhase() == Phase.PROGRAMMING ?
                 lobby.getGameServer().getGameState(playerName) : lobby.getGameServer().getGameState();
 
         if (gameState == null) {

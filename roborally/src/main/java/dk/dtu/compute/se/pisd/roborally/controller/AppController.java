@@ -30,14 +30,11 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
-import dk.dtu.compute.se.pisd.roborally.model.CommandCard;
-import dk.dtu.compute.se.pisd.roborally.model.CommandCardField;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
-import dk.dtu.compute.se.pisd.roborally.view.PlayerView;
 import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -290,10 +287,10 @@ public class AppController implements Observer {
 
     public void startGame(GameTemplate gameState) {
         stopWaiting();
-        roboRally.createBoardView(gameState);
+        if (roboRally.getBoardView() == null) roboRally.createBoardView(gameState);
     }
 
-    public void startGame() {
+    public void createGame() {
         ChoiceDialog<String> mapDialog = new ChoiceDialog<>("dizzy_highway", "defaultboard", "dizzy_highway", "high_octane");
         mapDialog.setTitle("Map selection");
         mapDialog.setHeaderText("Select map to play on");
@@ -313,7 +310,6 @@ public class AppController implements Observer {
                 alert.setHeaderText(response.getItem().getAsJsonObject().get("info").getAsString());
                 alert.showAndWait();
             } else {
-                stopWaiting();
 
                 GsonBuilder simpleBuilder = new GsonBuilder().
                         registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
@@ -321,7 +317,7 @@ public class AppController implements Observer {
                 Gson gson = simpleBuilder.create();
 
                 GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
-                roboRally.createBoardView(gameState);
+                startGame(gameState);
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
