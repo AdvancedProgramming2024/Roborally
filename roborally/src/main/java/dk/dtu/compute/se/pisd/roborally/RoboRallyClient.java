@@ -35,12 +35,14 @@ import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 
@@ -99,9 +101,9 @@ public class RoboRallyClient extends Application {
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
-        stage.setMaximized(true);
-        double screenWidth = stage.getMaxWidth();
-        double screenHeight = stage.getMaxHeight();
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        double screenWidth = screenBounds.getWidth();
+        double screenHeight = screenBounds.getHeight();
 
         appController = new AppController(this);
 
@@ -154,7 +156,7 @@ public class RoboRallyClient extends Application {
                     e.consume();
                     appController.exit();} );
         stage.setResizable(true);
-        stage.setMaximized(true);
+        stage.setMaximized(false);
         stage.show();
 
         executorService = Executors.newSingleThreadScheduledExecutor();
@@ -188,6 +190,7 @@ public class RoboRallyClient extends Application {
     public void createLobbyView() {
         boardRoot.getChildren().clear();
         lobbyPane.getChildren().clear();
+        stage.setMaximized(false);
 
         lobbyPane.getChildren().add(new Text("Lobby: " + lobbyId + "\nYour username: " + getPlayerName()));
         lobbyPane.getChildren().add(new Text("Host: "));
@@ -227,6 +230,7 @@ public class RoboRallyClient extends Application {
     public void createBoardView(GameTemplate gameState) {
         // if present, remove old BoardView
         boardRoot.getChildren().clear();
+        stage.setMaximized(true);
 
         if (gameState != null) {
             // create and add view for new board
