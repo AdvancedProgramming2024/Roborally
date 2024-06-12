@@ -17,7 +17,13 @@ public class GameTemplate implements Cloneable {
     @Override
     public GameTemplate clone() {
         try {
-            return (GameTemplate) super.clone();
+            GameTemplate gameTemplate = (GameTemplate) super.clone();
+            List<PlayerTemplate> players = new ArrayList<>();
+            for (PlayerTemplate player : this.players) {
+                players.add(player.clone());
+            }
+            gameTemplate.players = players;
+            return gameTemplate;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

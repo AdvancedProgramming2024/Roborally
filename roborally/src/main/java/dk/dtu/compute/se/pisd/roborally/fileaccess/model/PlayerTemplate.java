@@ -8,7 +8,7 @@ import java.util.List;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
-public class PlayerTemplate {
+public class PlayerTemplate implements Cloneable {
     public int id;
     public String name;
     public String color;
@@ -24,4 +24,13 @@ public class PlayerTemplate {
     public int checkpoints;
     public int energyBank;
     public boolean rebooting;
+
+    @Override
+    public PlayerTemplate clone() {
+        try {
+            return (PlayerTemplate) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

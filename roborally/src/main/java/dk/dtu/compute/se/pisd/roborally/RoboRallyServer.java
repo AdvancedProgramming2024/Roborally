@@ -107,12 +107,12 @@ public class RoboRallyServer {
 
     public GameTemplate getGameState(String playerName) {
         GameTemplate tmp = gameState.clone();
-        tmp.players.forEach(player -> {
-            if (!player.name.equals(playerName)) {
-                Arrays.fill(player.program, -1);
-                Arrays.fill(player.hand, -1);
+        for (int i = 0; i < gameState.players.size(); i++) {
+            if (!tmp.players.get(i).name.equals(playerName)) {
+                Arrays.fill(tmp.players.get(i).program, -1);
+                Arrays.fill(tmp.players.get(i).hand, -1);
             }
-        });
+        }
         return tmp;
     }
 }
