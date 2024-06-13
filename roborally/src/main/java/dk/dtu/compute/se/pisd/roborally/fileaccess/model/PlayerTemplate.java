@@ -28,7 +28,12 @@ public class PlayerTemplate implements Cloneable {
     @Override
     public PlayerTemplate clone() {
         try {
-            return (PlayerTemplate) super.clone();
+            PlayerTemplate tmp = (PlayerTemplate) super.clone();
+            tmp.program = program.clone();
+            tmp.hand = hand.clone();
+            tmp.drawPile = new ArrayList<>(drawPile);
+            tmp.discardPile = new ArrayList<>(discardPile);
+            return tmp;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
