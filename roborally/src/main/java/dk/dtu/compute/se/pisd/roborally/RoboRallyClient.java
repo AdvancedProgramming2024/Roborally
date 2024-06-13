@@ -157,12 +157,16 @@ public class RoboRallyClient extends Application {
         executorService.shutdown();
         System.out.println("Polling suspended"); // TODO remove
     }
-
+    /**
+     * This appoach must change if the timer is implemented.
+     * Client will not start polling the server until they click the "Finish Programming" button.
+     */
     public void startPolling() {
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(this::pollServer, 0, 500, TimeUnit.MILLISECONDS);
         System.out.println("Polling started"); // TODO remove
     }
+
 
     private void pollServer() {
         System.out.println("Polling server"); // TODO remove
