@@ -106,7 +106,7 @@ public class PlayerView extends Tab {
         //      refactored.
 
         finishButton = new Button("Finish Programming");
-        //finishButton.setOnAction( e -> gameController.finishProgrammingPhase());
+        finishButton.setOnAction( e -> appController.sendReadySignal());
         // TODO: Send signal for done with programming with Rest
 
         executeButton = new Button("Execute Program");

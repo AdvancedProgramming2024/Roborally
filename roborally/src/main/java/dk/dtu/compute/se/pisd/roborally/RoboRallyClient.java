@@ -80,6 +80,7 @@ public class RoboRallyClient extends Application {
 
     private ScheduledExecutorService executorService;
     private BoardView boardView;
+    private GameTemplate gameState;
 
     @Override
     public void init() throws Exception {
@@ -169,7 +170,7 @@ public class RoboRallyClient extends Application {
                     registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
-            GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+            gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
             if (gameState == null || boardView == null) return;
             updateBoardView(gameState);
         } catch (IOException | InterruptedException e) {
@@ -230,6 +231,7 @@ public class RoboRallyClient extends Application {
         // if present, remove old BoardView
         boardRoot.getChildren().clear();
         stage.setMaximized(true);
+        this.gameState = gameState;
 
         if (gameState != null) {
             // create and add view for new board
@@ -244,6 +246,7 @@ public class RoboRallyClient extends Application {
 
     public void updateBoardView(GameTemplate gameState) {
         if (gameState != null) {
+            this.gameState = gameState;
             BoardView boardView = (BoardView) boardRoot.getCenter();
             boardView.updateView(gameState);
         }

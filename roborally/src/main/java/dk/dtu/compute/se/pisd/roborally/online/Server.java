@@ -7,10 +7,7 @@ import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
-import dk.dtu.compute.se.pisd.roborally.model.CommandCardField;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Phase;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -236,14 +233,19 @@ public class Server {
         }
     }
 
-    @PostMapping(ResourceLocation.playerReady)
+    @GetMapping(ResourceLocation.playerReady)
     public ResponseEntity<String> playerReadySignal(@PathVariable String lobbyId, @PathVariable int playerId) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         assert lobby != null;
-        if (lobby.getGameServer().getGameController().board.getPhase() == Phase.PROGRAMMING) {
-            return responseCenter.badRequest("Player needs to send their program");
+        Board board = lobby.getGameServer().getGameController().board;
+        Player player = board.getPlayer(playerId);
+        if (player == null) return responseCenter.badRequest("Player not found");
+        if (board.getPhase() == Phase.PROGRAMMING) {
+            for (int i = 0; i < Player.NO_REGISTERS; i++) {
+                if (player.getProgramField(i).getCard() == null) return responseCenter.badRequest("Player needs to fill all registers");
+            }
         }
-        lobby.getGameServer().getGameController().board.getPlayer(playerId).setReady(true);
+        player.setReady(true);
         return responseCenter.ok();
     }
 }
