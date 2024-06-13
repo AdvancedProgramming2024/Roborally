@@ -155,6 +155,7 @@ public class RoboRallyClient extends Application {
         executorService.scheduleAtFixedRate(this::pollServer, 0, 1, TimeUnit.SECONDS);
     }
 
+    // TODO maybe first start this in activation phase, since it is only needed in activation phase and upgrade phase
     private void pollServer() {
         if (lobbyId == null) {
             return;

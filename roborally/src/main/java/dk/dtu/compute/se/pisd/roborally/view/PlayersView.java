@@ -28,6 +28,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import javafx.scene.control.TabPane;
 
@@ -48,19 +49,24 @@ public class PlayersView extends TabPane {
         this.appController = appController;
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
+        int ownIndex = 0;
         playerViews = new PlayerView[gameState.players.size()];
         for (int i = 0; i < gameState.players.size();  i++) {
             playerViews[i] = new PlayerView(appController, gameState, gameState.players.get(i));
             this.getTabs().add(playerViews[i]);
+            if (gameState.players.get(i).name.equals(appController.getRoboRally().getPlayerName())) ownIndex = i;
         }
+        this.getSelectionModel().select(ownIndex);
     }
 
     public void updateView(GameTemplate gameState) {
         this.gameState = gameState;
-        this.getSelectionModel().select(gameState.currentPlayer);
+        if (gameState.playPhase == Phase.ACTIVATION.ordinal()) {
+            this.getSelectionModel().select(gameState.currentPlayer);
+        }
+
         for (int i = 0; i < playerViews.length; i++) {
             playerViews[i].updateView(gameState, i);
         }
     }
-
 }
