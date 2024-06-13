@@ -153,7 +153,7 @@ public class RoboRallyClient extends Application {
         stage.show();
 
         executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(this::pollServer, 0, 1, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(this::pollServer, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     // TODO maybe first start this in activation phase, and stop again at programming phase, since it is only needed in activation phase and upgrade phase
