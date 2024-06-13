@@ -26,6 +26,7 @@ import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
@@ -37,7 +38,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -100,7 +100,7 @@ public class RoboRallyClient extends Application {
 
         appController = new AppController(this);
 
-        // create the primary scene with the a menu bar and a pane for
+        // create the primary scene with a menu bar and a pane for
         // the board view (which initially is empty); it will be filled
         // when the user creates a new game or loads a game
         RoboRallyMenuBar menuBar = new RoboRallyMenuBar(appController);
@@ -151,13 +151,21 @@ public class RoboRallyClient extends Application {
         stage.setResizable(true);
         stage.setMaximized(false);
         stage.show();
-
-        executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(this::pollServer, 0, 500, TimeUnit.MILLISECONDS);
     }
 
-    // TODO maybe first start this in activation phase, and stop again at programming phase, since it is only needed in activation phase and upgrade phase
+    public void suspendPolling() {
+        executorService.shutdown();
+        System.out.println("Polling suspended"); // TODO remove
+    }
+
+    public void startPolling() {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(this::pollServer, 0, 500, TimeUnit.MILLISECONDS);
+        System.out.println("Polling started"); // TODO remove
+    }
+
     private void pollServer() {
+        System.out.println("Polling server"); // TODO remove
         if (lobbyId == null) {
             return;
         }
@@ -171,7 +179,10 @@ public class RoboRallyClient extends Application {
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
             gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+            /*Object lasers = gson.fromJson(response.getItem().getAsJsonObject().get("lasers").getAsString(), List.class);
+            System.out.println("lasers: \n" + lasers.toString());*/
             if (gameState == null || boardView == null) return;
+            if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();
             updateBoardView(gameState);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);

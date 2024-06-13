@@ -106,7 +106,10 @@ public class PlayerView extends Tab {
         //      refactored.
 
         finishButton = new Button("Finish Programming");
-        finishButton.setOnAction( e -> appController.sendReadySignal());
+        finishButton.setOnAction( e -> {
+            appController.sendReadySignal();
+            appController.getRoboRally().startPolling();
+        });
         // TODO: Send signal for done with programming with Rest
 
         executeButton = new Button("Execute Program");
