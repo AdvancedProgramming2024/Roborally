@@ -119,6 +119,7 @@ public class RoboRallyClient extends Application {
         menuPane.getChildren().add(menuButtons.joinGameButton);
         menuPane.getChildren().add(menuButtons.loadGameButton);
         menuPane.getChildren().add(menuButtons.exitGameButton);
+        menuPane.getChildren().add(menuButtons.ruleButton);
         lobbyPane = new TilePane(Orientation.VERTICAL);
 
         //style for the menu

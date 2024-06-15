@@ -512,25 +512,22 @@ public class AppController implements Observer {
      * @return true if the current game was stopped, false otherwise
      */
     public boolean stopGame(boolean savedDialog) {
-        if (gameController != null) {
-            if (savedDialog) {
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Exit RoboRally?");
-                alert.setContentText("Are you sure you want to close RoboRally?\n" +
-                        "Have you remembered to save the game? Unsaved progress wil be deleted!");
-                Optional<ButtonType> result = alert.showAndWait();
+        if (savedDialog) {
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Return to lobby?");
+            alert.setContentText("Are you sure you want to return to lobby?\n" +
+                    "Have you remembered to save the game? Unsaved progress wil be deleted!");
+            Optional<ButtonType> result = alert.showAndWait();
 
-                if (!result.isPresent() || result.get() != ButtonType.OK) {
-                    return false;
-                }
+            if (!result.isPresent() || result.get() != ButtonType.OK) {
+                return false;
             }
-
-            roboRally.returnToMenu();
-            gameController = null;
-            roboRally.createBoardView(null);
-            return true;
         }
-        return false;
+
+        roboRally.returnToMenu();
+        gameController = null;
+        roboRally.createBoardView(null);
+        return true;
     }
 
     public void exit() {
