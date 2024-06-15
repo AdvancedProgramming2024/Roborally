@@ -151,6 +151,8 @@ public class Player extends Subject {
     public void reachCheckpoint() {
         checkpoints++;
         notifyChange();
+
+        // TODO change this, it should be shown to client instead, probably as part of the whole gamestate json object
         if (checkpoints == board.checkpoints) {
             Alert winnerAlert = new Alert(Alert.AlertType.INFORMATION);
             winnerAlert.setTitle("A player has won the game!");

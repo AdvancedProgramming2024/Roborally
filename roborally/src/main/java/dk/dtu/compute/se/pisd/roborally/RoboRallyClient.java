@@ -26,6 +26,8 @@ import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
@@ -33,6 +35,7 @@ import dk.dtu.compute.se.pisd.roborally.online.Response;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
+import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
@@ -53,6 +56,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -180,11 +185,12 @@ public class RoboRallyClient extends Application {
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return;
             }
+            JsonObject gameStateJson = response.getItem().getAsJsonObject();
             GsonBuilder simpleBuilder = new GsonBuilder().
                     registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
-            gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+            gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
             /*Object lasers = gson.fromJson(response.getItem().getAsJsonObject().get("lasers").getAsString(), List.class);
             System.out.println("lasers: \n" + lasers.toString());*/
             if (gameState == null || boardView == null) return;
@@ -192,6 +198,21 @@ public class RoboRallyClient extends Application {
             // since gamestate hasn't been updated with the new phase yet
             //if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();
             Platform.runLater(() -> updateBoardView(gameState));
+
+            JsonElement tmp = gameStateJson.get("lasers");
+
+            //if (gameStateJson.get("lasers") == null) SpaceView.destroyLasers();
+//            JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
+//            for (JsonElement laser : lasers) {
+//                JsonObject laserObj = laser.getAsJsonObject();
+//                JsonArray LOS = laserObj.get("laser").getAsJsonArray();
+//                List<SpaceTemplate> spaces = new ArrayList<>();
+//                for (JsonElement los : LOS) {
+//                    spaces.add(gson.fromJson(los.getAsString(), SpaceTemplate.class));
+//                }
+//                Heading heading = Heading.valueOf(laserObj.get("heading").getAsString());
+//                SpaceView.drawLaser(spaces, heading);
+//            }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

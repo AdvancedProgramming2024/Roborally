@@ -192,7 +192,11 @@ public class Server {
         JsonArray lasers = new JsonArray();
         for (Map.Entry<List<SpaceTemplate>, Heading> entry : lobby.getGameServer().getLaser().entrySet()) {
             JsonObject laser = new JsonObject();
-            laser.addProperty("laser", gson.toJson(entry.getKey()));
+            JsonArray LOS = new JsonArray();
+            for (SpaceTemplate space : entry.getKey()) {
+                LOS.add(gson.toJson(space));
+            }
+            laser.addProperty("laser", LOS.toString());
             laser.addProperty("heading", entry.getValue().ordinal());
             lasers.add(laser);
         }
