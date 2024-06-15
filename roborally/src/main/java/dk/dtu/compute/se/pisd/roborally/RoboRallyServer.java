@@ -54,7 +54,13 @@ public class RoboRallyServer {
             gameController.finishProgrammingPhase();
             while (gameController.board.getPhase() == Phase.ACTIVATION) {
                 gameController.executeStep();
-                waitForAcks();
+                updateGameState();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                laser.clear();
                 if (gameWon) {
                     gameRunning = false;
                     break;

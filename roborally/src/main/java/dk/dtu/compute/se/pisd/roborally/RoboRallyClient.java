@@ -34,6 +34,7 @@ import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.MenuButtons;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -187,8 +188,10 @@ public class RoboRallyClient extends Application {
             /*Object lasers = gson.fromJson(response.getItem().getAsJsonObject().get("lasers").getAsString(), List.class);
             System.out.println("lasers: \n" + lasers.toString());*/
             if (gameState == null || boardView == null) return;
-            if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();
-            updateBoardView(gameState);
+            // TODO: Implement timestamp check before phase check, else it stops immediately because gamestate
+            // since gamestate hasn't been updated with the new phase yet
+            //if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();
+            Platform.runLater(() -> updateBoardView(gameState));
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
