@@ -107,8 +107,16 @@ public class PlayerView extends Tab {
 
         finishButton = new Button("Finish Programming");
         finishButton.setOnAction( e -> {
-            appController.sendReadySignal();
-            appController.getRoboRally().startPolling();
+            if (appController.sendReadySignal()) {
+                appController.getRoboRally().startPolling();
+                for (CardFieldView cardFieldView : programCardViews) {
+                    // Deactivate events for cards, so they aren't moved after having finished programming
+                    cardFieldView.setDisable(true);
+                }
+                for (CardFieldView cardFieldView : cardViews) {
+                    cardFieldView.setDisable(true);
+                }
+            }
         });
         // TODO: Send signal for done with programming with Rest
 
@@ -225,9 +233,15 @@ public class PlayerView extends Tab {
             }
         }
         for (CardFieldView cardFieldView : cardViews) {
+            if (gameState.playPhase == Phase.ACTIVATION.ordinal()) {
+                cardFieldView.setDisable(false); // Activate events again after programming phase
+            }
             cardFieldView.updateView(gameState, playerId);
         }
         for (CardFieldView cardFieldView : programCardViews) {
+            if (gameState.playPhase == Phase.ACTIVATION.ordinal()) {
+                cardFieldView.setDisable(false); // Activate events again after programming phase
+            }
             cardFieldView.updateView(gameState, playerId);
         }
     }

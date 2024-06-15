@@ -383,7 +383,7 @@ public class AppController implements Observer {
         return true;
     }
 
-    public void sendReadySignal() {
+    public boolean sendReadySignal() {
         try {
             GameTemplate gameState = roboRally.getGameState();
             int playerId = -1;
@@ -399,10 +399,12 @@ public class AppController implements Observer {
                 alert.setTitle("Error");
                 alert.setHeaderText(response.getItem());
                 alert.showAndWait();
+                return false;
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+        return true;
     }
 
     /*public void newGame() {
