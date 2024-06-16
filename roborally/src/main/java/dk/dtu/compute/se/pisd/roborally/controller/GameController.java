@@ -325,13 +325,17 @@ public class GameController {
 
             //This is where the robot shoots
             for (int i = 0; i < board.getPlayersNumber(); i++) {
+                Player player = board.getPlayer(i);
+                if (player.isRebooting()) {
+                    continue;
+                }
                 List<Space> LOS = new ArrayList<>();
-                Heading heading = board.getPlayer(i).getHeading();
-                Space space = board.getPlayer(i).getSpace().board.getNeighbour(board.getPlayer(i).getSpace(), heading);
+                Heading heading = player.getHeading();
+                Space space = player.getSpace().board.getNeighbour(player.getSpace(), heading);
 
                 if (space != null) {
                     LOS = board.getLOS(space, heading, LOS);
-                    if (LOS.get(0).equals(board.getPlayer(i).getSpace())) {
+                    if (LOS.get(0).equals(player.getSpace())) {
                         break;
                     }
 
@@ -341,9 +345,9 @@ public class GameController {
                     Heading reverse = heading.next().next();
 
                     if (!hit.getWalls().contains(reverse)) {
-                        Player player = hit.getPlayer();
-                        if (player != null) {
-                            player.addCommandCard(new CommandCard(SPAM));
+                        Player playerHit = hit.getPlayer();
+                        if (playerHit != null) {
+                            playerHit.addCommandCard(new CommandCard(SPAM));
                             System.out.println("Headshot!");
                         }
                     }
