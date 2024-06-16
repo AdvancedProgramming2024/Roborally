@@ -200,20 +200,40 @@ public class RoboRallyClient extends Application {
             //if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();
             Platform.runLater(() -> updateBoardView(gameState));
 
-            JsonElement tmp = gameStateJson.get("lasers");
+            //JsonElement tmp = gameStateJson.get("lasers");
+            JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
+            if (lasers.size() == 0) SpaceView.destroyLasers();
+            for (JsonElement laser : lasers) {
+                JsonObject laserObj = laser.getAsJsonObject();
+                JsonArray LOS = laserObj.get("LOS").getAsJsonArray();
+                int heading = laserObj.get("heading").getAsInt();
 
-            //if (gameStateJson.get("lasers") == null) SpaceView.destroyLasers();
-//            JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
-//            for (JsonElement laser : lasers) {
-//                JsonObject laserObj = laser.getAsJsonObject();
-//                JsonArray LOS = laserObj.get("laser").getAsJsonArray();
-//                List<SpaceTemplate> spaces = new ArrayList<>();
-//                for (JsonElement los : LOS) {
-//                    spaces.add(gson.fromJson(los.getAsString(), SpaceTemplate.class));
-//                }
-//                Heading heading = Heading.valueOf(laserObj.get("heading").getAsString());
-//                SpaceView.drawLaser(spaces, heading);
-//            }
+                List<SpaceTemplate> spaces = new ArrayList<>();
+                for (JsonElement los : LOS) {
+                    JsonObject spaceObject = los.getAsJsonObject();
+                    int x = spaceObject.get("x").getAsInt();
+                    int y = spaceObject.get("y").getAsInt();
+
+                    spaces.add(gameState.board.spaces.get(x * gameState.board.height + y));
+                }
+                while (boardView.getSpaces()[gameState.board.height-1][gameState.board.width-1].gameState != gameState) {
+                    Thread.sleep(100);
+                }
+                Platform.runLater(() -> SpaceView.drawLaser(spaces, Heading.values()[heading]));
+            }
+
+            /*if (gameStateJson.get("lasers") == null) SpaceView.destroyLasers();
+            JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
+            for (JsonElement laser : lasers) {
+                JsonObject laserObj = laser.getAsJsonObject();
+                JsonArray LOS = laserObj.get("laser").getAsJsonArray();
+                List<SpaceTemplate> spaces = new ArrayList<>();
+                for (JsonElement los : LOS) {
+                    spaces.add(gson.fromJson(los.getAsString(), SpaceTemplate.class));
+                }
+                Heading heading = Heading.valueOf(laserObj.get("heading").getAsString());
+                SpaceView.drawLaser(spaces, heading);
+            }*/
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

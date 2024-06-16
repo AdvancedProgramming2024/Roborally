@@ -37,6 +37,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +54,10 @@ public class BoardView extends BorderPane {
     private GameTemplate gameState;
     private final RoboRallyClient client;
     private BoardTemplate board;
+    private static BoardTemplate staticBoard;
 
     private GridPane mainBoardPane;
+    @Getter
     private SpaceView[][] spaces;
     private PlayersView playersView;
     private UpgradeShopView upgradeShopView;
@@ -62,9 +65,10 @@ public class BoardView extends BorderPane {
 
     private Label statusLabel;
 
-    private static Map<SpaceTemplate, SpaceView> spaceViewMap = new HashMap<>();
+    private static Map<Integer, SpaceView> spaceViewMap = new HashMap<>();
 
     public BoardView(@NotNull AppController appController, @NotNull GameTemplate gameState, @NotNull RoboRallyClient client) {
+        staticBoard = gameState.board;
         this.client = client;
         this.appController = appController;
         this.gameState = gameState;
@@ -100,7 +104,7 @@ public class BoardView extends BorderPane {
                 SpaceTemplate space = board.spaces.get(x * board.height + y);
                 SpaceView spaceView = new SpaceView(gameState, space);
                 spaces[y][x] = spaceView;
-                spaceViewMap.put(space, spaceView);
+                spaceViewMap.put(x+y*board.width, spaceView);
                 mainBoardPane.add(spaceView, x, y);
             }
         }
@@ -108,6 +112,7 @@ public class BoardView extends BorderPane {
 
     public void updateView(GameTemplate gameState) {
         this.gameState = gameState;
+        staticBoard = gameState.board;
         statusLabel.setText(getStatusMessage());
         playersView.updateView(gameState);
         upgradeShopView.updateView();
@@ -118,7 +123,7 @@ public class BoardView extends BorderPane {
         }
     }
     public static SpaceView getSpaceView(SpaceTemplate space) {
-        return spaceViewMap.get(space);
+        return spaceViewMap.get(space.x + space.y*staticBoard.width);
     }
 
     public String getStatusMessage() {

@@ -11,10 +11,7 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static dk.dtu.compute.se.pisd.roborally.online.ResponseCenter.asJson;
 
@@ -190,17 +187,23 @@ public class Server {
         response.addProperty("gameState", gson.toJson(gameState));
 
         JsonArray lasers = new JsonArray();
-        for (Map.Entry<List<SpaceTemplate>, Heading> entry : lobby.getGameServer().getLaser().entrySet()) {
+        Iterator<Map.Entry<List<Space>, Heading>> entrySets = lobby.getGameServer().getLaser().entrySet().iterator();
+        for (int i = 0; i < lobby.getGameServer().getLaser().entrySet().size(); i++) {
+            Map.Entry<List<Space>, Heading> entry = entrySets.next();
             JsonObject laser = new JsonObject();
             JsonArray LOS = new JsonArray();
-            for (SpaceTemplate space : entry.getKey()) {
-                LOS.add(gson.toJson(space));
+            for (Space space : entry.getKey()) {
+                JsonObject spaceObject = new JsonObject();
+                spaceObject.addProperty("x", space.x);
+                spaceObject.addProperty("y", space.y);
+                LOS.add(spaceObject);
             }
-            laser.addProperty("laser", LOS.toString());
+            laser.add("LOS", LOS);
             laser.addProperty("heading", entry.getValue().ordinal());
+
             lasers.add(laser);
         }
-        response.addProperty("lasers", lasers.toString());
+        response.add("lasers", lasers);
         return responseCenter.response(response.toString());
     }
 

@@ -20,7 +20,7 @@ public class RoboRallyServer {
     private Lobby lobby;
     private boolean gameWon;
     private GameTemplate gameState = null;
-    private Map<List<SpaceTemplate>,Heading> laser = new HashMap<>();
+    private Map<List<Space>,Heading> laser = new HashMap<>();
 
     public RoboRallyServer(ArrayList<String> players, String mapName, Lobby lobby) {
         Board board = loadBoard(mapName);
@@ -56,6 +56,8 @@ public class RoboRallyServer {
                 gameController.executeStep();
                 updateGameState();
                 try {
+                    Thread.sleep(750);
+                    laser.clear();
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -100,14 +102,10 @@ public class RoboRallyServer {
     }
 
     public void addLaser(List<Space> los, Heading heading) {
-        List<SpaceTemplate> temp = new ArrayList<>();
-        for (Space space : los) {
-            temp.add(createSpaceTemplate(space, gameController.board));
-        }
-        laser.put(temp, heading);
+        laser.put(los, heading);
     }
 
-    public Map<List<SpaceTemplate>, Heading> getLaser() {
+    public Map<List<Space>, Heading> getLaser() {
         return laser;
     }
 
