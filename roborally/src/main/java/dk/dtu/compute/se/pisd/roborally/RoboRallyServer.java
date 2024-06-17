@@ -121,7 +121,7 @@ public class RoboRallyServer {
         GameTemplate tmp = gameState.clone();
         for (int i = 0; i < gameState.players.size(); i++) {
             if (!tmp.players.get(i).name.equals(playerName)) {
-                Arrays.fill(tmp.players.get(i).program, -1);
+                if (gameController.board.getPhase() == Phase.PROGRAMMING) Arrays.fill(tmp.players.get(i).program, -1);
                 Arrays.fill(tmp.players.get(i).hand, -1);
             }
         }

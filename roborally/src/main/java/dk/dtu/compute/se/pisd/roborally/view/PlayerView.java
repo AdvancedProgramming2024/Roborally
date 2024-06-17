@@ -194,13 +194,14 @@ public class PlayerView extends Tab {
 
 
         } else {
-            if (!programPane.getChildren().contains(playerInteractionPanel)) {
-                programPane.getChildren().remove(buttonPanel);
-                programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
-            }
-            playerInteractionPanel.getChildren().clear();
+            finishButton.setDisable(true);
+            if (gameState.currentPlayer == player.id && appController.getRoboRally().getPlayerName().equals(player.name)) {
+                if (!programPane.getChildren().contains(playerInteractionPanel)) {
+                    programPane.getChildren().remove(buttonPanel);
+                    programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
+                }
+                playerInteractionPanel.getChildren().clear();
 
-            if (gameState.currentPlayer == player.id) {
                 Command command = Command.values()[gameState.currentCommand];
                 for (Command option : command.getOptions()) {
                     Button optionButton = new Button(option.displayName);

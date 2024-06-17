@@ -157,9 +157,7 @@ public class Server {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameController().board.getPhase()
-                == Phase.PROGRAMMING ?
-                lobby.getGameServer().getGameState(playerName) : lobby.getGameServer().getGameState()));
+        response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState(playerName)));
 
         lobby.getGameServer().getLaser().clear();
         return responseCenter.response(response.toString());
@@ -177,8 +175,7 @@ public class Server {
         }
 
         JsonObject response = new JsonObject();
-        GameTemplate gameState = lobby.getGameServer().getGameController().board.getPhase() == Phase.PROGRAMMING ?
-                lobby.getGameServer().getGameState(playerName) : lobby.getGameServer().getGameState();
+        GameTemplate gameState = lobby.getGameServer().getGameState(playerName);
 
         if (gameState == null) {
             return responseCenter.badRequest(asJson("No new game state available"));
