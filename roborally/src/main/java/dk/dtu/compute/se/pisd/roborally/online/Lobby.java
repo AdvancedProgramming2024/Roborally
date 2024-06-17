@@ -1,6 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.online;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,7 +41,25 @@ public class Lobby {
         inGame = true;
 
         gameThread = new Thread(() -> {
-            gameServer = new RoboRallyServer(players, mapName, this);
+            gameServer = new RoboRallyServer(this);
+            gameServer.createGame(players, mapName);
+            gameServer.startGameLoop();
+        });
+        gameThread.start();
+
+        return true;
+    }
+
+    public boolean loadGame(GameTemplate gameState) {
+        if (players.size() != gameState.players.size()) return false;
+        for (int i = 0; i < gameState.players.size(); i++) {
+            if (!players.contains(gameState.players.get(i).name)) return false;
+        }
+        inGame = true;
+
+        gameThread = new Thread(() -> {
+            gameServer = new RoboRallyServer(this);
+            gameServer.loadGame(gameState);
             gameServer.startGameLoop();
         });
         gameThread.start();

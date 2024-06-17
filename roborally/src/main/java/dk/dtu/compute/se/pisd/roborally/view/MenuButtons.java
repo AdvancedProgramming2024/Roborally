@@ -11,7 +11,6 @@ public class MenuButtons {
     private AppController appController;
     public Button newGameButton = new Button("New Game");
     public Button joinGameButton = new Button("Join Game");
-    public Button loadGameButton = new Button("Load Game");
     public Button exitGameButton = new Button("Exit Game");
     public Button ruleButton = new Button("Rulebook");
 

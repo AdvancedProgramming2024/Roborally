@@ -7,7 +7,7 @@ import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -164,6 +164,44 @@ public class Server {
         return responseCenter.response(response.toString());
     }
 
+    @PostMapping(ResourceLocation.gameLoad)
+    public ResponseEntity<String> gameLoadRequest(@PathVariable String lobbyId, @RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        String playerName = info.get("playerName").getAsString();
+        GameTemplate gameState = gson.fromJson(info.get("gameState").getAsString(), GameTemplate.class);
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        if (lobby == null) {
+            return responseCenter.notFound();
+        }
+
+        if (!playerName.equals(lobby.getPlayers().get(0))) {
+            return responseCenter.badRequest(asJson("Only player 1 can start the game"));
+        }
+
+        if (!lobby.loadGame(gameState)) {
+            StringBuilder response = new StringBuilder();
+            response.append("These players must be present to load the game (the names need to be the same):\n");
+            for (PlayerTemplate player : gameState.players) {
+                response.append("'").append(player.name).append("'").append(", ");
+                response.delete(response.length() - 2, response.length() - 1);
+            }
+            return responseCenter.badRequest(asJson(response.toString()));
+        }
+
+        JsonObject response = new JsonObject();
+
+        try {
+            while (lobby.getGameServer() == null) Thread.sleep(100);
+            while (lobby.getGameServer().getGameState() == null) Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        response.addProperty("gameState", gson.toJson(lobby.getGameServer().getGameState(playerName)));
+
+        lobby.getGameServer().getLaser().clear();
+        return responseCenter.response(response.toString());
+    }
+
     @GetMapping(ResourceLocation.gameState+"/{playerName}")
     public ResponseEntity<String> gameStateRequest(@PathVariable String lobbyId, @PathVariable String playerName) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
@@ -254,7 +292,7 @@ public class Server {
         return responseCenter.ok();
     }
 
-    @GetMapping(ResourceLocation.gameSaveFile)
+    @GetMapping(ResourceLocation.gameSave)
     public ResponseEntity<String> saveGameRequest(@PathVariable String lobbyId) {
         Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
         if (lobby == null) {

@@ -192,13 +192,14 @@ public class RoboRallyClient extends Application {
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
             gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
+
             if (gameState == null || boardView == null) return;
             // TODO: Implement timestamp check before phase check, else it stops immediately because gamestate
             // since gamestate hasn't been updated with the new phase yet
             //if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();
+
             Platform.runLater(() -> updateBoardView(gameState));
 
-            //JsonElement tmp = gameStateJson.get("lasers");
             JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
             if (lasers.size() == 0) SpaceView.destroyLasers();
             for (JsonElement laser : lasers) {
@@ -268,7 +269,7 @@ public class RoboRallyClient extends Application {
         Button loadBtn = new Button("Load Game");
         Button leaveBtn = new Button("Leave Lobby");
         startBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.createGame());
-        //loadBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.loadGame()); //TODO: this
+        loadBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.loadGame());
         leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.leaveLobby());
 
         lobbyPane.getChildren().add(new HBox(15, startBtn, loadBtn, leaveBtn));

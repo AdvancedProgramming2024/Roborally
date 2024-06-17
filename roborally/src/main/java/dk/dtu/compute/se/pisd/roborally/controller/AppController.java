@@ -67,11 +67,15 @@ public class AppController implements Observer {
     final private RoboRallyClient roboRally;
     private volatile Thread waitForPlayers;
     private volatile Thread waitForGame;
-
-    private GameController gameController; // TODO: Remove later and fix functions depending on this
+    private final Gson gson;
 
     public AppController(@NotNull RoboRallyClient roboRally) {
         this.roboRally = roboRally;
+
+        GsonBuilder simpleBuilder = new GsonBuilder().
+                registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
+                setPrettyPrinting();
+        gson = simpleBuilder.create();
     }
 
 
@@ -239,12 +243,6 @@ public class AppController implements Observer {
                 if (!response.getStatusCode().is2xxSuccessful()) {
                     continue;
                 }
-
-                GsonBuilder simpleBuilder = new GsonBuilder().
-                        registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
-                        setPrettyPrinting();
-                Gson gson = simpleBuilder.create();
-
                 GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
 
                 Platform.runLater(() -> startGame(gameState));
@@ -314,12 +312,6 @@ public class AppController implements Observer {
                 alert.setHeaderText(response.getItem().getAsJsonObject().get("info").getAsString());
                 alert.showAndWait();
             } else {
-
-                GsonBuilder simpleBuilder = new GsonBuilder().
-                        registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
-                        setPrettyPrinting();
-                Gson gson = simpleBuilder.create();
-
                 GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
                 startGame(gameState);
             }
@@ -355,12 +347,6 @@ public class AppController implements Observer {
                 alert.showAndWait();
                 return false;
             } else {
-
-                GsonBuilder simpleBuilder = new GsonBuilder().
-                        registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
-                        setPrettyPrinting();
-                Gson gson = simpleBuilder.create();
-
                 gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
             }
         } catch (IOException | InterruptedException e) {
@@ -395,26 +381,6 @@ public class AppController implements Observer {
         return true;
     }
 
-
-    public void saveGame() {
-        String fileName = inputBox(true);
-        if (fileName == null) return;
-        try {
-            Response<String> response = RequestCenter.getRequest(makeUri(gameSaveFilePath(roboRally.getLobbyId())));
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(response.getItem());
-                alert.showAndWait();
-            }
-            String finalName = LoadSave.getFilePath(fileName, GAMESFOLDER);
-            writeToFile(response, finalName);
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void sendChoice(Command command) {
         GameTemplate gameState = roboRally.getGameState();
         int playerId = -1;
@@ -437,70 +403,64 @@ public class AppController implements Observer {
             throw new RuntimeException(e);
         }
     }
-    /*public void newGame() {
-        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
-        dialog.setTitle("Player number");
-        dialog.setHeaderText("Select number of players");
-        Optional<Integer> result = dialog.showAndWait();
-
-
-        // Temporary map selection dialog. Should be replaced with a new scene for selecting maps
-        ChoiceDialog<String> mapDialog = new ChoiceDialog<>("dizzy_highway", "defaultboard", "dizzy_highway", "high_octane");
-        mapDialog.setTitle("Map selection");
-        mapDialog.setHeaderText("Select map to play on");
-        Optional<String> mapName = mapDialog.showAndWait();
-
-        if (result.isPresent() && mapName.isPresent()) {
-            if (gameController != null) {
-                // The UI should not allow this, but in case this happens anyway.
-                // give the user the option to save the game or abort this operation!
-                if (!stopGame(true)) {
-                    return;
-                }
-            }
-
-            // @TODO set new scene where you can choose which map to play on
-
-            // XXX the board should eventually be created programmatically or loaded from a file
-            //     here we just create an empty board with the required number of players.
-            Board board = loadBoard(mapName.get());
-            assert board != null;
-            board.setGameId((int)(Math.random() * 100));
-            //saveBoard(board, "test");
-
-            gameController = new GameController(board);
-            Player.server = this;
-            int no = result.get();
-            for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1), i);
-                board.addPlayer(player);
-                player.setSpace(board.getSpace(i % board.width, i));
-            }
-
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase();
-
-            roboRally.createBoardView(gameController);
-        }
-    }
 
     public void saveGame() {
         String fileName = inputBox(true);
         if (fileName == null) return;
+        try {
+            Response<JsonObject> response = RequestCenter.getRequestJson(makeUri(gameSavePath(roboRally.getLobbyId())));
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(response.getItem().get("info").getAsString());
+                alert.showAndWait();
+            }
+            String finalName = LoadSave.getFilePath(fileName, GAMESFOLDER);
 
-        saveGameState(gameController, fileName);
+            GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
+            writeToFile(gameState, finalName);
+
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void loadGame() {
-        if (gameController == null) {
+        String fileName = inputBox(false);
+        if (fileName == null) return;
+        GameTemplate gameState = LoadSave.readGameStateFromFile(fileName);
+        if (gameState == null) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No game found with that name");
+            alert.showAndWait();
+            return;
+        }
+        try {
+            JsonObject info = new JsonObject();
+            info.addProperty("gameState", gson.toJson(gameState));
+            info.addProperty("playerName", roboRally.getPlayerName());
+            Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(gameLoadPath(roboRally.getLobbyId())), info);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(response.getItem().get("info").getAsString());
+                alert.showAndWait();
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        /*if (gameController == null) {
             String fileName = inputBox(false);
             if (fileName == null) return;
             gameController = loadGameState(fileName);
             if (gameController == null) return;
             roboRally.createBoardView(gameController);
-        }
-    }*/
+        }*/
+    }
+
+
 
     /**
      * Create a dialog box for the user to input a filename.
@@ -532,49 +492,12 @@ public class AppController implements Observer {
         return filenameField.getText();
     }
 
-    /**
-     * Stop playing the current game, giving the user the option to save
-     * the game or to cancel stopping the game. The method returns true
-     * if the game was successfully stopped (with or without saving the
-     * game); returns false, if the current game was not stopped. In case
-     * there is no current game, false is returned.
-     *
-     * @return true if the current game was stopped, false otherwise
-     */
-    public boolean stopGame(boolean savedDialog) {
-        if (savedDialog) {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Return to lobby?");
-            alert.setContentText("Are you sure you want to return to lobby?\n" +
-                    "Have you remembered to save the game? Unsaved progress wil be deleted!");
-            Optional<ButtonType> result = alert.showAndWait();
-
-            if (!result.isPresent() || result.get() != ButtonType.OK) {
-                return false;
-            }
-        }
-
-        roboRally.returnToMenu();
-        gameController = null;
-        roboRally.createBoardView(null);
-        return true;
-    }
-
     public void exit() {
-        // If the user did not cancel, the RoboRally application will exit
-        if (gameController == null || stopGame(true)) {
-            Platform.exit();
-        }
+        Platform.exit();
     }
-
-    public boolean isGameRunning() {
-        return gameController != null;
-    }
-
 
     @Override
     public void update(Subject subject) {
         // XXX do nothing for now
     }
-
 }

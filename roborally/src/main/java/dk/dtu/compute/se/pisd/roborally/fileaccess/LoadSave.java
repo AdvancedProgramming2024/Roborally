@@ -109,22 +109,7 @@ public class LoadSave {
 		return null;
     }
 
-    public static void saveBoard(Board board, String fileName) {
-        BoardTemplate template = createBoardTemplate(board);
-
-        // Get resource folder, create folder if it doesn't exist
-        String filename = getFilePath(fileName, BOARDSFOLDER);
-
-        writeToFile(template, filename);
-    }
-
-    /**
-     * Load the game state from a file with the given name. If the file does not exist, null is returned.
-     * @author Jonathan (s235115)
-     * @param fileName of the file to load from
-     */
-    public static GameController loadGameState(String fileName) {
-
+    public static GameTemplate readGameStateFromFile(String fileName) {
         ClassLoader classLoader = LoadSave.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(GAMESFOLDER + "/" + fileName + "." + JSON_EXT);
 
@@ -137,74 +122,13 @@ public class LoadSave {
                 registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>());
         Gson gson = simpleBuilder.create();
 
-        // FileReader fileReader = null;
         JsonReader reader = null;
+
         try {
-            // fileReader = new FileReader(filename);
             reader = gson.newJsonReader(new InputStreamReader(inputStream));
-            GameTemplate template = gson.fromJson(reader, GameTemplate.class);
-
-            Board board = new Board(template.board.width, template.board.height);
-
-            // TODO: Fix this
-            RoboRallyServer server = new RoboRallyServer(null, null, null);
-            GameController gameController = server.getGameController();
-            gameController.commandCardController.setCurrentCommand(template.currentCommand != -1 ? Command.values()[template.currentCommand] : null);
-
-            board.setGameId(template.gameId);
-
-            board.setAntenna(template.board.antennaX, template.board.antennaY, Heading.values()[template.board.antennaHeading]);
-            board.setRebootStation(template.board.rebootStationX, template.board.rebootStationY, Heading.values()[template.board.rebootStationHeading]);
-
-            for (SpaceTemplate spaceTemplate: template.board.spaces) {
-                Space space = board.getSpace(spaceTemplate.x, spaceTemplate.y);
-                if (space != null) {
-                    space.getActions().addAll(spaceTemplate.actions);
-                    space.getWalls().addAll(spaceTemplate.walls);
-                    space.setPit(spaceTemplate.isPit);
-                }
-            }
-
-            for (PlayerTemplate playerTemplate: template.players) {
-                Player player = new Player(board, playerTemplate.color, playerTemplate.name, playerTemplate.id);
-                player.setSpace(board.getSpace(playerTemplate.xPosition, playerTemplate.yPosition));
-                board.getSpace(playerTemplate.xPosition, playerTemplate.yPosition).setPlayer(player);
-                player.setHeading(Heading.values()[playerTemplate.heading]);
-
-                for (int card : playerTemplate.drawPile) {
-                    player.getDrawPile().add(new CommandCard(Command.values()[card]));
-                }
-                for (int card : playerTemplate.discardPile) {
-                    player.getDiscardPile().add(new CommandCard(Command.values()[card]));
-                }
-                for (int i=0; i<playerTemplate.program.length; i++) {
-                    player.getProgram()[i] = new CommandCardField(player);
-                    if (playerTemplate.program[i] != -1)
-                        player.getProgram()[i].setCard(new CommandCard(Command.values()[playerTemplate.program[i]]));
-                }
-                for (int i=0; i<playerTemplate.hand.length; i++) {
-                    player.getCards()[i] = new CommandCardField(player);
-                    if (playerTemplate.hand[i] != -1)
-                        player.getCards()[i].setCard(new CommandCard(Command.values()[playerTemplate.hand[i]]));
-                }
-
-                player.setCheckpoints(playerTemplate.checkpoints);
-                player.setEnergyCubes(playerTemplate.energyBank);
-                player.setRebooting(playerTemplate.rebooting);
-                board.addPlayer(player);
-            }
-
-            board.setCurrentPlayer(board.getPlayer(template.currentPlayer));
-            List<Player> playerOrder = new ArrayList<>();
-            for (int i : template.playerOrder) {
-                playerOrder.add(board.getPlayer(i));
-            }
-            gameController.setPlayerOrder(playerOrder);
-            board.setPhase(Phase.values()[template.playPhase]);
-            board.setStep(template.step);
-
+            GameTemplate gameState = gson.fromJson(reader, GameTemplate.class);
             reader.close();
-            return gameController;
+            return gameState;
         } catch (IOException e1) {
             if (reader != null) {
                 try {
@@ -219,6 +143,73 @@ public class LoadSave {
             }
         }
         return null;
+    }
+
+    /**
+     * Load the game state from a file with the given name. If the file does not exist, null is returned.
+     * @author Jonathan (s235115)
+     * @param gameState of the game you want to load
+     */
+    public static GameController loadGameState(GameTemplate gameState, RoboRallyServer server) {
+        Board board = new Board(gameState.board.width, gameState.board.height);
+
+        GameController gameController = new GameController(board, server);
+        server.setGameController(gameController);
+        gameController.commandCardController.setCurrentCommand(gameState.currentCommand != -1 ? Command.values()[gameState.currentCommand] : null);
+
+        board.setGameId(gameState.gameId);
+
+        board.setAntenna(gameState.board.antennaX, gameState.board.antennaY, Heading.values()[gameState.board.antennaHeading]);
+        board.setRebootStation(gameState.board.rebootStationX, gameState.board.rebootStationY, Heading.values()[gameState.board.rebootStationHeading]);
+
+        for (SpaceTemplate spaceTemplate: gameState.board.spaces) {
+            Space space = board.getSpace(spaceTemplate.x, spaceTemplate.y);
+            if (space != null) {
+                space.getActions().addAll(spaceTemplate.actions);
+                space.getWalls().addAll(spaceTemplate.walls);
+                space.setPit(spaceTemplate.isPit);
+            }
+        }
+
+        for (PlayerTemplate playerTemplate: gameState.players) {
+            Player player = new Player(board, playerTemplate.color, playerTemplate.name, playerTemplate.id);
+            player.setSpace(board.getSpace(playerTemplate.xPosition, playerTemplate.yPosition));
+            board.getSpace(playerTemplate.xPosition, playerTemplate.yPosition).setPlayer(player);
+            player.setHeading(Heading.values()[playerTemplate.heading]);
+
+            for (int card : playerTemplate.drawPile) {
+                player.getDrawPile().add(new CommandCard(Command.values()[card]));
+            }
+            for (int card : playerTemplate.discardPile) {
+                player.getDiscardPile().add(new CommandCard(Command.values()[card]));
+            }
+            for (int i=0; i<playerTemplate.program.length; i++) {
+                player.getProgram()[i] = new CommandCardField(player);
+                if (playerTemplate.program[i] != -1)
+                    player.getProgram()[i].setCard(new CommandCard(Command.values()[playerTemplate.program[i]]));
+            }
+            for (int i=0; i<playerTemplate.hand.length; i++) {
+                player.getCards()[i] = new CommandCardField(player);
+                if (playerTemplate.hand[i] != -1)
+                    player.getCards()[i].setCard(new CommandCard(Command.values()[playerTemplate.hand[i]]));
+            }
+
+            player.setCheckpoints(playerTemplate.checkpoints);
+            player.setEnergyCubes(playerTemplate.energyBank);
+            player.setRebooting(playerTemplate.rebooting);
+            board.addPlayer(player);
+        }
+
+        board.setCurrentPlayer(board.getPlayer(gameState.currentPlayer));
+        List<Player> playerOrder = new ArrayList<>();
+        for (int i : gameState.playerOrder) {
+            playerOrder.add(board.getPlayer(i));
+        }
+        gameController.setPlayerOrder(playerOrder);
+        board.setPhase(Phase.values()[gameState.playPhase]);
+        board.setStep(gameState.step);
+
+        return gameController;
     }
 
     /**

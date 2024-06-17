@@ -17,37 +17,42 @@ import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.loadBoard;
 @Setter
 @Getter
 public class RoboRallyServer {
-    private final GameController gameController;
+    @Getter
+    private GameController gameController;
     private Lobby lobby;
     private boolean gameWon;
     private GameTemplate gameState = null;
     private Map<List<Space>,Heading> laser = new HashMap<>();
+    private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
-    public RoboRallyServer(ArrayList<String> players, String mapName, Lobby lobby) {
+    public RoboRallyServer(Lobby lobby) {
+        this.lobby = lobby;
+    }
+
+    public void createGame(ArrayList<String> players, String mapName) {
         Board board = loadBoard(mapName);
         assert board != null;
         board.setGameId(Integer.parseInt(lobby.getID()));
 
         gameController = new GameController(board, this);
         Player.server = this;
-        List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
         for (int i = 0; i < players.size(); i++) {
             Player player = new Player(board, PLAYER_COLORS.get(i), players.get(i), i);
             board.addPlayer(player);
             player.setSpace(board.getSpace(0, i));
             player.setHeading(Heading.EAST);
         }
+    }
 
-        //TODO: Send game state to all players and wait for ack
-
-        // XXX: V2
-        // board.setCurrentPlayer(board.getPlayer(0));
-
-        gameController.startProgrammingPhase();
-        updateGameState();
+    public void loadGame(GameTemplate gameState) {
+        gameController = LoadSave.loadGameState(gameState, this);
+        Player.server = this;
     }
 
     public void startGameLoop() {
+        gameController.startProgrammingPhase();
+        updateGameState();
+
         boolean gameRunning = true;
         while (gameRunning) {
             waitForAcks(); // Wait for players to have sent their programming registers
@@ -78,14 +83,6 @@ public class RoboRallyServer {
             }
         }
         lobby.stopGame();
-    }
-
-    public GameController getGameController() {
-        return gameController;
-    }
-
-    public void stopGame() {
-        // TODO: Do something
     }
 
     public void updateGameState() {
@@ -131,6 +128,5 @@ public class RoboRallyServer {
     public void gameWon(Player player) {
         this.gameWon = true;
         gameController.setWinner(player);
-        stopGame();
     }
 }

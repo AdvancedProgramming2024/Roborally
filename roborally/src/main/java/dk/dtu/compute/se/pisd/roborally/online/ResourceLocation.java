@@ -32,8 +32,11 @@ public class ResourceLocation {
     public static String gameStatePath(String lobbyId) {
         return gameState.replace("{lobbyId}", lobbyId);
     }
-    public static String gameSaveFilePath(String lobbyId) {
-        return gameSaveFile.replace("{lobbyId}", lobbyId);
+    public static String gameSavePath(String lobbyId) {
+        return gameSave.replace("{lobbyId}", lobbyId);
+    }
+    public static String gameLoadPath(String lobbyId) {
+        return gameLoad.replace("{lobbyId}", lobbyId);
     }
     public static String playerCardMovementPath(String lobbyId, int playerId) {
         return playerCardMovement.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId + "");
@@ -53,7 +56,8 @@ public class ResourceLocation {
     public static final String leaveLobby = lobby + "/leave";
     public static final String lobbyState = lobby + "/state";
     public static final String gameState = game + "/state";
-    public static final String gameSaveFile = game + "/saveFile";
+    public static final String gameLoad = game + "/Load";
+    public static final String gameSave = game + "/saveFile";
     public static final String players = game + "/players";
     public static final String player = players + "/{playerId}";
     public static final String playerCardMovement = player + "/cardMovement";

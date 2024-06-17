@@ -68,8 +68,9 @@ public class RoboRallyMenuBar extends MenuBar {
 
         exitApp = new MenuItem("Exit");
         exitApp.setOnAction( e -> {
-            appController.getRoboRally().suspendPolling();
-            this.appController.exit();
+            // TODO: FIX THIS
+            /*appController.leaveLobby();
+            appController.getRoboRally().suspendPolling();*/
         });
         controlMenu.getItems().add(exitApp);
 
