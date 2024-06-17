@@ -24,6 +24,8 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -42,6 +44,9 @@ public class GameController {
 
     final public Board board;
     final public CommandCardController commandCardController;
+    @Setter
+    @Getter
+    private Player winner;
     private List<Player> playerOrder;
 
     public final RoboRallyServer server;

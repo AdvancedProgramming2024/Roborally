@@ -25,7 +25,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import dk.dtu.compute.se.pisd.roborally.controller.CommandCardController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
@@ -269,6 +268,8 @@ public class LoadSave {
 
         gameTemplate.playPhase = gameController.board.getPhase().ordinal();
         gameTemplate.step = gameController.board.getStep();
+        gameTemplate.winnerName = gameController.getWinner() != null ? gameController.getWinner().getName() : null;
+
 
         // TODO add new method to handle save to file which uses saveGameState
         // Get resource folder, create folder if it doesn't exist

@@ -28,7 +28,6 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
@@ -42,6 +41,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -221,7 +221,10 @@ public class RoboRallyClient extends Application {
                 }
                 Platform.runLater(() -> SpaceView.drawLaser(spaces, Heading.values()[heading]));
             }
-
+            if (gameState.winnerName != null) {
+                suspendPolling();
+                Platform.runLater(this::displayWinner);
+            }
             /*if (gameStateJson.get("lasers") == null) SpaceView.destroyLasers();
             JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
             for (JsonElement laser : lasers) {
@@ -237,6 +240,15 @@ public class RoboRallyClient extends Application {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void displayWinner() {
+        Alert winnerAlert = new Alert(Alert.AlertType.INFORMATION);
+        winnerAlert.setTitle("A player has won the game!");
+        winnerAlert.setHeaderText("Congratulations to " + gameState.winnerName + "!\nThey have won the game!");
+        winnerAlert.setContentText("Returning to main menu.");
+        winnerAlert.showAndWait();
+        appController.leaveLobby();
     }
 
     public void createLobbyView() {
