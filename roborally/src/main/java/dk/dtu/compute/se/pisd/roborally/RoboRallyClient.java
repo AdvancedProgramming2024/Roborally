@@ -73,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 public class RoboRallyClient extends Application {
 
     private static final int MIN_APP_WIDTH = 600;
+    private boolean poll;
     private String lobbyId;
     private String playerName;
     private AppController appController;
@@ -117,7 +118,6 @@ public class RoboRallyClient extends Application {
         menuPane = new TilePane(Orientation.VERTICAL);
         menuPane.getChildren().add(menuButtons.newGameButton);
         menuPane.getChildren().add(menuButtons.joinGameButton);
-        menuPane.getChildren().add(menuButtons.loadGameButton);
         menuPane.getChildren().add(menuButtons.exitGameButton);
         menuPane.getChildren().add(menuButtons.ruleButton);
         lobbyPane = new TilePane(Orientation.VERTICAL);
@@ -154,8 +154,10 @@ public class RoboRallyClient extends Application {
         stage.setOnCloseRequest(
                 e -> {
                     e.consume();
-                    appController.leaveLobby();
-                    appController.exit();} );
+                    if (lobbyId != null) {appController.leaveLobby();}
+                        if (poll) {suspendPolling();}
+                    appController.exit();}
+        );
         stage.setResizable(true);
         stage.setMaximized(false);
         stage.show();
@@ -182,6 +184,7 @@ public class RoboRallyClient extends Application {
             return;
         }
         try {
+            poll = true;
             Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameStatePath(lobbyId)+"/"+getPlayerName()));
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return;
@@ -267,11 +270,13 @@ public class RoboRallyClient extends Application {
         lobbyPane.getChildren().add(playersText);
 
         Button startBtn = new Button("Start Game");
+        Button loadBtn = new Button("Load Game");
         Button leaveBtn = new Button("Leave Lobby");
         startBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.createGame());
+        //loadBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.loadGame()); //TODO: this
         leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.leaveLobby());
 
-        lobbyPane.getChildren().add(new HBox(15, startBtn, leaveBtn));
+        lobbyPane.getChildren().add(new HBox(15, startBtn, loadBtn, leaveBtn));
         scene.setRoot(lobbyPane);
     }
 

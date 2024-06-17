@@ -41,7 +41,7 @@ public class RoboRallyMenuBar extends MenuBar {
 
     private MenuItem saveGame;
 
-    private MenuItem stopGame;
+   // private MenuItem stopGame;
 
     private MenuItem exitApp;
 
@@ -55,12 +55,12 @@ public class RoboRallyMenuBar extends MenuBar {
         controlMenu = new Menu("File");
         this.getMenus().add(controlMenu);
 
-        stopGame = new MenuItem("Stop Game");
-        stopGame.setOnAction( e -> {
-            boolean stop = this.appController.stopGame(true);
-            if (stop) {appController.getRoboRally().suspendPolling();}
-        });
-        controlMenu.getItems().add(stopGame);
+//        stopGame = new MenuItem("Stop Game");
+//        stopGame.setOnAction( e -> {
+//            boolean stop = this.appController.stopGame(true);
+//            if (stop) {appController.getRoboRally().suspendPolling();}
+//        });
+//        controlMenu.getItems().add(stopGame);
 
         saveGame = new MenuItem("Save Game");
         //saveGame.setOnAction( e -> this.appController.saveGame()); //TODO: Move to use right place
