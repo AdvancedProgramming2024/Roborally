@@ -48,7 +48,7 @@ import java.util.List;
 public class LoadSave {
 
     private static final String BOARDSFOLDER = "boards";
-    private static final String GAMESFOLDER = "games";
+    public static final String GAMESFOLDER = "games";
     private static final String DEFAULTBOARD = "defaultboard";
     private static final String JSON_EXT = "json";
 
@@ -286,7 +286,7 @@ public class LoadSave {
      * @return File path
      */
     @NotNull
-    private static String getFilePath(String fileName, String rFolder) {
+    public static String getFilePath(String fileName, String rFolder) {
         ClassLoader classLoader = LoadSave.class.getClassLoader();
 
         URL url = classLoader.getResource(rFolder);

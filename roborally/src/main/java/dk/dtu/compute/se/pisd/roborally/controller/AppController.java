@@ -28,6 +28,7 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.*;
 import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.*;
 
 /**
@@ -198,9 +200,7 @@ public class AppController implements Observer {
     }
 
     public void leaveLobby() {
-        if (getRoboRally().getLobbyId() == null) {
-            return;
-        }
+        if (getRoboRally().getLobbyId() == null) return;
         try {
             Map<String, Object> playerName = Map.of("playerName", roboRally.getPlayerName());
             Response<String> response = RequestCenter.postRequest(makeUri(leaveLobbyPath(roboRally.getLobbyId())), playerName);
@@ -410,6 +410,23 @@ public class AppController implements Observer {
         return true;
     }
 
+    public void saveGame() {
+        String fileName = inputBox(true);
+        if (fileName == null) return;
+        try {
+            Response<String> response = RequestCenter.getRequest(makeUri(gameSaveFilePath(roboRally.getLobbyId())));
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(response.getItem());
+                alert.showAndWait();
+            }
+            String finalName = LoadSave.getFilePath(fileName, GAMESFOLDER);
+            writeToFile(response, finalName);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
     /*public void newGame() {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");

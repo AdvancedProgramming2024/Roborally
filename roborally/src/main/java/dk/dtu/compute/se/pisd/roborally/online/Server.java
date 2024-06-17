@@ -5,6 +5,7 @@ import com.google.gson.*;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
@@ -254,5 +255,27 @@ public class Server {
         }
         player.setReady(true);
         return responseCenter.ok();
+    }
+
+    @GetMapping(ResourceLocation.gameSaveFile)
+    public ResponseEntity<String> saveGameRequest(@PathVariable String lobbyId) {
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        if (lobby == null) {
+            return responseCenter.notFound();
+        }
+
+        if (!lobby.isInGame() || lobby.getGameServer() == null || lobby.getGameServer().getGameState() == null) {
+            return responseCenter.badRequest(asJson("Game has not started yet, impossible to save"));
+        }
+
+        JsonObject response = new JsonObject();
+        GameTemplate gameState = LoadSave.saveGameState(lobby.getGameServer().getGameController(), true);
+
+        if (gameState == null) {
+            return responseCenter.badRequest(asJson("No new game state available"));
+        }
+
+        response.addProperty("gameState", gson.toJson(gameState));
+        return responseCenter.response(response.toString());
     }
 }
