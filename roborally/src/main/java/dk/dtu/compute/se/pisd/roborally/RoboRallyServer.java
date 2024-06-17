@@ -50,15 +50,18 @@ public class RoboRallyServer {
     }
 
     public void startGameLoop() {
-        gameController.startProgrammingPhase();
+        if (gameController.board.getPhase() == Phase.INITIALISATION) gameController.startProgrammingPhase();
         updateGameState();
 
         boolean gameRunning = true;
         while (gameRunning) {
-            waitForAcks(); // Wait for players to have sent their programming registers
-            System.out.println("Starting activation phase");
-            gameController.finishProgrammingPhase();
-            while (gameController.board.getPhase() == Phase.ACTIVATION) {
+            if (gameController.board.getPhase() == Phase.PROGRAMMING) {
+                waitForAcks(); // Wait for players to have sent their programming registers
+                System.out.println("Starting activation phase");
+                gameController.finishProgrammingPhase();
+            }
+            while (gameController.board.getPhase() == Phase.ACTIVATION || gameController.board.getPhase() == Phase.PLAYER_INTERACTION) {
+                // Player interaction should be used here to get to the loop when loading a game in the middle of a round
                 gameController.executeStep();
                 updateGameState();
                 while (gameController.board.getPhase() == Phase.PLAYER_INTERACTION) {
