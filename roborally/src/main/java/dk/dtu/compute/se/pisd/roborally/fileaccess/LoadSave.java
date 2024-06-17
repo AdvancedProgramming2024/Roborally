@@ -338,13 +338,6 @@ public class LoadSave {
     }
 
     public static void writeToFile(Object template, String filename) {
-        // In simple cases, we can create a Gson object with new:
-        //
-        //   Gson gson = new Gson();
-        //
-        // But, if you need to configure it, it is better to create it from
-        // a builder (here, we want to configure the JSON serialisation with
-        // a pretty printer):
         GsonBuilder simpleBuilder = new GsonBuilder().
                 registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                 setPrettyPrinting();
@@ -357,6 +350,9 @@ public class LoadSave {
             writer = gson.newJsonWriter(fileWriter);
             gson.toJson(template, template.getClass(), writer);
             writer.close();
+            fileWriter.close();
+            writer = null;
+            fileWriter = null;
         } catch (IOException e1) {
             if (writer != null) {
                 try {
