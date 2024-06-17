@@ -155,6 +155,7 @@ public class RoboRallyClient extends Application {
                 e -> {
                     e.consume();
                     appController.leaveLobby();
+                    suspendPolling();
                     appController.exit();} );
         stage.setResizable(true);
         stage.setMaximized(false);
