@@ -367,11 +367,14 @@ public class GameController {
     /**
      * Makes the player choose a card from the command card field
      * @param command Chosen command to be executed
+     * @return true if the command was executed successfully, false if the command was not an option (for validation)
      */
-    public void makeChoice(Command command) {
+    public boolean makeChoice(Command command) {
+        if (!commandCardController.getCurrentCommand().getOptions().contains(command)) return false;
         board.setPhase(Phase.ACTIVATION);
         commandCardController.executeCommand(this, board.getCurrentPlayer(), command);
         endTurn();
+        return true;
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {

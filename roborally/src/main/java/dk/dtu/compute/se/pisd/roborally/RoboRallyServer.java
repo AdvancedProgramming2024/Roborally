@@ -55,6 +55,14 @@ public class RoboRallyServer {
             while (gameController.board.getPhase() == Phase.ACTIVATION) {
                 gameController.executeStep();
                 updateGameState();
+                while (gameController.board.getPhase() == Phase.PLAYER_INTERACTION) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    updateGameState();
+                }
                 try {
                     Thread.sleep(750);
                     laser.clear();
@@ -62,7 +70,6 @@ public class RoboRallyServer {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                laser.clear();
                 if (gameWon) {
                     gameRunning = false;
                     break;

@@ -30,6 +30,7 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
+import dk.dtu.compute.se.pisd.roborally.model.Command;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
@@ -405,6 +406,29 @@ public class AppController implements Observer {
             throw new RuntimeException(e);
         }
         return true;
+    }
+
+    public void sendChoice(Command command) {
+        GameTemplate gameState = roboRally.getGameState();
+        int playerId = -1;
+        for (int i = 0; i < gameState.players.size(); i++) {
+            if (gameState.players.get(i).name.equals(roboRally.getPlayerName())) {
+                playerId = i;
+                break;
+            }
+        }
+        try {
+            Map<String, Object> args = Map.of("command", command.ordinal());
+            Response<String> response = RequestCenter.postRequest(makeUri(playerChoicePath(roboRally.getLobbyId(), playerId)), args);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(response.getItem());
+                alert.showAndWait();
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*public void newGame() {

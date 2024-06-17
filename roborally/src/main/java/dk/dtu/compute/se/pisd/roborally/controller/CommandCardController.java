@@ -1,9 +1,15 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
+@Getter
+@Setter
 public class CommandCardController {
+
+    private Command currentCommand = null;
 
     /**
      * Execute command boolean.
@@ -15,6 +21,7 @@ public class CommandCardController {
      * @return whether the command was executed (true) or a new card needs to be drawn (false)
      */
     public boolean executeCommand(GameController gameController, @NotNull Player player, Command command) {
+        currentCommand = command;
         if (player.board == gameController.board && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
