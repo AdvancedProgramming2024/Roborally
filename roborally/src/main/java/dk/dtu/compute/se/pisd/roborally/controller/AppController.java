@@ -198,6 +198,9 @@ public class AppController implements Observer {
     }
 
     public void leaveLobby() {
+        if (getRoboRally().getLobbyId() == null) {
+            return;
+        }
         try {
             Map<String, Object> playerName = Map.of("playerName", roboRally.getPlayerName());
             Response<String> response = RequestCenter.postRequest(makeUri(leaveLobbyPath(roboRally.getLobbyId())), playerName);
