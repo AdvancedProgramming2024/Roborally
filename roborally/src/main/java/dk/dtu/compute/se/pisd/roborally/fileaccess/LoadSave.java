@@ -276,6 +276,8 @@ public class LoadSave {
 
         gameTemplate.playPhase = gameController.board.getPhase().ordinal();
         gameTemplate.step = gameController.board.getStep();
+        gameTemplate.winnerName = gameController.getWinner() != null ? gameController.getWinner().getName() : null;
+
 
         // TODO add new method to handle save to file which uses saveGameState
         // Get resource folder, create folder if it doesn't exist

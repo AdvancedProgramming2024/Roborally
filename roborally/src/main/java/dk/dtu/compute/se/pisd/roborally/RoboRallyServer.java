@@ -6,6 +6,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.online.Lobby;
+import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -125,5 +126,11 @@ public class RoboRallyServer {
             }
         }
         return tmp;
+    }
+
+    public void gameWon(Player player) {
+        this.gameWon = true;
+        gameController.setWinner(player);
+        stopGame();
     }
 }

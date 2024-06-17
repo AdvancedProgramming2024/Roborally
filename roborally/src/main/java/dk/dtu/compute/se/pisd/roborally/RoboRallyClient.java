@@ -28,7 +28,6 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
@@ -42,6 +41,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -73,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 public class RoboRallyClient extends Application {
 
     private static final int MIN_APP_WIDTH = 600;
+    private boolean poll;
     private String lobbyId;
     private String playerName;
     private AppController appController;
@@ -117,7 +118,6 @@ public class RoboRallyClient extends Application {
         menuPane = new TilePane(Orientation.VERTICAL);
         menuPane.getChildren().add(menuButtons.newGameButton);
         menuPane.getChildren().add(menuButtons.joinGameButton);
-        menuPane.getChildren().add(menuButtons.loadGameButton);
         menuPane.getChildren().add(menuButtons.exitGameButton);
         menuPane.getChildren().add(menuButtons.ruleButton);
         lobbyPane = new TilePane(Orientation.VERTICAL);
@@ -154,8 +154,10 @@ public class RoboRallyClient extends Application {
         stage.setOnCloseRequest(
                 e -> {
                     e.consume();
-                    appController.leaveLobby();
-                    appController.exit();} );
+                    if (lobbyId != null) {appController.leaveLobby();}
+                        if (poll) {suspendPolling();}
+                    appController.exit();}
+        );
         stage.setResizable(true);
         stage.setMaximized(false);
         stage.show();
@@ -182,6 +184,7 @@ public class RoboRallyClient extends Application {
             return;
         }
         try {
+            poll = true;
             Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameStatePath(lobbyId)+"/"+getPlayerName()));
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return;
@@ -221,7 +224,10 @@ public class RoboRallyClient extends Application {
                 }
                 Platform.runLater(() -> SpaceView.drawLaser(spaces, Heading.values()[heading]));
             }
-
+            if (gameState.winnerName != null) {
+                suspendPolling();
+                Platform.runLater(this::displayWinner);
+            }
             /*if (gameStateJson.get("lasers") == null) SpaceView.destroyLasers();
             JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
             for (JsonElement laser : lasers) {
@@ -237,6 +243,15 @@ public class RoboRallyClient extends Application {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void displayWinner() {
+        Alert winnerAlert = new Alert(Alert.AlertType.INFORMATION);
+        winnerAlert.setTitle("A player has won the game!");
+        winnerAlert.setHeaderText("Congratulations to " + gameState.winnerName + "!\nThey have won the game!");
+        winnerAlert.setContentText("Returning to main menu.");
+        winnerAlert.showAndWait();
+        appController.leaveLobby();
     }
 
     public void createLobbyView() {
@@ -255,11 +270,13 @@ public class RoboRallyClient extends Application {
         lobbyPane.getChildren().add(playersText);
 
         Button startBtn = new Button("Start Game");
+        Button loadBtn = new Button("Load Game");
         Button leaveBtn = new Button("Leave Lobby");
         startBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.createGame());
+        //loadBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.loadGame()); //TODO: this
         leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.leaveLobby());
 
-        lobbyPane.getChildren().add(new HBox(15, startBtn, leaveBtn));
+        lobbyPane.getChildren().add(new HBox(15, startBtn, loadBtn, leaveBtn));
         scene.setRoot(lobbyPane);
     }
 
