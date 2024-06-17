@@ -24,6 +24,8 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -42,6 +44,9 @@ public class GameController {
 
     final public Board board;
     final public CommandCardController commandCardController;
+    @Setter
+    @Getter
+    private Player winner;
     private List<Player> playerOrder;
 
     public final RoboRallyServer server;
@@ -367,11 +372,14 @@ public class GameController {
     /**
      * Makes the player choose a card from the command card field
      * @param command Chosen command to be executed
+     * @return true if the command was executed successfully, false if the command was not an option (for validation)
      */
-    public void makeChoice(Command command) {
+    public boolean makeChoice(Command command) {
+        if (!commandCardController.getCurrentCommand().getOptions().contains(command)) return false;
         board.setPhase(Phase.ACTIVATION);
         commandCardController.executeCommand(this, board.getCurrentPlayer(), command);
         endTurn();
+        return true;
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {

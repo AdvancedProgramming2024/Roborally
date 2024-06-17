@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dk.dtu.compute.se.pisd.roborally.RoboRallyServer;
 import dk.dtu.compute.se.pisd.roborally.controller.CommandCardController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
@@ -144,7 +145,11 @@ public class LoadSave {
             GameTemplate template = gson.fromJson(reader, GameTemplate.class);
 
             Board board = new Board(template.board.width, template.board.height);
-            GameController gameController = null;//new GameController(board);
+
+            // TODO: Fix this
+            RoboRallyServer server = new RoboRallyServer(null, null, null);
+            GameController gameController = server.getGameController();
+            gameController.commandCardController.setCurrentCommand(template.currentCommand != -1 ? Command.values()[template.currentCommand] : null);
 
             board.setGameId(template.gameId);
 
@@ -226,6 +231,8 @@ public class LoadSave {
         GameTemplate gameTemplate = new GameTemplate();
         gameTemplate.gameId = gameController.board.getGameId();
         gameTemplate.board = createBoardTemplate(gameController.board);
+        Command currentCommand = gameController.commandCardController.getCurrentCommand();
+        gameTemplate.currentCommand = currentCommand == null ? -1 : currentCommand.ordinal();
 
         for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
             PlayerTemplate playerTemplate = new PlayerTemplate();
@@ -269,6 +276,8 @@ public class LoadSave {
 
         gameTemplate.playPhase = gameController.board.getPhase().ordinal();
         gameTemplate.step = gameController.board.getStep();
+        gameTemplate.winnerName = gameController.getWinner() != null ? gameController.getWinner().getName() : null;
+
 
         // TODO add new method to handle save to file which uses saveGameState
         // Get resource folder, create folder if it doesn't exist

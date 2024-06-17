@@ -121,9 +121,7 @@
       "y": 0
     },
     {
-      "walls": [
-        "SOUTH"
-      ],
+      "walls": [],
       "actions": [],
       "x": 7,
       "y": 0

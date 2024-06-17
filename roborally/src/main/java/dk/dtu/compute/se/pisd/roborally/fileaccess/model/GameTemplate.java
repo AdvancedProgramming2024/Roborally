@@ -13,6 +13,7 @@ public class GameTemplate implements Cloneable {
     public int playPhase;
     public int step;
     public int currentCommand;
+    public String winnerName;
 
     @Override
     public GameTemplate clone() {

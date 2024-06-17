@@ -278,4 +278,17 @@ public class Server {
         response.addProperty("gameState", gson.toJson(gameState));
         return responseCenter.response(response.toString());
     }
+    
+    @PostMapping(ResourceLocation.playerChoice)
+    public ResponseEntity<String> playerChoice(@PathVariable String lobbyId, @PathVariable int playerId, @RequestBody String stringInfo) {
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        int command = info.get("command").getAsInt();
+        assert lobby != null;
+        if (lobby.getGameServer().getGameController().makeChoice(Command.values()[command])) {
+            return responseCenter.ok();
+        } else {
+            return responseCenter.badRequest("Invalid choice");
+        }
+    }
 }

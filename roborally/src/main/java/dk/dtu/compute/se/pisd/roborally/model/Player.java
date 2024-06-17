@@ -93,7 +93,8 @@ public class Player extends Subject {
         Command[] commands = Command.values();
         drawPile = new ArrayList<CommandCard>();
         discardPile = new ArrayList<CommandCard>();
-        int[] commandValues = {0, 0, 0, 0, 1, 1, 1, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 6, 7, 8};
+        //int[] commandValues = {0, 0, 0, 0, 1, 1, 1, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 6, 7, 8};
+        int[] commandValues = {14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14};
         for (int commandValue : commandValues) {
             drawPile.add(new CommandCard(commands[commandValue]));
         }
@@ -152,14 +153,8 @@ public class Player extends Subject {
         checkpoints++;
         notifyChange();
 
-        // TODO change this, it should be shown to client instead, probably as part of the whole gamestate json object
         if (checkpoints == board.checkpoints) {
-            Alert winnerAlert = new Alert(Alert.AlertType.INFORMATION);
-            winnerAlert.setTitle("A player has won the game!");
-            winnerAlert.setHeaderText("Congratulations " + name + "!\nYou have won the game!");
-            winnerAlert.setContentText("Returning to main menu.");
-            winnerAlert.showAndWait();
-            server.stopGame();
+            server.gameWon(this);
         }
     }
 

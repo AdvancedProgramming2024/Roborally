@@ -6,6 +6,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.online.Lobby;
+import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,6 +56,14 @@ public class RoboRallyServer {
             while (gameController.board.getPhase() == Phase.ACTIVATION) {
                 gameController.executeStep();
                 updateGameState();
+                while (gameController.board.getPhase() == Phase.PLAYER_INTERACTION) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    updateGameState();
+                }
                 try {
                     Thread.sleep(750);
                     laser.clear();
@@ -62,7 +71,6 @@ public class RoboRallyServer {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                laser.clear();
                 if (gameWon) {
                     gameRunning = false;
                     break;
@@ -118,5 +126,11 @@ public class RoboRallyServer {
             }
         }
         return tmp;
+    }
+
+    public void gameWon(Player player) {
+        this.gameWon = true;
+        gameController.setWinner(player);
+        stopGame();
     }
 }
