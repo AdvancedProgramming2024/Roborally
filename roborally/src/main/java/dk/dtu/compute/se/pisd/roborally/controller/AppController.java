@@ -37,7 +37,6 @@ import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
-import dk.dtu.compute.se.pisd.roborally.view.SpaceView;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -50,7 +49,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static dk.dtu.compute.se.pisd.roborally.fileaccess.LoadSave.*;
 import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.*;
@@ -328,20 +326,6 @@ public class AppController implements Observer {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void drawLasers() {
-        // TODO: Draw lasers
-
-        // Destroy lasers after 500ms
-        new Thread(() -> {
-            try {
-                TimeUnit.MILLISECONDS.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } finally {
-                SpaceView.destroyLasers();
-            }}).start();
     }
 
     public boolean moveCards(@NotNull String source, @NotNull String target, PlayerTemplate player) {
