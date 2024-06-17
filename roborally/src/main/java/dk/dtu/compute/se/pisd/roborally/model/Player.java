@@ -32,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dk.dtu.compute.se.pisd.roborally.model.Command.SPAM;
+import static dk.dtu.compute.se.pisd.roborally.model.Command.WORM;
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
 /**
@@ -46,6 +48,7 @@ public class Player extends Subject {
 
     final public static int NO_REGISTERS = 5;
     final public static int NO_CARDS = 8;
+    final public static int NO_UPGRADE_CARDS = 3; // Both for temporary and permanent, so 3 for each
 
     final public Board board;
 
@@ -61,6 +64,8 @@ public class Player extends Subject {
 
     private List<CommandCard> drawPile;
     private List<CommandCard> discardPile;
+    private UpgradeCardField[] temporaryUpgrades;
+    private UpgradeCardField[] permanentUpgrades;
 
     private int checkpoints = 0;
     /**
@@ -109,6 +114,16 @@ public class Player extends Subject {
         cards = new CommandCardField[NO_CARDS];
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new CommandCardField(this);
+        }
+
+        temporaryUpgrades = new UpgradeCardField[NO_UPGRADE_CARDS];
+        for (int i = 0; i < temporaryUpgrades.length; i++) {
+            temporaryUpgrades[i] = new UpgradeCardField(false);
+        }
+
+        permanentUpgrades = new UpgradeCardField[NO_UPGRADE_CARDS];
+        for (int i = 0; i < permanentUpgrades.length; i++) {
+            permanentUpgrades[i] = new UpgradeCardField(false);
         }
     }
 
@@ -239,13 +254,74 @@ public class Player extends Subject {
      */
     public void reboot(GameController gameController) {
         rebooting = true;
-        addCommandCard(new CommandCard(Command.SPAM));
-        addCommandCard(new CommandCard(Command.SPAM));
+        addCommandCard(new CommandCard(SPAM));
+        addCommandCard(new CommandCard(SPAM));
 
 
         gameController.moveToSpace(this, board.getRebootStation(), board.getRebootStationHeading());
             // TODO: What to do if the reboot station is blocked and it can't push? Move to start space?
         // TODO: Player should choose heading
+    }
+
+    /**
+     * @return Returns whether the card was successfully bought
+     * @author Jonathan (s235115)
+     */
+    public boolean buyUpgradeCard(UpgradeCard upgrade) {
+        if (energyCubes < upgrade.getCost()) {
+            return false;
+        }
+        for (UpgradeCardField field : (upgrade.getIsPermanent() ? permanentUpgrades : temporaryUpgrades)) {
+            if (field.getCard() == null) {
+                field.setCard(upgrade);
+                removeEnergyCubes(upgrade.getCost());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void discardUpgradeCard(UpgradeCardField field) {
+        if (field.getCard() != null) {
+            field.setCard(null);
+            // TODO: Add to board's upgrade card pile
+        }
+    }
+
+    public UpgradeCard getUpgrade(Upgrade upgrade) {
+        for (UpgradeCardField field : (upgrade.isPermanent ? permanentUpgrades : temporaryUpgrades)) {
+            if (field.getCard() != null && field.getCard().upgrade == upgrade) {
+                return field.getCard();
+            }
+        }
+        return null;
+    }
+
+    public boolean hasActiveUpgrade(Upgrade upgrade) {
+        UpgradeCard card = getUpgrade(upgrade);
+        if (card != null) return card.isActive();
+        return false;
+    }
+
+    public void takeDamage(Player aggressor, Command damageType) {
+        if (aggressor != null) {
+            if (aggressor.hasActiveUpgrade(Upgrade.SCRAMBLER) && board.getStep() < 5) {
+                discardCommandCard(getProgramField(board.getStep()).getCard()); // Step has already been incremented
+                getProgramField(board.getStep()).setCard(drawCommandCard());
+            }
+
+            if (aggressor.hasActiveUpgrade(Upgrade.BLUE_SCREEN_OF_DEATH) &&
+                    (Math.abs(aggressor.space.x - space.x + aggressor.space.y - space.y) < 2) &&
+                    damageType == SPAM) {
+                addCommandCard(new CommandCard(WORM));
+            }
+
+            if (aggressor.hasActiveUpgrade(Upgrade.CORRUPTION_WAVE) && damageType == SPAM) {
+                drawPile.add(0, new CommandCard(SPAM));
+                return;
+            }
+        }
+        addCommandCard(new CommandCard(damageType));
     }
 
     public boolean isRebooting() {

@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import lombok.Getter;
 
 /**
  * ...
@@ -31,17 +32,16 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
  */
 public class UpgradeCardField extends Subject {
 
+    @Getter
     private UpgradeCard card;
-
+    private final boolean inShop;
+    @Getter
     private boolean visible;
 
-    public UpgradeCardField() {
-        this. card = null;
+    public UpgradeCardField(boolean inShop) {
+        this.card = null;
         this.visible = true;
-    }
-
-    public UpgradeCard getCard() {
-        return card;
+        this.inShop = inShop;
     }
 
     public void setCard(UpgradeCard card) {
@@ -49,10 +49,6 @@ public class UpgradeCardField extends Subject {
             this.card = card;
             notifyChange();
         }
-    }
-
-    public boolean isVisible() {
-        return visible;
     }
 
     public void setVisible(boolean visible) {

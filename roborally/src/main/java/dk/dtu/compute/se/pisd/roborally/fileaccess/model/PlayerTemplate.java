@@ -20,6 +20,8 @@ public class PlayerTemplate implements Cloneable {
     public List<Integer> discardPile = new ArrayList<>();
     public int[] program = new int[5];
     public int[] hand = new int[8];
+    public int[] permanent = new int[3];
+    public int[] temporary = new int[3];
 
     public int checkpoints;
     public int energyBank;
@@ -33,6 +35,8 @@ public class PlayerTemplate implements Cloneable {
             tmp.hand = hand.clone();
             tmp.drawPile = new ArrayList<>(drawPile);
             tmp.discardPile = new ArrayList<>(discardPile);
+            tmp.permanent = permanent.clone();
+            tmp.temporary = temporary.clone();
             return tmp;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

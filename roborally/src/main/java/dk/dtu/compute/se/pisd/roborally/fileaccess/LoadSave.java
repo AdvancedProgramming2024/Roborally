@@ -253,7 +253,16 @@ public class LoadSave {
                 boolean ignore = !asSaveFile && !field.isVisible();
                 playerTemplate.hand[j] = (field.getCard() == null || ignore) ? -1 : field.getCard().command.ordinal();
             }
-
+            for (int j = 0; j < player.getPermanentUpgrades().length; j++) {
+                UpgradeCardField field = player.getPermanentUpgrades()[j];
+                boolean ignore = !asSaveFile && !field.isVisible();
+                playerTemplate.permanent[j] = (field.getCard() == null || ignore) ? -1 : field.getCard().upgrade.ordinal();
+            }
+            for (int j = 0; j < player.getTemporaryUpgrades().length; j++) {
+                UpgradeCardField field = player.getTemporaryUpgrades()[j];
+                boolean ignore = !asSaveFile && !field.isVisible();
+                playerTemplate.temporary[j] = (field.getCard() == null || ignore) ? -1 : field.getCard().upgrade.ordinal();
+            }
             playerTemplate.checkpoints = player.getCheckpoints();
             playerTemplate.energyBank = player.getEnergyCubes();
             playerTemplate.rebooting = player.isRebooting();
@@ -269,12 +278,6 @@ public class LoadSave {
         gameTemplate.step = gameController.board.getStep();
         gameTemplate.winnerName = gameController.getWinner() != null ? gameController.getWinner().getName() : null;
 
-
-        // TODO add new method to handle save to file which uses saveGameState
-        // Get resource folder, create folder if it doesn't exist
-        //String filename = getFilePath(fileName, GAMESFOLDER);
-
-        //writeToFile(gameTemplate, filename);
         return gameTemplate;
     }
 

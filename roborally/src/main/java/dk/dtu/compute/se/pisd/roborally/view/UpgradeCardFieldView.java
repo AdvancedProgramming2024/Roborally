@@ -91,11 +91,10 @@ public class UpgradeCardFieldView extends GridPane {
 
 
         this.setOnMouseClicked(event -> {
-            //change this to phase UPGRADE
-            if (gameState.playPhase == Phase.PROGRAMMING.ordinal()) {
+            if (gameState.playPhase == Phase.UPGRADE.ordinal()) {
                 showConfirmationDialog();
             } else {
-                System.out.println("Clicking is not allowed during this phase.");
+                System.out.println("Buying is not allowed during this phase.");
             }
         });
     }

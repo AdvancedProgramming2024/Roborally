@@ -71,7 +71,7 @@ public class UpgradeShopView extends VBox {
 
         for (int i = 0; i < upgradePile.size(); i++) {
 
-            UpgradeCardField cardField = new UpgradeCardField();
+            UpgradeCardField cardField = new UpgradeCardField(true);
             cardField.setCard(upgradePile.get(i));
 
             cardViews[i] = new UpgradeCardFieldView(gameState, cardField);

@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -33,6 +34,16 @@ import org.jetbrains.annotations.NotNull;
 public class UpgradeCard extends Subject {
 
     final public Upgrade upgrade;
+    @Getter
+    private boolean active = true;
+
+    public void deactivate() {
+        active = false;
+    }
+
+    public void activate() {
+        active = true;
+    }
 
     public UpgradeCard(@NotNull Upgrade upgrade) {
         this.upgrade = upgrade;
