@@ -192,8 +192,6 @@ public class RoboRallyClient extends Application {
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
             gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
-            /*Object lasers = gson.fromJson(response.getItem().getAsJsonObject().get("lasers").getAsString(), List.class);
-            System.out.println("lasers: \n" + lasers.toString());*/
             if (gameState == null || boardView == null) return;
             // TODO: Implement timestamp check before phase check, else it stops immediately because gamestate
             // since gamestate hasn't been updated with the new phase yet
