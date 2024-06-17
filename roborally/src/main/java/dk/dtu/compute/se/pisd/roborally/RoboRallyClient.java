@@ -165,7 +165,6 @@ public class RoboRallyClient extends Application {
 
     public void suspendPolling() {
         executorService.shutdown();
-        System.out.println("Polling suspended"); // TODO remove
     }
     /**
      * This appoach must change if the timer is implemented.
@@ -174,12 +173,10 @@ public class RoboRallyClient extends Application {
     public void startPolling() {
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(this::pollServer, 0, 500, TimeUnit.MILLISECONDS);
-        System.out.println("Polling started"); // TODO remove
     }
 
 
     private void pollServer() {
-        System.out.println("Polling server"); // TODO remove
         if (lobbyId == null) {
             return;
         }
