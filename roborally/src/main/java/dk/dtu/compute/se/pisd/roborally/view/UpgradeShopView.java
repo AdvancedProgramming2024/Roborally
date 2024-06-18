@@ -62,21 +62,9 @@ public class UpgradeShopView extends VBox {
         cardsPane.setAlignment(Pos.CENTER);
         cardViews = new UpgradeCardFieldView[5];
 
-        Upgrade[] upgrades = Upgrade.values();
-        ArrayList<UpgradeCard> upgradePile = new ArrayList<>();
-        int[] upgradeValues = {0,1,2,3,4};
-        for (int upgradeValue : upgradeValues) {
-            upgradePile.add(new UpgradeCard(upgrades[upgradeValue]));
-        }
-
-        for (int i = 0; i < upgradePile.size(); i++) {
-
-            UpgradeCardField cardField = new UpgradeCardField(true);
-            cardField.setCard(upgradePile.get(i));
-
-            cardViews[i] = new UpgradeCardFieldView(gameState, cardField);
+        for (int i = 0; i < gameState.upgradeShop.size(); i++) {
+            cardViews[i] = new UpgradeCardFieldView(gameState, gameState.upgradeShop.get(i));
             cardsPane.add(cardViews[i], 0, i);
-
         }
 
         top.setPrefWidth(120.0);

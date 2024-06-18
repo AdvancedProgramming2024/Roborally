@@ -48,12 +48,18 @@ public class GameController {
     @Getter
     private Player winner;
     private List<Player> playerOrder;
+    private UpgradeCardField[] upgradeShop;
 
     public final RoboRallyServer server;
 
     public GameController(Board board, RoboRallyServer server) {
         this.board = board;
         this.server = server;
+        upgradeShop = new UpgradeCardField[board.getPlayersNumber()];
+        for (int i = 0; i < board.getPlayersNumber(); i++) {
+            upgradeShop[i] = new UpgradeCardField(true);
+        }
+
         // Count the number of checkpoints on the board
         for (int x = 0; x < board.width; x++) {
             for(int y = 0; y < board.height; y++) {
@@ -417,6 +423,23 @@ public class GameController {
                     field.setVisible(true);
                 }
             }
+        }
+    }
+
+    public void startUpgradePhase() {
+        board.setPhase(Phase.UPGRADE);
+        board.setCurrentPlayer(playerOrder.get(0));
+        for (UpgradeCardField field : upgradeShop) {
+            field.setCard(UpgradeCard.drawRandomUpgradeCard());
+        }
+    }
+
+    public void continueUpgradePhase() {
+        int nextPlayerNumber = playerOrder.indexOf(board.getCurrentPlayer()) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(playerOrder.get(nextPlayerNumber));
+        } else {
+            startProgrammingPhase();
         }
     }
 

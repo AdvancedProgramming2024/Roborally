@@ -14,6 +14,7 @@ public class GameTemplate implements Cloneable {
     public int step;
     public int currentCommand;
     public String winnerName;
+    public List<Integer> upgradeShop = new ArrayList<>();
 
     @Override
     public GameTemplate clone() {

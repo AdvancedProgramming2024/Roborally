@@ -25,6 +25,8 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
+
 /**
  * ...
  *
@@ -49,16 +51,9 @@ public class UpgradeCard extends Subject {
         this.upgrade = upgrade;
     }
 
-    public String getName() {
-        return upgrade.displayName;
+    public static UpgradeCard drawRandomUpgradeCard() {
+        Random rand = new Random();
+        int upgrade = rand.nextInt(Upgrade.values().length);
+        return new UpgradeCard(Upgrade.values()[upgrade]);
     }
-
-    public int getCost() {
-        return upgrade.cost;
-    }
-    public boolean getIsPermanent() {
-        return upgrade.isPermanent;
-    }
-
-
 }

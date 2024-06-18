@@ -35,25 +35,15 @@ public class UpgradeCardField extends Subject {
     @Getter
     private UpgradeCard card;
     private final boolean inShop;
-    @Getter
-    private boolean visible;
 
     public UpgradeCardField(boolean inShop) {
         this.card = null;
-        this.visible = true;
         this.inShop = inShop;
     }
 
     public void setCard(UpgradeCard card) {
         if (card != this.card) {
             this.card = card;
-            notifyChange();
-        }
-    }
-
-    public void setVisible(boolean visible) {
-        if (visible != this.visible) {
-            this.visible = visible;
             notifyChange();
         }
     }

@@ -60,15 +60,15 @@ public class UpgradeCardFieldView extends GridPane {
     final public static Background BG_ACTIVE = new Background(new BackgroundFill(Color.YELLOW, null, null));
     final public static Background BG_DONE = new Background(new BackgroundFill(Color.GREENYELLOW, null, null));
 
-    private UpgradeCardField field;
+    private int card;
 
     private Label label;
 
     private GameTemplate gameState;
 
-    public UpgradeCardFieldView(@NotNull GameTemplate gameState, @NotNull UpgradeCardField field) {
+    public UpgradeCardFieldView(@NotNull GameTemplate gameState, int card) {
         this.gameState = gameState;
-        this.field = field;
+        this.card = card;
 
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(2, 2, 2, 2));
@@ -97,6 +97,7 @@ public class UpgradeCardFieldView extends GridPane {
                 System.out.println("Buying is not allowed during this phase.");
             }
         });
+        updateView(card);
     }
 
     private void showConfirmationDialog() {
@@ -118,18 +119,15 @@ public class UpgradeCardFieldView extends GridPane {
         });
     }
 
-    public void updateView() {
-        if (true) { //TODO: Only run if the card is not null, it should be saved in game state
-            UpgradeCard card = field.getCard();
-            if (card != null && field.isVisible()) {
-                StringBuilder labelText = new StringBuilder();
-                labelText.append(field.getCard().getName()).append("\n");
-                labelText.append("Cost: ").append(field.getCard().getCost()).append("\n");
-                labelText.append(field.getCard().getIsPermanent() ? "Permanent" : "Temporary");
-                label.setText(labelText.toString());
-            } else {
-                label.setText("");
-            }
+    public void updateView(int card) {
+        if (card != -1) {
+            StringBuilder labelText = new StringBuilder();
+            labelText.append(Upgrade.values()[card].displayName).append("\n");
+            labelText.append("Cost: ").append(Upgrade.values()[card].cost).append("\n");
+            labelText.append(Upgrade.values()[card].isPermanent ? "Permanent" : "Temporary");
+            label.setText(labelText.toString());
+        } else {
+            label.setText("");
         }
     }
 }
