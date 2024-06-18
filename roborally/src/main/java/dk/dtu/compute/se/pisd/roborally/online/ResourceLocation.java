@@ -48,6 +48,10 @@ public class ResourceLocation {
         return playerChoice.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId + "");
     }
 
+    public static String buyUpgradePath(String lobbyId, int playerId) {
+        return buyUpgrade.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId + "");
+    }
+
     public static final String baseLocation = "http://localhost:8080";
     public static final String lobbies = "/lobbies";
     public static final String lobby = lobbies + "/{lobbyId}";
@@ -63,4 +67,5 @@ public class ResourceLocation {
     public static final String playerCardMovement = player + "/cardMovement";
     public static final String playerReady = player + "/ready";
     public static final String playerChoice = player + "/choice";
+    public static final String buyUpgrade = player + "/buyUpgrade";
 }

@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
@@ -50,7 +51,7 @@ public class UpgradeShopView extends VBox {
     private UpgradeCardFieldView[] cardViews;
 
 
-    public UpgradeShopView(@NotNull GameTemplate gameState) {
+    public UpgradeShopView(@NotNull AppController appController, @NotNull GameTemplate gameState) {
         top = new VBox();
         top.setSpacing(10.0);
         getChildren().add(top);
@@ -63,7 +64,7 @@ public class UpgradeShopView extends VBox {
         cardViews = new UpgradeCardFieldView[5];
 
         for (int i = 0; i < gameState.upgradeShop.size(); i++) {
-            cardViews[i] = new UpgradeCardFieldView(gameState, gameState.upgradeShop.get(i));
+            cardViews[i] = new UpgradeCardFieldView(appController, gameState, gameState.upgradeShop.get(i), i);
             cardsPane.add(cardViews[i], 0, i);
         }
 

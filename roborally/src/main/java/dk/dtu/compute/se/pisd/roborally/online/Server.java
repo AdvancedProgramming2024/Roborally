@@ -322,4 +322,21 @@ public class Server {
             return responseCenter.badRequest("Invalid choice");
         }
     }
+
+    @PostMapping(ResourceLocation.buyUpgrade)
+    public ResponseEntity<String> buyUpgrade(@PathVariable String lobbyId, @PathVariable int playerId, @RequestBody String stringInfo) {
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        int shopIndex = info.get("shopIndex").getAsInt();
+        assert lobby != null;
+        GameController gameController = lobby.getGameServer().getGameController();
+        if (gameController.board.getCurrentPlayer().getId() != playerId) {
+            return responseCenter.badRequest("Not your turn");
+        }
+        if (gameController.buyUpgrade(gameController.getUpgradeShop()[shopIndex])) {
+            return responseCenter.ok();
+        } else {
+            return responseCenter.badRequest("You can't buy this upgrade, you both need the energy cubes stated on the card and space in your player mat");
+        }
+    }
 }

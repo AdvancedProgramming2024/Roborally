@@ -48,6 +48,7 @@ public class GameController {
     @Getter
     private Player winner;
     private List<Player> playerOrder;
+    @Getter
     private UpgradeCardField[] upgradeShop;
 
     public final RoboRallyServer server;

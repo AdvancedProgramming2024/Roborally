@@ -21,10 +21,16 @@
  */
 package dk.dtu.compute.se.pisd.roborally.view;
 
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
+import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
+import dk.dtu.compute.se.pisd.roborally.online.Response;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -39,6 +45,9 @@ import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.IOException;
+
+import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.*;
 
 /**
  * ...
@@ -60,15 +69,15 @@ public class UpgradeCardFieldView extends GridPane {
     final public static Background BG_ACTIVE = new Background(new BackgroundFill(Color.YELLOW, null, null));
     final public static Background BG_DONE = new Background(new BackgroundFill(Color.GREENYELLOW, null, null));
 
-    private int card;
-
+    private final int shopIndex;
     private Label label;
-
     private GameTemplate gameState;
+    private final AppController appController;
 
-    public UpgradeCardFieldView(@NotNull GameTemplate gameState, int card) {
+    public UpgradeCardFieldView(@NotNull AppController appController, @NotNull GameTemplate gameState, int card, int shopIndex) {
+        this.appController = appController;
         this.gameState = gameState;
-        this.card = card;
+        this.shopIndex = shopIndex;
 
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(2, 2, 2, 2));
@@ -110,11 +119,31 @@ public class UpgradeCardFieldView extends GridPane {
 
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.YES) {
-                //HANDLE UPGRADE
-                System.out.println("buying upgrade");
-                //gameController.handleUpgradeShop();
-            } else {
-                // Close the dialog (do nothing)
+                JsonObject info = new JsonObject();
+                info.addProperty("shopIndex", shopIndex);
+
+                String lobbyId = appController.getRoboRally().getLobbyId();
+                int playerId = -1;
+                for (PlayerTemplate player : gameState.players) {
+                    if (player.name.equals(appController.getRoboRally().getPlayerName())) {
+                        playerId = player.id;
+                        break;
+                    }
+                }
+                try {
+                    Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(buyUpgradePath(lobbyId, playerId)), info);
+                    if (!response.getStatusCode().is2xxSuccessful()) {
+                        System.out.println("Couldn't buy upgrade");
+                        Alert responseAlert = new Alert(Alert.AlertType.ERROR);
+                        responseAlert.setTitle("Error");
+                        responseAlert.setHeaderText(response.getItem().get("info").getAsString());
+                        responseAlert.showAndWait();
+                        return;
+                    }
+                    System.out.println("Upgrade bought successfully");
+                } catch (IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }

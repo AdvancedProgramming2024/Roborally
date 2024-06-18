@@ -233,18 +233,6 @@ public class RoboRallyClient extends Application {
                 suspendPolling();
                 Platform.runLater(this::displayWinner);
             }
-            /*if (gameStateJson.get("lasers") == null) SpaceView.destroyLasers();
-            JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
-            for (JsonElement laser : lasers) {
-                JsonObject laserObj = laser.getAsJsonObject();
-                JsonArray LOS = laserObj.get("laser").getAsJsonArray();
-                List<SpaceTemplate> spaces = new ArrayList<>();
-                for (JsonElement los : LOS) {
-                    spaces.add(gson.fromJson(los.getAsString(), SpaceTemplate.class));
-                }
-                Heading heading = Heading.valueOf(laserObj.get("heading").getAsString());
-                SpaceView.drawLaser(spaces, heading);
-            }*/
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

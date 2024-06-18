@@ -75,7 +75,7 @@ public class BoardView extends BorderPane {
         board = gameState.board;
         mainBoardPane = new GridPane();
         playersView = new PlayersView(appController, gameState);
-        upgradeShopView = new UpgradeShopView(gameState);
+        upgradeShopView = new UpgradeShopView(appController, gameState);
         statusLabel = new Label("<no status>");
 
 
