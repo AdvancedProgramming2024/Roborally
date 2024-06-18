@@ -34,14 +34,10 @@ import java.util.List;
 public enum Upgrade {
 
     //Permanent Upgrades
-    ADMIN_PRIVILEGE("Admin Privilege", 3, true),
     CORRUPTION_WAVE("Corruption Wave", 4, true),
     BLUE_SCREEN_OF_DEATH("Blue Screen of Death", 4, true),
-    CRAB_LEGS("Crab Legs", 5, true),
-    BRAKES("Brakes", 3, true),
     DEFLECTOR_SHIELD("Deflector Shield", 2, true),
     DOUBLE_BARREL_LASER("Double Barrel Laser", 2, true),
-    MODULAR_CHASSIS("Modular Chassis", 1, true),
     FIREWALL("Firewall", 3, true),
     PRESSOR_BEAM("Pressor Beam", 3, true),
     HOVER_UNIT("Hover unit", 1, true),
@@ -52,14 +48,20 @@ public enum Upgrade {
     REAR_LASER("Rear Laser", 2, true),
     SCRAMBLER("Scrambler", 3, true),
     TRACTOR_BEAM("Tractor Beam", 3, true),
-    SIDE_ARMS("Side Arms", 3, true),
     TROJAN_NEEDLER("Trojan Needler", 3, true),
     TELEPORTER("Teleporter", 3, true),
     VIRUS_MODULE("Virus Module", 2, true),
-    BOINK("Boink", 1, false);
 
-    //TO DO
     //Temporary Upgrades
+    ENERGY_ROUTINE("Energy Routine", 3, false),
+    REPEAT_ROUTINE("Repeat Routine", 3, false),
+    SANDBOX_ROUTINE("Sandbox Routine", 5, false),
+    RECHARGE("Recharge", 0, false),
+    SPAM_BLOCKER("Spam Blocker", 3, false),
+    RECOMPILE("Recompile", 1, false),
+    SPAM_FOLDER_ROUTINE("Spam Folder Routine", 2, false),
+    SPEED_ROUTINE("Speed Routine", 3, false),
+    WEASEL_ROUTINE("Weasel Routine", 3, false);
 
     final public String displayName;
     final public int cost;
