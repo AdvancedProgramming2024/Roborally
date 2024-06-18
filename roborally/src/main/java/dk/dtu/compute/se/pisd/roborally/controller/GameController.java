@@ -443,6 +443,14 @@ public class GameController {
         }
     }
 
+    public boolean buyUpgrade(UpgradeCardField field) {
+        if (board.getCurrentPlayer().buyUpgradeCard(field.getCard())) {
+            field.setCard(null);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * A method called when no corresponding controller operation is implemented yet. This
      * should eventually be removed.
