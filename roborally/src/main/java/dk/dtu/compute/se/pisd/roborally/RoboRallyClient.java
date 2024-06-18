@@ -62,6 +62,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.lobbyStatePath;
+import static dk.dtu.compute.se.pisd.roborally.online.ResourceLocation.makeUri;
+
 /**
  * ...
  *
@@ -83,6 +86,7 @@ public class RoboRallyClient extends Application {
     private VBox gameRoot;
     private static TilePane menuPane;
     private static TilePane lobbyPane;
+    private static GridPane joinPane;
     private static Scene scene;
 
     private ScheduledExecutorService executorService;
@@ -117,10 +121,11 @@ public class RoboRallyClient extends Application {
         gameRoot.setMinWidth(MIN_APP_WIDTH);
         menuPane = new TilePane(Orientation.VERTICAL);
         menuPane.getChildren().add(menuButtons.newGameButton);
-        menuPane.getChildren().add(menuButtons.joinGameButton);
+        menuPane.getChildren().add(menuButtons.lobbyButton);
         menuPane.getChildren().add(menuButtons.exitGameButton);
         menuPane.getChildren().add(menuButtons.ruleButton);
         lobbyPane = new TilePane(Orientation.VERTICAL);
+        joinPane = new GridPane();
 
         //style for the menu
         menuPane.setAlignment(Pos.CENTER);
@@ -129,6 +134,10 @@ public class RoboRallyClient extends Application {
         //style for the lobby
         lobbyPane.setAlignment(Pos.CENTER);
         lobbyPane.setVgap(15);
+
+        joinPane.setAlignment(Pos.TOP_LEFT);
+        joinPane.setVgap(10);
+        joinPane.setHgap(80);
 
         //Menu Background image
         Image menu = new Image("images/RoboRallyBackground.png");
@@ -274,6 +283,56 @@ public class RoboRallyClient extends Application {
 
         lobbyPane.getChildren().add(new HBox(15, startBtn, loadBtn, leaveBtn));
         scene.setRoot(lobbyPane);
+    }
+
+    public void createJoinView(Response<String> lobbies) throws IOException, InterruptedException {
+        boardRoot.getChildren().clear();
+        lobbyPane.getChildren().clear();
+        joinPane.getChildren().clear();
+        stage.setMaximized(false);
+
+        Gson gson = new Gson();
+        String jsonString = lobbies.getItem();
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+
+        JsonArray lobbiesArray = jsonObject.getAsJsonArray("lobbies");
+
+
+        int row = 0;
+        int column = 0;
+        for (int i = 0; i < lobbiesArray.size(); i++) {
+            String lobbyId = lobbiesArray.get(i).getAsString();
+
+            Response<JsonObject> response = RequestCenter.getRequestJson(makeUri(lobbyStatePath(lobbyId)));
+            JsonObject json = response.getItem();
+            JsonArray players = json.get("players").getAsJsonArray();
+
+            Text lobbyText = new Text("LobbyId: " + lobbyId);
+            lobbyText.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+            joinPane.add(lobbyText, column, row);
+            row += 1;
+            StringBuilder playerTextBuilder = new StringBuilder();
+            playerTextBuilder.append("Players:");
+
+            for (int x = 0; x < players.size(); x++) {
+                playerTextBuilder.append("\nPlayer ").append(x + 1).append(": ").append(players.get(x).getAsString());
+            }
+            // Add lobby capacity information
+            playerTextBuilder.append("\n").append(players.size()).append("/6");
+
+            // Create and add the player text
+            Text playerText = new Text(playerTextBuilder.toString());
+            playerText.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 15));
+            joinPane.add(playerText, column, row);
+            row += 1;
+            Button joinBtn = new Button("join Lobby");
+            joinBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.joinLobby(lobbyId));
+            joinPane.add(joinBtn, column, row);
+            row -= 2;
+            column += 1;
+
+        }
+        scene.setRoot(joinPane);
     }
 
     public void updateLobbyView(JsonObject lobbyContent) {

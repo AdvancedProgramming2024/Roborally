@@ -63,7 +63,7 @@ public class Server {
         for (Lobby lobby : lobbies) {
             ids.add(lobby.getID());
         }
-
+        response.add("lobbies", ids);
         return responseCenter.response(response.toString());
     }
     @GetMapping(ResourceLocation.lobby)

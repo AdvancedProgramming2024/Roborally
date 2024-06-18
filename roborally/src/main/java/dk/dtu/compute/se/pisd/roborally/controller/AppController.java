@@ -120,35 +120,23 @@ public class AppController implements Observer {
         startWaitingForGame();
     }
 
-    public void joinLobby() {
-        TextInputDialog idInput = new TextInputDialog();
-        idInput.setTitle("Join lobby");
-        idInput.setHeaderText("Enter a lobby ID");
-        Optional<String> id = idInput.showAndWait();
+    public void joinLobby(String id) {
         try {
             boolean successful = false;
             while (!successful) {
                 if (id.isEmpty()) {
-                    return;
-                }
-                while (id.get().length() != 4) {
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Error");
-                    alert.setHeaderText("Lobby ID must be 4 digits long");
+                    alert.setHeaderText("No lobbyID given");
                     alert.showAndWait();
-
-                    id = idInput.showAndWait();
-                    if (id.isEmpty()) {
-                        return;
-                    }
+                    return;
                 }
-                Response<String> lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id.get())));
+                Response<String> lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id)));
                 if (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(lobbyResponse.getItem());
                     alert.showAndWait();
-                    id = idInput.showAndWait();
                 } else {
                     successful = true;
                 }
@@ -180,7 +168,7 @@ public class AppController implements Observer {
                     }
                 }
                 Map<String, Object> playerName = Map.of("playerName", name.get());
-                Response<String> joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(id.get())), playerName);
+                Response<String> joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(id)), playerName);
                 if (!joinResponse.getStatusCode().is2xxSuccessful()) {
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Error");
@@ -191,7 +179,7 @@ public class AppController implements Observer {
                     successful = true;
                 }
             }
-            roboRally.setLobbyId(id.get());
+            roboRally.setLobbyId(id);
             roboRally.setPlayerName(name.get());
             roboRally.createLobbyView();
         } catch (IOException | InterruptedException e) {
