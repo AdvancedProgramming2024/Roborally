@@ -336,32 +336,16 @@ public class GameController {
 
             //This is where the robot shoots
             for (int i = 0; i < board.getPlayersNumber(); i++) {
+                Heading heading = board.getPlayer(i).getHeading();
+                shootRobotLaser(heading, i);
                 Player player = board.getPlayer(i);
                 if (player.isRebooting()) {
                     continue;
                 }
-                List<Space> LOS = new ArrayList<>();
-                Heading heading = player.getHeading();
-                Space space = player.getSpace().board.getNeighbour(player.getSpace(), heading);
 
-                if (space != null) {
-                    LOS = board.getLOS(space, heading, LOS);
-                    if (LOS.get(0).equals(player.getSpace())) {
-                        break;
-                    }
-
-                    server.addLaser(LOS, heading);
-
-                    Space hit = LOS.get(LOS.size() - 1);
-                    Heading reverse = heading.next().next();
-
-                    if (!hit.getWalls().contains(reverse)) {
-                        Player playerHit = hit.getPlayer();
-                        if (playerHit != null) {
-                            playerHit.addCommandCard(new CommandCard(SPAM));
-                            System.out.println("Headshot!");
-                        }
-                    }
+                if (board.getPlayer(i).hasActiveUpgrade(Upgrade.REAR_LASER)) {
+                    heading = heading.next().next();
+                    shootRobotLaser(heading, i);
                 }
             }
 
@@ -371,6 +355,50 @@ public class GameController {
                 board.setCurrentPlayer(playerOrder.get(0));
             } else {
                 startProgrammingPhase();
+            }
+        }
+    }
+
+    private void shootRobotLaser(Heading heading, int playerIndex) {
+        List<Space> LOS = new ArrayList<>();
+        Space space = board.getPlayer(playerIndex).getSpace().board.getNeighbour(board.getPlayer(playerIndex).getSpace(), heading);
+
+        if (space != null) {
+            LOS = board.getLOS(space, heading, LOS);
+            if (LOS.get(0).equals(board.getPlayer(playerIndex).getSpace())) {
+                return;
+            }
+
+            server.addLaser(LOS, heading);
+
+            Space hit = LOS.get(LOS.size() - 1);
+            Heading reverse = heading.next().next();
+
+            if (!hit.getWalls().contains(reverse)) {
+                Player player = hit.getPlayer();
+
+                if (player != null) {
+                    if (!player.hasActiveUpgrade(Upgrade.DEFLECTOR_SHIELD)) {
+                        player.takeDamage(board.getPlayer(playerIndex), SPAM);
+                        if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.DOUBLE_BARREL_LASER)) {
+                            player.takeDamage(board.getPlayer(playerIndex), SPAM);
+                        }
+                        if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.PRESSOR_BEAM)) {
+                            moveInDirection(player, heading, true);
+                        }
+                        if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.TRACTOR_BEAM) &&
+                                Math.abs(player.getSpace().x - board.getPlayer(playerIndex).getSpace().x +
+                                        player.getSpace().y - board.getPlayer(playerIndex).getSpace().y) > 1) {
+                            moveInDirection(player, heading.next().next(), true);
+                        }
+                        if (board.getPlayer(playerIndex).hasActiveUpgrade(Upgrade.MINI_HOWITZER)) {
+                            player.takeDamage(board.getPlayer(playerIndex), SPAM);
+                            player.takeDamage(board.getPlayer(playerIndex), SPAM);
+                            moveInDirection(player, heading, true);
+                        }
+                    }
+                    System.out.println("Headshot!");
+                }
             }
         }
     }
