@@ -50,7 +50,12 @@ public class UpgradeCard extends Subject {
     public UpgradeCard(@NotNull Upgrade upgrade) {
         this.upgrade = upgrade;
     }
-
+    public int getCost() {
+        return upgrade.cost;
+    }
+    public boolean getIsPermanent() {
+        return upgrade.isPermanent;
+    }
     public static UpgradeCard drawRandomUpgradeCard() {
         Random rand = new Random();
         int upgrade = rand.nextInt(Upgrade.values().length);
