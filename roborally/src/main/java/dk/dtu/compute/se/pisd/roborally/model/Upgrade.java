@@ -34,8 +34,11 @@ import java.util.List;
 public enum Upgrade {
 
     //Permanent Upgrades
+    ADMIN_PRIVILEGE("Admin Privilege", 3, true),
     CORRUPTION_WAVE("Corruption Wave", 4, true),
     BLUE_SCREEN_OF_DEATH("Blue Screen of Death", 4, true),
+    CRAB_LEGS("Crab Legs", 5, true),
+    BRAKES("Brakes", 3, true),
     DEFLECTOR_SHIELD("Deflector Shield", 2, true),
     DOUBLE_BARREL_LASER("Double Barrel Laser", 2, true),
     MODULAR_CHASSIS("Modular Chassis", 1, true),
