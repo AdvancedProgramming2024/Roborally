@@ -255,13 +255,11 @@ public class LoadSave {
             }
             for (int j = 0; j < player.getPermanentUpgrades().length; j++) {
                 UpgradeCardField field = player.getPermanentUpgrades()[j];
-                boolean ignore = !asSaveFile && !field.isVisible();
-                playerTemplate.permanent[j] = (field.getCard() == null || ignore) ? -1 : field.getCard().upgrade.ordinal();
+                playerTemplate.permanent[j] = (field.getCard() == null) ? -1 : field.getCard().upgrade.ordinal();
             }
             for (int j = 0; j < player.getTemporaryUpgrades().length; j++) {
                 UpgradeCardField field = player.getTemporaryUpgrades()[j];
-                boolean ignore = !asSaveFile && !field.isVisible();
-                playerTemplate.temporary[j] = (field.getCard() == null || ignore) ? -1 : field.getCard().upgrade.ordinal();
+                playerTemplate.temporary[j] = (field.getCard() == null) ? -1 : field.getCard().upgrade.ordinal();
             }
             playerTemplate.checkpoints = player.getCheckpoints();
             playerTemplate.energyBank = player.getEnergyCubes();
