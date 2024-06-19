@@ -320,6 +320,16 @@ public class RoboRallyClient extends Application {
             column += 1;
 
         }
+        AnchorPane leavePane = new AnchorPane();
+        Button leaveBtn = new Button("Back to menu");
+        leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> scene.setRoot(menuPane));
+        AnchorPane.setRightAnchor(leaveBtn, 5.0);
+        AnchorPane.setBottomAnchor(leaveBtn, 5.0);
+        leavePane.getChildren().add(leaveBtn);
+
+        joinPane.add(leavePane, 14, 60);
+        
+
         scene.setRoot(joinPane);
     }
 
