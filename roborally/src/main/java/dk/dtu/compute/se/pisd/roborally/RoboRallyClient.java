@@ -205,7 +205,6 @@ public class RoboRallyClient extends Application {
             Gson gson = simpleBuilder.create();
             GameTemplate gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
             if (gameState == null || boardView == null) return;
-            System.out.println(gameState.timeStamp);
             if (!gameState.timeStamp.equals(lastUpdate)) {
                 this.gameState = gameState;
                 Platform.runLater(() -> updateBoardView(this.gameState));
