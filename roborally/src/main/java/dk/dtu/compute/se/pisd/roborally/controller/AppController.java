@@ -122,24 +122,19 @@ public class AppController implements Observer {
 
     public void joinLobby(String id) {
         try {
-            boolean successful = false;
-            while (!successful) {
-                if (id.isEmpty()) {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("No lobbyID given");
-                    alert.showAndWait();
-                    return;
-                }
-                Response<String> lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id)));
-                if (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(lobbyResponse.getItem());
-                    alert.showAndWait();
-                } else {
-                    successful = true;
-                }
+            if (id.isEmpty()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("No lobbyID given");
+                alert.showAndWait();
+                return;
+            }
+            Response<String> lobbyResponse = RequestCenter.getRequest(makeUri(lobbyPath(id)));
+            if (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(lobbyResponse.getItem());
+                alert.showAndWait();
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
