@@ -201,12 +201,15 @@ public class GameController {
      * @author Jonathan (s235115)
      */
     public void finishProgrammingPhase() {
+        // Check if it is possible to finish the programming phase
         for (int j = 0; j < board.getPlayersNumber(); j++) {
             Player player = board.getPlayer(j);
             for (int i = 0; i < Player.NO_REGISTERS; i++) {
                 if (player.getProgramField(i).getCard() == null) return;
             }
         }
+
+        // Finish the programming phase
         for (int j = 0; j < board.getPlayersNumber(); j++) {
             Player player = board.getPlayer(j);
             for (int i = 0; i < Player.NO_CARDS; i++) {
@@ -355,7 +358,7 @@ public class GameController {
                 board.setStep(step);
                 board.setCurrentPlayer(playerOrder.get(0));
             } else {
-                startProgrammingPhase();
+                startUpgradePhase();
             }
         }
     }
@@ -433,19 +436,12 @@ public class GameController {
 
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
-        determinePlayerOrder();
         board.setCurrentPlayer(playerOrder.get(0));
-        board.setStep(0);
 
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
                 player.stopRebooting();
-                for (int j = 0; j < Player.NO_REGISTERS; j++) {
-                    CommandCardField field = player.getProgramField(j);
-                    field.setCard(null);
-                    field.setVisible(true);
-                }
                 for (int j = 0; j < Player.NO_CARDS; j++) {
                     CommandCardField field = player.getCardField(j);
                     field.setCard(player.drawCommandCard());
@@ -456,20 +452,39 @@ public class GameController {
     }
 
     public void startUpgradePhase() {
+        board.setStep(0);
+        determinePlayerOrder();
         board.setPhase(Phase.UPGRADE);
         board.setCurrentPlayer(playerOrder.get(0));
+        for (int j = 0; j < board.getPlayersNumber(); j++) {
+            Player player = board.getPlayer(j);
+            board.getCurrentPlayer().setUsedUpgradePhase(false);
+            for (int i = 0; i < Player.NO_CARDS; i++) {
+                CommandCardField field = player.getCardField(j);
+                field.setCard(null);
+                field.setVisible(true);
+            }
+            for (int i = 0; i < Player.NO_REGISTERS; i++) {
+                CommandCardField field = player.getProgramField(i);
+                field.setCard(null);
+                field.setVisible(true);
+            }
+        }
         for (UpgradeCardField field : upgradeShop) {
             field.setCard(UpgradeCard.drawRandomUpgradeCard());
         }
+        server.updateGameState();
     }
 
     public void continueUpgradePhase() {
+        board.getCurrentPlayer().setUsedUpgradePhase(true);
         int nextPlayerNumber = playerOrder.indexOf(board.getCurrentPlayer()) + 1;
         if (nextPlayerNumber < board.getPlayersNumber()) {
             board.setCurrentPlayer(playerOrder.get(nextPlayerNumber));
         } else {
             startProgrammingPhase();
         }
+        server.updateGameState();
     }
 
     public boolean buyUpgrade(UpgradeCardField field) {

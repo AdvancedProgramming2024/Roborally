@@ -32,8 +32,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.text.html.Option;
@@ -61,6 +63,7 @@ public class PlayerView extends Tab {
     private VBox buttonPanel;
 
     private Button finishButton;
+    private Button skipUpgradeButton;
 
     private VBox playerInteractionPanel;
 
@@ -106,7 +109,6 @@ public class PlayerView extends Tab {
         finishButton = new Button("Finish Programming");
         finishButton.setOnAction( e -> {
             if (appController.sendReadySignal()) {
-                appController.getRoboRally().startPolling();
                 for (CardFieldView cardFieldView : programCardViews) {
                     // Deactivate events for cards, so they aren't moved after having finished programming
                     cardFieldView.setDisable(true);
@@ -117,7 +119,12 @@ public class PlayerView extends Tab {
             }
         });
 
-        buttonPanel = new VBox(finishButton);
+        skipUpgradeButton = new Button("Don't buy an upgrade card");
+        skipUpgradeButton.setOnAction( e -> {
+            appController.buyUpgrade(-1);
+        });
+
+        buttonPanel = new VBox(skipUpgradeButton);
         buttonPanel.setAlignment(Pos.CENTER_LEFT);
         buttonPanel.setSpacing(3.0);
         // programPane.add(buttonPanel, Player.NO_REGISTERS, 0); done in update now
@@ -150,7 +157,7 @@ public class PlayerView extends Tab {
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
             CardFieldView cardFieldView = programCardViews[i];
             if (cardFieldView != null) {
-                if (gameState.playPhase == Phase.PROGRAMMING.ordinal()) {
+                if (gameState.playPhase != Phase.ACTIVATION.ordinal() && gameState.playPhase != Phase.PLAYER_INTERACTION.ordinal()) {
                     cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
                 } else {
                     if (i < gameState.step) {
@@ -167,6 +174,31 @@ public class PlayerView extends Tab {
                         cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
                     }
                 }
+            }
+        }
+
+        if (gameState.playPhase == Phase.UPGRADE.ordinal()) {
+            if (!buttonPanel.getChildren().contains(skipUpgradeButton)) {
+                buttonPanel.getChildren().remove(finishButton);
+                buttonPanel.getChildren().add(skipUpgradeButton);
+            }
+            String currentPlayerName = "";
+            for (int i = 0; i < gameState.players.size(); i++) {
+                if (gameState.players.get(i).id == gameState.currentPlayer) currentPlayerName = gameState.players.get(i).name;
+            }
+
+            // Disable button if it is another player's turn
+            if (currentPlayerName.equals(appController.getRoboRally().getPlayerName())) {
+                skipUpgradeButton.setDisable(false);
+                skipUpgradeButton.setStyle("-fx-base: lightgreen");
+            } else {
+                skipUpgradeButton.setDisable(true);
+                skipUpgradeButton.setStyle(null);
+            }
+        } else {
+            if (!buttonPanel.getChildren().contains(finishButton)) {
+                buttonPanel.getChildren().remove(skipUpgradeButton);
+                buttonPanel.getChildren().add(finishButton);
             }
         }
 
@@ -191,8 +223,6 @@ public class PlayerView extends Tab {
                 default:
                     finishButton.setDisable(true);
             }
-
-
         } else {
             finishButton.setDisable(true);
             if (gameState.currentPlayer == player.id && appController.getRoboRally().getPlayerName().equals(player.name)) {

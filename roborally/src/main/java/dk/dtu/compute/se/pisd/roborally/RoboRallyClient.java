@@ -199,6 +199,7 @@ public class RoboRallyClient extends Application {
 
 
     private void pollServer() {
+        System.out.println("Polling server");
         if (lobbyId == null) {
             return;
         }
@@ -411,6 +412,7 @@ public class RoboRallyClient extends Application {
             //boardView.updateView(gameState.board); // TODO figure out what to do
             scene.setRoot(gameRoot);
             updateBoardView(gameState);
+            startPolling();
         }
         //stage.setMaximized(true);
     }

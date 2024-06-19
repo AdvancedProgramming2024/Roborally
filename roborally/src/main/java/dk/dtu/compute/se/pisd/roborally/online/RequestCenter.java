@@ -46,6 +46,8 @@ public abstract class RequestCenter {
         HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
         Response<String> response = new Response<>(httpResponse);
         try {
+            if (response.getItem().isEmpty())
+                return new Response<>(response.getStatusCode(), null);
             return new Response<>(response.getStatusCode(), jsonParser.parse(response.item).getAsJsonObject());
         } catch (IllegalStateException e) {
             System.out.println("posted to: " + location + "with payload: " + json);

@@ -331,12 +331,21 @@ public class Server {
         assert lobby != null;
         GameController gameController = lobby.getGameServer().getGameController();
         if (gameController.board.getCurrentPlayer().getId() != playerId) {
-            return responseCenter.badRequest("Not your turn");
+            return responseCenter.badRequest(asJson("Not your turn"));
+        }
+        if (gameController.board.getCurrentPlayer().hasUsedUpgradePhase()) {
+            return responseCenter.badRequest(asJson("You have already used the upgrade phase"));
+        }
+
+        if (shopIndex == -1) {
+            gameController.continueUpgradePhase();
+            return responseCenter.ok();
         }
         if (gameController.buyUpgrade(gameController.getUpgradeShop()[shopIndex])) {
+            gameController.continueUpgradePhase();
             return responseCenter.ok();
         } else {
-            return responseCenter.badRequest("You can't buy this upgrade, you both need the energy cubes stated on the card and space in your player mat");
+            return responseCenter.badRequest(asJson("You can't buy this upgrade, you both need the energy cubes stated on the card and space in your player mat"));
         }
     }
 }

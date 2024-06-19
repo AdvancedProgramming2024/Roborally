@@ -50,12 +50,18 @@ public class RoboRallyServer {
     }
 
     public void startGameLoop() {
-        if (gameController.board.getPhase() == Phase.INITIALISATION) gameController.startProgrammingPhase();
+        if (gameController.board.getPhase() == Phase.INITIALISATION) gameController.startUpgradePhase();
         updateGameState();
 
         boolean gameRunning = true;
         while (gameRunning) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             if (gameController.board.getPhase() == Phase.PROGRAMMING) {
+                updateGameState();
                 waitForAcks(); // Wait for players to have sent their programming registers
                 System.out.println("Starting activation phase");
                 gameController.finishProgrammingPhase();

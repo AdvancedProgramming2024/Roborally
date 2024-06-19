@@ -55,6 +55,7 @@ public class Player extends Subject {
     final private int id;
 
     private boolean ready = false;
+    private boolean usedUpgradePhase = false;
 
     private String name;
     private String color;
@@ -245,6 +246,10 @@ public class Player extends Subject {
                 space.playerChanged();
             }
         }
+    }
+
+    public boolean hasUsedUpgradePhase() {
+        return usedUpgradePhase;
     }
 
     /**

@@ -119,31 +119,7 @@ public class UpgradeCardFieldView extends GridPane {
 
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.YES) {
-                JsonObject info = new JsonObject();
-                info.addProperty("shopIndex", shopIndex);
-
-                String lobbyId = appController.getRoboRally().getLobbyId();
-                int playerId = -1;
-                for (PlayerTemplate player : gameState.players) {
-                    if (player.name.equals(appController.getRoboRally().getPlayerName())) {
-                        playerId = player.id;
-                        break;
-                    }
-                }
-                try {
-                    Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(buyUpgradePath(lobbyId, playerId)), info);
-                    if (!response.getStatusCode().is2xxSuccessful()) {
-                        System.out.println("Couldn't buy upgrade");
-                        Alert responseAlert = new Alert(Alert.AlertType.ERROR);
-                        responseAlert.setTitle("Error");
-                        responseAlert.setHeaderText(response.getItem().get("info").getAsString());
-                        responseAlert.showAndWait();
-                        return;
-                    }
-                    System.out.println("Upgrade bought successfully");
-                } catch (IOException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                appController.buyUpgrade(shopIndex);
             }
         });
     }

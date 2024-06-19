@@ -151,33 +151,28 @@ public class AppController implements Observer {
         Optional<String> name = nameInput.showAndWait();
 
         try {
-            boolean successful = false;
-            while (!successful) {
+            if (name.isEmpty()) {
+                return;
+            }
+            while (name.get().trim().isEmpty()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("You must enter a name");
+                alert.showAndWait();
+
+                name = nameInput.showAndWait();
                 if (name.isEmpty()) {
                     return;
                 }
-                while (name.get().trim().isEmpty()) {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("You must enter a name");
-                    alert.showAndWait();
-
-                    name = nameInput.showAndWait();
-                    if (name.isEmpty()) {
-                        return;
-                    }
-                }
-                Map<String, Object> playerName = Map.of("playerName", name.get());
-                Response<String> joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(id)), playerName);
-                if (!joinResponse.getStatusCode().is2xxSuccessful()) {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(joinResponse.getItem());
-                    alert.showAndWait();
-                    name = nameInput.showAndWait();
-                } else {
-                    successful = true;
-                }
+            }
+            Map<String, Object> playerName = Map.of("playerName", name.get());
+            Response<String> joinResponse = RequestCenter.postRequest(makeUri(joinLobbyPath(id)), playerName);
+            if (!joinResponse.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(joinResponse.getItem());
+                alert.showAndWait();
+                name = nameInput.showAndWait();
             }
             roboRally.setLobbyId(id);
             roboRally.setPlayerName(name.get());
@@ -387,6 +382,34 @@ public class AppController implements Observer {
                 alert.setHeaderText(response.getItem());
                 alert.showAndWait();
             }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void buyUpgrade(int shopIndex) {
+        JsonObject info = new JsonObject();
+        info.addProperty("shopIndex", shopIndex);
+
+        String lobbyId = getRoboRally().getLobbyId();
+        int playerId = -1;
+        for (PlayerTemplate player : getRoboRally().getGameState().players) {
+            if (player.name.equals(getRoboRally().getPlayerName())) {
+                playerId = player.id;
+                break;
+            }
+        }
+        try {
+            Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(buyUpgradePath(lobbyId, playerId)), info);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Couldn't buy upgrade");
+                Alert responseAlert = new Alert(Alert.AlertType.ERROR);
+                responseAlert.setTitle("Error");
+                responseAlert.setHeaderText(response.getItem().get("info").getAsString());
+                responseAlert.showAndWait();
+                return;
+            }
+            System.out.println("Upgrade bought successfully");
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
