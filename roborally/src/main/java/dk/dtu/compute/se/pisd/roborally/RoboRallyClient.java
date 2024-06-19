@@ -28,6 +28,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
@@ -92,6 +93,7 @@ public class RoboRallyClient extends Application {
     private ScheduledExecutorService executorService;
     private BoardView boardView;
     private GameTemplate gameState;
+    private String lastUpdate; // timestamp of last gameState update
 
     @Override
     public void init() throws Exception {
@@ -193,6 +195,7 @@ public class RoboRallyClient extends Application {
             poll = true;
             Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameStatePath(lobbyId)+"/"+getPlayerName()));
             if (!response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Error: " + response.getStatusCode());
                 return;
             }
             JsonObject gameStateJson = response.getItem().getAsJsonObject();
@@ -201,13 +204,16 @@ public class RoboRallyClient extends Application {
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
             gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
-
             if (gameState == null || boardView == null) return;
-            // TODO: Implement timestamp check before phase check, else it stops immediately because gamestate
-            // since gamestate hasn't been updated with the new phase yet
-            //if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();
-
-            Platform.runLater(() -> updateBoardView(gameState));
+            System.out.println(gameState.timeStamp);
+            System.out.println("1");
+            if (!gameState.timeStamp.equals(lastUpdate)) {
+                System.out.println("2");
+                Platform.runLater(() -> updateBoardView(gameState));
+                lastUpdate = gameState.timeStamp;
+            }
+            System.out.println("3");
+            /*if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();*/
 
             JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
             if (lasers.size() == 0) SpaceView.destroyLasers();
