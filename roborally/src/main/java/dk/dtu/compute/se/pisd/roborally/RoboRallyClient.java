@@ -28,6 +28,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.Adapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.GameTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.online.RequestCenter;
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
@@ -92,6 +93,7 @@ public class RoboRallyClient extends Application {
     private ScheduledExecutorService executorService;
     private BoardView boardView;
     private GameTemplate gameState;
+    private String lastUpdate; // timestamp of last gameState update
 
     @Override
     public void init() throws Exception {
@@ -193,6 +195,7 @@ public class RoboRallyClient extends Application {
             poll = true;
             Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameStatePath(lobbyId)+"/"+getPlayerName()));
             if (!response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Error: " + response.getStatusCode());
                 return;
             }
             JsonObject gameStateJson = response.getItem().getAsJsonObject();
@@ -200,17 +203,18 @@ public class RoboRallyClient extends Application {
                     registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
-            gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
-
+            GameTemplate gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
             if (gameState == null || boardView == null) return;
-            // TODO: Implement timestamp check before phase check, else it stops immediately because gamestate
-            // since gamestate hasn't been updated with the new phase yet
-            //if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();
-
-            Platform.runLater(() -> updateBoardView(gameState));
+            if (!gameState.timeStamp.equals(lastUpdate)) {
+                this.gameState = gameState;
+                Platform.runLater(() -> updateBoardView(this.gameState));
+                lastUpdate = gameState.timeStamp;
+            }
+            /*if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();*/
 
             JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
             if (lasers.size() == 0) SpaceView.destroyLasers();
+            gameState = this.gameState;
             for (JsonElement laser : lasers) {
                 JsonObject laserObj = laser.getAsJsonObject();
                 JsonArray LOS = laserObj.get("LOS").getAsJsonArray();
@@ -234,6 +238,7 @@ public class RoboRallyClient extends Application {
                 Platform.runLater(this::displayWinner);
             }
         } catch (IOException | InterruptedException e) {
+            System.out.println("Error in polling server: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

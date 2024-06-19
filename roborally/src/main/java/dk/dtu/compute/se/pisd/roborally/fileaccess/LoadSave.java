@@ -38,6 +38,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.URL;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -224,6 +226,7 @@ public class LoadSave {
         gameTemplate.board = createBoardTemplate(gameController.board);
         Command currentCommand = gameController.commandCardController.getCurrentCommand();
         gameTemplate.currentCommand = currentCommand == null ? -1 : currentCommand.ordinal();
+        gameTemplate.timeStamp = new Timestamp(System.currentTimeMillis()).toString();
 
         for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
             PlayerTemplate playerTemplate = new PlayerTemplate();
