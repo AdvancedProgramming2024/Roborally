@@ -332,7 +332,7 @@ public class RoboRallyClient extends Application {
         AnchorPane.setBottomAnchor(leaveBtn, 5.0);
         leavePane.getChildren().add(leaveBtn);
 
-        joinPane.add(leavePane, 14, 60);
+        joinPane.add(leavePane, 7, 40);
         
 
         scene.setRoot(joinPane);
