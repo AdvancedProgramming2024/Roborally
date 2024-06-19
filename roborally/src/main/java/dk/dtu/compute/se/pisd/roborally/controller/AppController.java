@@ -168,7 +168,7 @@ public class AppController implements Observer {
                 alert.setTitle("Error");
                 alert.setHeaderText(joinResponse.getItem());
                 alert.showAndWait();
-                name = nameInput.showAndWait();
+                return;
             }
             roboRally.setLobbyId(id);
             roboRally.setPlayerName(name.get());
