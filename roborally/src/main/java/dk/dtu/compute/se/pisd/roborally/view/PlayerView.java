@@ -31,10 +31,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,18 +44,17 @@ import javax.swing.text.html.Option;
  *
  */
 public class PlayerView extends Tab {
-
-    private VBox top;
-
-    private Label programLabel;
     private Label energyCubeLabel;
     private GridPane programPane;
-    private Label cardsLabel;
     private Label checkPointLabel;
     private GridPane cardsPane;
+    private GridPane permanentUpgradesPane;
+    private GridPane temporaryUpgradesPane;
 
     private CardFieldView[] programCardViews;
     private CardFieldView[] cardViews;
+    private UpgradeCardFieldView[] permanentUpgrades;
+    private UpgradeCardFieldView[] temporaryUpgrades;
 
     private VBox buttonPanel;
 
@@ -76,14 +72,26 @@ public class PlayerView extends Tab {
         this.appController = appController;
         this.setStyle("-fx-text-base-color: " + player.color + ";");
 
-        top = new VBox();
+        HBox top = new HBox();
         top.setPrefHeight(600);
         this.setContent(top);
+
+        VBox cardsAndProgram = new VBox();
+        cardsAndProgram.setPrefHeight(600);
+        top.getChildren().add(cardsAndProgram);
+
+        VBox info = new VBox();
+        info.setPrefHeight(600);
+        top.getChildren().add(info);
+
+        VBox upgradeCards = new VBox();
+        upgradeCards.setPrefHeight(600);
+        top.getChildren().add(upgradeCards);
 
         this.gameState = gameState;
         this.player = player;
 
-        programLabel = new Label("Program");
+        Label programLabel = new Label("Program");
 
         programPane = new GridPane();
         programPane.setVgap(2.0);
@@ -92,8 +100,8 @@ public class PlayerView extends Tab {
         checkPointLabel = new Label("Checkpoint\n" + player.checkpoints);
         energyCubeLabel = new Label("Energy Cubes\n" + player.energyBank);
 
-        programPane.add(checkPointLabel, Player.NO_REGISTERS+1, 0);
-        programPane.add(energyCubeLabel, Player.NO_REGISTERS+1, 1);
+        info.getChildren().add(checkPointLabel);
+        info.getChildren().add(energyCubeLabel);
 
         programCardViews = new CardFieldView[Player.NO_REGISTERS];
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
@@ -133,7 +141,7 @@ public class PlayerView extends Tab {
         playerInteractionPanel.setAlignment(Pos.CENTER_LEFT);
         playerInteractionPanel.setSpacing(3.0);
 
-        cardsLabel = new Label("Command Cards");
+        Label cardsLabel = new Label("Command Cards");
         cardsPane = new GridPane();
         cardsPane.setVgap(2.0);
         cardsPane.setHgap(2.0);
@@ -143,10 +151,36 @@ public class PlayerView extends Tab {
             cardsPane.add(cardViews[i], i, 0);
         }
 
-        top.getChildren().add(programLabel);
-        top.getChildren().add(programPane);
-        top.getChildren().add(cardsLabel);
-        top.getChildren().add(cardsPane);
+        Label permanentLabel = new Label("Permanent Upgrade Cards");
+        permanentUpgradesPane = new GridPane();
+        permanentUpgradesPane.setVgap(2.0);
+        permanentUpgradesPane.setHgap(2.0);
+        permanentUpgrades = new UpgradeCardFieldView[Player.NO_UPGRADE_CARDS];
+        for (int i = 0; i < Player.NO_UPGRADE_CARDS; i++) {
+            permanentUpgrades[i] = new UpgradeCardFieldView(appController, gameState, player, player.permanent[i], i, UpgradeCardFieldView.Placement.PERMANENT);
+            permanentUpgradesPane.add(permanentUpgrades[i], i, 0);
+        }
+
+        Label temporaryLabel = new Label("Temporary Upgrade Cards");
+        temporaryUpgradesPane = new GridPane();
+        temporaryUpgradesPane.setVgap(2.0);
+        temporaryUpgradesPane.setHgap(2.0);
+        temporaryUpgrades = new UpgradeCardFieldView[Player.NO_UPGRADE_CARDS];
+        for (int i = 0; i < Player.NO_UPGRADE_CARDS; i++) {
+            temporaryUpgrades[i] = new UpgradeCardFieldView(appController, gameState, player, player.temporary[i], i, UpgradeCardFieldView.Placement.TEMPORARY);
+            temporaryUpgradesPane.add(temporaryUpgrades[i], i, 0);
+        }
+
+        cardsAndProgram.getChildren().add(programLabel);
+        cardsAndProgram.getChildren().add(programPane);
+        cardsAndProgram.getChildren().add(cardsLabel);
+        cardsAndProgram.getChildren().add(cardsPane);
+
+        upgradeCards.getChildren().add(permanentLabel);
+        upgradeCards.getChildren().add(permanentUpgradesPane);
+        upgradeCards.getChildren().add(temporaryLabel);
+        upgradeCards.getChildren().add(temporaryUpgradesPane);
+
     }
 
     public void updateView(GameTemplate gameState, int playerId) {
@@ -252,6 +286,12 @@ public class PlayerView extends Tab {
                 cardFieldView.setDisable(false); // Activate events again after programming phase
             }
             cardFieldView.updateView(gameState, playerId);
+        }
+        for (int i = 0; i < permanentUpgrades.length; i++) {
+            permanentUpgrades[i].updateView(gameState, player, player.permanent[i]);
+        }
+        for (int i = 0; i < temporaryUpgrades.length; i++) {
+            temporaryUpgrades[i].updateView(gameState, player, player.temporary[i]);
         }
     }
 }

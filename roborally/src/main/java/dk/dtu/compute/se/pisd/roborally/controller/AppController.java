@@ -37,6 +37,7 @@ import dk.dtu.compute.se.pisd.roborally.RoboRallyClient;
 
 import dk.dtu.compute.se.pisd.roborally.online.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.online.Response;
+import dk.dtu.compute.se.pisd.roborally.view.UpgradeCardFieldView;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -118,6 +119,15 @@ public class AppController implements Observer {
 
         startWaitingForPlayers();
         startWaitingForGame();
+    }
+
+    public void showLobbies() {
+        try {
+            Response<String> lobbies = RequestCenter.getRequest(makeUri(ResourceLocation.lobbies));
+            getRoboRally().createJoinView(lobbies);
+        } catch (IOException | InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public void joinLobby(String id) {
@@ -406,6 +416,56 @@ public class AppController implements Observer {
                 return;
             }
             System.out.println("Upgrade bought successfully");
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void discardUpgrade(int index, UpgradeCardFieldView.Placement placement) {
+        String lobbyId = getRoboRally().getLobbyId();
+        int playerId = -1;
+        for (PlayerTemplate player : getRoboRally().getGameState().players) {
+            if (player.name.equals(getRoboRally().getPlayerName())) {
+                playerId = player.id;
+                break;
+            }
+        }
+        try {
+            JsonObject info = new JsonObject();
+            info.addProperty("index", index);
+            info.addProperty("isPermanent", placement == UpgradeCardFieldView.Placement.PERMANENT);
+            Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(discardUpgradePath(lobbyId, playerId)), info);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert responseAlert = new Alert(Alert.AlertType.ERROR);
+                responseAlert.setTitle("Error");
+                responseAlert.setHeaderText(response.getItem().get("info").getAsString());
+                responseAlert.showAndWait();
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void toggleUpgrade(int index, UpgradeCardFieldView.Placement placement) {
+        String lobbyId = getRoboRally().getLobbyId();
+        int playerId = -1;
+        for (PlayerTemplate player : getRoboRally().getGameState().players) {
+            if (player.name.equals(getRoboRally().getPlayerName())) {
+                playerId = player.id;
+                break;
+            }
+        }
+        try {
+            JsonObject info = new JsonObject();
+            info.addProperty("index", index);
+            info.addProperty("isPermanent", placement == UpgradeCardFieldView.Placement.PERMANENT);
+            Response<JsonObject> response = RequestCenter.postRequestJson(makeUri(toggleUpgradePath(lobbyId, playerId)), info);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                Alert responseAlert = new Alert(Alert.AlertType.ERROR);
+                responseAlert.setTitle("Error");
+                responseAlert.setHeaderText(response.getItem().get("info").getAsString());
+                responseAlert.showAndWait();
+            }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

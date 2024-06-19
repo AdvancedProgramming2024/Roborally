@@ -348,4 +348,34 @@ public class Server {
             return responseCenter.badRequest(asJson("You can't buy this upgrade, you both need the energy cubes stated on the card and space in your player mat"));
         }
     }
+
+    @PostMapping(ResourceLocation.discardUpgrade)
+    public ResponseEntity<String> discardUpgrade(@PathVariable String lobbyId, @PathVariable int playerId, @RequestBody String stringInfo) {
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        int index = info.get("index").getAsInt();
+        boolean permanent = info.get("isPermanent").getAsBoolean();
+        assert lobby != null;
+        GameController gameController = lobby.getGameServer().getGameController();
+
+        Player player = gameController.board.getPlayer(playerId);
+        player.discardUpgradeCard(index, permanent);
+        gameController.server.updateGameState();
+        return responseCenter.ok();
+    }
+
+    @PostMapping(ResourceLocation.toggleUpgrade)
+    public ResponseEntity<String> toggleUpgrade(@PathVariable String lobbyId, @PathVariable int playerId, @RequestBody String stringInfo) {
+        Lobby lobby = lobbies.stream().filter(l -> l.getID().contentEquals(lobbyId)).findFirst().orElse(null);
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        int index = info.get("index").getAsInt();
+        boolean permanent = info.get("isPermanent").getAsBoolean();
+        assert lobby != null;
+        GameController gameController = lobby.getGameServer().getGameController();
+
+        Player player = gameController.board.getPlayer(playerId);
+        player.toggleUpgradeCard(index, permanent);
+        gameController.server.updateGameState();
+        return responseCenter.ok();
+    }
 }

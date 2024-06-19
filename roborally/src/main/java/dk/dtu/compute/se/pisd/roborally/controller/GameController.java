@@ -58,7 +58,7 @@ public class GameController {
         this.server = server;
         upgradeShop = new UpgradeCardField[board.getPlayersNumber()];
         for (int i = 0; i < board.getPlayersNumber(); i++) {
-            upgradeShop[i] = new UpgradeCardField(true);
+            upgradeShop[i] = new UpgradeCardField();
         }
 
         // Count the number of checkpoints on the board
@@ -340,12 +340,13 @@ public class GameController {
 
             //This is where the robot shoots
             for (int i = 0; i < board.getPlayersNumber(); i++) {
-                Heading heading = board.getPlayer(i).getHeading();
-                shootRobotLaser(heading, i);
                 Player player = board.getPlayer(i);
                 if (player.isRebooting()) {
                     continue;
                 }
+
+                Heading heading = board.getPlayer(i).getHeading();
+                shootRobotLaser(heading, i);
 
                 if (board.getPlayer(i).hasActiveUpgrade(Upgrade.REAR_LASER)) {
                     heading = heading.next().next();
@@ -433,7 +434,6 @@ public class GameController {
         }
     }
 
-
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(playerOrder.get(0));
@@ -458,9 +458,9 @@ public class GameController {
         board.setCurrentPlayer(playerOrder.get(0));
         for (int j = 0; j < board.getPlayersNumber(); j++) {
             Player player = board.getPlayer(j);
-            board.getCurrentPlayer().setUsedUpgradePhase(false);
+            player.setUsedUpgradePhase(false);
             for (int i = 0; i < Player.NO_CARDS; i++) {
-                CommandCardField field = player.getCardField(j);
+                CommandCardField field = player.getCardField(i);
                 field.setCard(null);
                 field.setVisible(true);
             }

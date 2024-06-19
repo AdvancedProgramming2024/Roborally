@@ -119,12 +119,12 @@ public class Player extends Subject {
 
         temporaryUpgrades = new UpgradeCardField[NO_UPGRADE_CARDS];
         for (int i = 0; i < temporaryUpgrades.length; i++) {
-            temporaryUpgrades[i] = new UpgradeCardField(false);
+            temporaryUpgrades[i] = new UpgradeCardField();
         }
 
         permanentUpgrades = new UpgradeCardField[NO_UPGRADE_CARDS];
         for (int i = 0; i < permanentUpgrades.length; i++) {
-            permanentUpgrades[i] = new UpgradeCardField(false);
+            permanentUpgrades[i] = new UpgradeCardField();
         }
     }
 
@@ -286,10 +286,17 @@ public class Player extends Subject {
         return false;
     }
 
-    public void discardUpgradeCard(UpgradeCardField field) {
+    public void discardUpgradeCard(int index, boolean isPermanent) {
+        UpgradeCardField field = (isPermanent ? permanentUpgrades : temporaryUpgrades)[index];
         if (field.getCard() != null) {
             field.setCard(null);
-            // TODO: Add to board's upgrade card pile
+        }
+    }
+
+    public void toggleUpgradeCard(int index, boolean isPermanent) {
+        UpgradeCardField field = (isPermanent ? permanentUpgrades : temporaryUpgrades)[index];
+        if (field.getCard() != null) {
+            field.getCard().toggle();
         }
     }
 

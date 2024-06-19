@@ -52,6 +52,14 @@ public class ResourceLocation {
         return buyUpgrade.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId + "");
     }
 
+    public static String discardUpgradePath(String lobbyId, int playerId) {
+        return discardUpgrade.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId + "");
+    }
+
+    public static String toggleUpgradePath(String lobbyId, int playerId) {
+        return toggleUpgrade.replace("{lobbyId}", lobbyId).replace("{playerId}", playerId + "");
+    }
+
     public static final String baseLocation = "http://localhost:8080";
     public static final String lobbies = "/lobbies";
     public static final String lobby = lobbies + "/{lobbyId}";
@@ -68,4 +76,6 @@ public class ResourceLocation {
     public static final String playerReady = player + "/ready";
     public static final String playerChoice = player + "/choice";
     public static final String buyUpgrade = player + "/buyUpgrade";
+    public static final String discardUpgrade = player + "/discardUpgrade";
+    public static final String toggleUpgrade = player + "/toggleUpgrade";
 }

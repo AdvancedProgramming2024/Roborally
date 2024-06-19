@@ -26,12 +26,7 @@ public class MenuButtons {
         newGameButton.setOnAction(e -> this.appController.newLobby());
 
         lobbyButton.setOnAction(e -> {
-            try {
-                Response<String> lobbies = RequestCenter.getRequest(makeUri(ResourceLocation.lobbies));
-                this.appController.getRoboRally().createJoinView(lobbies);
-            } catch (IOException | InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
+            appController.showLobbies();
         });
 
         exitGameButton.setOnAction(e -> this.appController.exit());

@@ -49,13 +49,15 @@ public class UpgradeShopView extends VBox {
     private GridPane cardsPane;
 
     private UpgradeCardFieldView[] cardViews;
+    private final AppController appController;
 
 
     public UpgradeShopView(@NotNull AppController appController, @NotNull GameTemplate gameState) {
+        this.appController = appController;
         top = new VBox();
         top.setSpacing(10.0);
         getChildren().add(top);
-        cardsLabel = new Label("Upgrade Shop (upgrade cards aren't implemented yet, so only visual)");
+        cardsLabel = new Label("Upgrade Shop");
         cardsLabel.setWrapText(true);
         cardsPane = new GridPane();
         cardsPane.setVgap(20.0);
@@ -64,7 +66,7 @@ public class UpgradeShopView extends VBox {
         cardViews = new UpgradeCardFieldView[5];
 
         for (int i = 0; i < gameState.upgradeShop.size(); i++) {
-            cardViews[i] = new UpgradeCardFieldView(appController, gameState, gameState.upgradeShop.get(i), i);
+            cardViews[i] = new UpgradeCardFieldView(appController, gameState, null, gameState.upgradeShop.get(i), i, UpgradeCardFieldView.Placement.SHOP);
             cardsPane.add(cardViews[i], 0, i);
         }
 
@@ -74,8 +76,10 @@ public class UpgradeShopView extends VBox {
         top.setAlignment(Pos.CENTER);
     }
 
-    public void updateView() {
-
+    public void updateView(GameTemplate gameState) {
+        for (int i = 0; i < gameState.upgradeShop.size(); i++) {
+            cardViews[i].updateView(gameState, null, gameState.upgradeShop.get(i));
+        }
     }
 }
 

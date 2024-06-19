@@ -164,6 +164,11 @@ public class LoadSave {
         board.setAntenna(gameState.board.antennaX, gameState.board.antennaY, Heading.values()[gameState.board.antennaHeading]);
         board.setRebootStation(gameState.board.rebootStationX, gameState.board.rebootStationY, Heading.values()[gameState.board.rebootStationHeading]);
 
+        for (int i=0; i<gameState.upgradeShop.size(); i++) {
+            gameController.getUpgradeShop()[i].setCard(gameState.upgradeShop.get(i) == null ?
+                    null : new UpgradeCard(Upgrade.values()[gameState.upgradeShop.get(i)]));
+        }
+
         for (SpaceTemplate spaceTemplate: gameState.board.spaces) {
             Space space = board.getSpace(spaceTemplate.x, spaceTemplate.y);
             if (space != null) {
@@ -194,6 +199,20 @@ public class LoadSave {
                 player.getCards()[i] = new CommandCardField(player);
                 if (playerTemplate.hand[i] != -1)
                     player.getCards()[i].setCard(new CommandCard(Command.values()[playerTemplate.hand[i]]));
+            }
+            for (int i=0; i<playerTemplate.permanent.length; i++) {
+                player.getPermanentUpgrades()[i] = new UpgradeCardField();
+                if (playerTemplate.permanent[i] != -1) {
+                    player.getPermanentUpgrades()[i].setCard(new UpgradeCard(Upgrade.values()[playerTemplate.permanent[i]]));
+                    player.getPermanentUpgrades()[i].getCard().setActive(playerTemplate.permanentActive[i]);
+                }
+            }
+            for (int i=0; i<playerTemplate.temporary.length; i++) {
+                player.getTemporaryUpgrades()[i] = new UpgradeCardField();
+                if (playerTemplate.temporary[i] != -1) {
+                    player.getTemporaryUpgrades()[i].setCard(new UpgradeCard(Upgrade.values()[playerTemplate.temporary[i]]));
+                    player.getTemporaryUpgrades()[i].getCard().setActive(playerTemplate.temporaryActive[i]);
+                }
             }
 
             player.setCheckpoints(playerTemplate.checkpoints);
@@ -228,6 +247,11 @@ public class LoadSave {
         gameTemplate.currentCommand = currentCommand == null ? -1 : currentCommand.ordinal();
         gameTemplate.timeStamp = new Timestamp(System.currentTimeMillis()).toString();
 
+        for (UpgradeCardField field : gameController.getUpgradeShop()) {
+            UpgradeCard upgradeCard = field.getCard();
+            gameTemplate.upgradeShop.add(upgradeCard != null ? upgradeCard.upgrade.ordinal() : -1);
+        }
+
         for (int i = 0; i < gameController.board.getPlayersNumber(); i++) {
             PlayerTemplate playerTemplate = new PlayerTemplate();
             Player player = gameController.board.getPlayer(i);
@@ -259,10 +283,12 @@ public class LoadSave {
             for (int j = 0; j < player.getPermanentUpgrades().length; j++) {
                 UpgradeCardField field = player.getPermanentUpgrades()[j];
                 playerTemplate.permanent[j] = (field.getCard() == null) ? -1 : field.getCard().upgrade.ordinal();
+                playerTemplate.permanentActive[j] = field.getCard() != null && field.getCard().isActive();
             }
             for (int j = 0; j < player.getTemporaryUpgrades().length; j++) {
                 UpgradeCardField field = player.getTemporaryUpgrades()[j];
                 playerTemplate.temporary[j] = (field.getCard() == null) ? -1 : field.getCard().upgrade.ordinal();
+                playerTemplate.temporaryActive[j] = field.getCard() != null && field.getCard().isActive();
             }
             playerTemplate.checkpoints = player.getCheckpoints();
             playerTemplate.energyBank = player.getEnergyCubes();

@@ -34,11 +34,9 @@ public class UpgradeCardField extends Subject {
 
     @Getter
     private UpgradeCard card;
-    private final boolean inShop;
 
-    public UpgradeCardField(boolean inShop) {
+    public UpgradeCardField() {
         this.card = null;
-        this.inShop = inShop;
     }
 
     public void setCard(UpgradeCard card) {
