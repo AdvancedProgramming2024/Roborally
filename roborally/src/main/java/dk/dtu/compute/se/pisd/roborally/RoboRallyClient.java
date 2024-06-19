@@ -203,20 +203,19 @@ public class RoboRallyClient extends Application {
                     registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                     setPrettyPrinting().setLenient();
             Gson gson = simpleBuilder.create();
-            gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
+            GameTemplate gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
             if (gameState == null || boardView == null) return;
             System.out.println(gameState.timeStamp);
-            System.out.println("1");
             if (!gameState.timeStamp.equals(lastUpdate)) {
-                System.out.println("2");
-                Platform.runLater(() -> updateBoardView(gameState));
+                this.gameState = gameState;
+                Platform.runLater(() -> updateBoardView(this.gameState));
                 lastUpdate = gameState.timeStamp;
             }
-            System.out.println("3");
             /*if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();*/
 
             JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
             if (lasers.size() == 0) SpaceView.destroyLasers();
+            gameState = this.gameState;
             for (JsonElement laser : lasers) {
                 JsonObject laserObj = laser.getAsJsonObject();
                 JsonArray LOS = laserObj.get("LOS").getAsJsonArray();
@@ -240,6 +239,7 @@ public class RoboRallyClient extends Application {
                 Platform.runLater(this::displayWinner);
             }
         } catch (IOException | InterruptedException e) {
+            System.out.println("Error in polling server: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
