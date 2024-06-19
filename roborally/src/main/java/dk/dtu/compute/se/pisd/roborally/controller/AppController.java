@@ -135,6 +135,7 @@ public class AppController implements Observer {
                 alert.setTitle("Error");
                 alert.setHeaderText(lobbyResponse.getItem());
                 alert.showAndWait();
+                return;
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
