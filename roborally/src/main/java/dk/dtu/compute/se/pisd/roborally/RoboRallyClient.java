@@ -43,9 +43,11 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -158,6 +160,15 @@ public class RoboRallyClient extends Application {
                 new BackgroundSize(240, 240, false, false, false, false)
         );
         lobbyPane.setBackground(new Background(backgroundLobby));
+
+        //Lobbies Background image
+        Image lobbies = new Image("images/RoboRallyLobbyBackground.png");
+        BackgroundImage backgroundLobbies = new BackgroundImage(
+                lobbies, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(100, 100, true, true, true, true)
+        );
+        joinPane.setBackground(new Background(backgroundLobbies));
 
         scene = new Scene(menuPane, screenWidth/1.5, screenHeight/1.5);
         stage.setScene(scene);
@@ -275,6 +286,7 @@ public class RoboRallyClient extends Application {
         leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> appController.leaveLobby());
 
         lobbyPane.getChildren().add(new HBox(15, startBtn, loadBtn, leaveBtn));
+        stage.setScene(scene);
         scene.setRoot(lobbyPane);
     }
 
@@ -283,6 +295,11 @@ public class RoboRallyClient extends Application {
         lobbyPane.getChildren().clear();
         joinPane.getChildren().clear();
         stage.setMaximized(false);
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setOffsetX(2.0);
+        dropShadow.setOffsetY(2.0);
+        dropShadow.setColor(Color.BLACK); // Shadow color
+
 
         Gson gson = new Gson();
         String jsonString = lobbies.getItem();
@@ -291,8 +308,8 @@ public class RoboRallyClient extends Application {
         JsonArray lobbiesArray = jsonObject.getAsJsonArray("lobbies");
 
 
-        int row = 0;
-        int column = 0;
+        int row = 5;
+        int column = 1;
         for (int i = 0; i < lobbiesArray.size(); i++) {
             String lobbyId = lobbiesArray.get(i).getAsString();
 
@@ -301,7 +318,9 @@ public class RoboRallyClient extends Application {
             JsonArray players = json.get("players").getAsJsonArray();
 
             Text lobbyText = new Text("LobbyId: " + lobbyId);
-            lobbyText.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+            lobbyText.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 25));
+            lobbyText.setEffect(dropShadow);
+            lobbyText.setFill(Color.WHITE);
             joinPane.add(lobbyText, column, row);
             row += 1;
             StringBuilder playerTextBuilder = new StringBuilder();
@@ -315,7 +334,9 @@ public class RoboRallyClient extends Application {
 
             // Create and add the player text
             Text playerText = new Text(playerTextBuilder.toString());
-            playerText.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 15));
+            playerText.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+            playerText.setEffect(dropShadow);
+            playerText.setFill(Color.WHITE);
             joinPane.add(playerText, column, row);
             row += 1;
             Button joinBtn = new Button("join Lobby");
@@ -323,19 +344,33 @@ public class RoboRallyClient extends Application {
             joinPane.add(joinBtn, column, row);
             row -= 2;
             column += 1;
+            if (column == 5) {
+                column = 1;
+                row += 5;
+            }
 
         }
-        AnchorPane leavePane = new AnchorPane();
+
         Button leaveBtn = new Button("Back to menu");
-        leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> scene.setRoot(menuPane));
-        AnchorPane.setRightAnchor(leaveBtn, 5.0);
-        AnchorPane.setBottomAnchor(leaveBtn, 5.0);
-        leavePane.getChildren().add(leaveBtn);
+        leaveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> stage.setScene(scene));
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().add(joinPane);
+        stackPane.getChildren().add(leaveBtn);
 
-        joinPane.add(leavePane, 7, 40);
-        
+        // Position the button to middle
+        stackPane.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            leaveBtn.setLayoutX(newWidth.doubleValue() - leaveBtn.getWidth() - 10);
+        });
+        stackPane.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            leaveBtn.setLayoutY(newHeight.doubleValue() - leaveBtn.getHeight() - 10);
+        });
 
-        scene.setRoot(joinPane);
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        double screenWidth = screenBounds.getWidth();
+        double screenHeight = screenBounds.getHeight();
+        Scene sceneLobby = new Scene(stackPane, screenWidth/1.5, screenHeight/1.5);
+        stage.setScene(sceneLobby);
+        stage.show();
     }
 
     public void updateLobbyView(JsonObject lobbyContent) {
