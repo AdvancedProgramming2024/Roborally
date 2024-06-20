@@ -19,11 +19,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package dtu.compute.RoborallyServer.controller;
+package dtu.compute.RoborallyClient.fileaccess.model;
 
-import dtu.compute.RoborallyClient.model.Heading;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * ...
@@ -31,15 +31,13 @@ import lombok.Setter;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-@Getter
-@Setter
-public class ConveyorBelt extends FieldAction {
+public class BoardTemplate {
 
-    private Heading heading;
-    private Heading turn = null;
+    public int width;
+    public int height;
+    public int antennaX, antennaY, antennaHeading;
+    public int rebootStationX, rebootStationY, rebootStationHeading;
 
-    private Heading cross = null;
-    private Heading tea = null;
-    private int belt = 1;
+    public List<SpaceTemplate> spaces = new ArrayList<>();
 
 }

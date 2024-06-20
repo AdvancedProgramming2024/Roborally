@@ -19,11 +19,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package dtu.compute.RoborallyServer.controller;
-
-import dtu.compute.RoborallyClient.model.Heading;
-import lombok.Getter;
-import lombok.Setter;
+package dtu.compute.RoborallyClient.model;
 
 /**
  * ...
@@ -31,15 +27,15 @@ import lombok.Setter;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-@Getter
-@Setter
-public class ConveyorBelt extends FieldAction {
+public enum Heading {
 
-    private Heading heading;
-    private Heading turn = null;
+    SOUTH, WEST, NORTH, EAST;
 
-    private Heading cross = null;
-    private Heading tea = null;
-    private int belt = 1;
+    public Heading next() {
+        return values()[(this.ordinal() + 1) % values().length];
+    }
 
+    public Heading prev() {
+        return values()[(this.ordinal() + values().length - 1) % values().length];
+    }
 }

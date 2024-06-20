@@ -1,6 +1,6 @@
 package dtu.compute.RoborallyServer.controller;
 
-import dtu.compute.roborally.model.Heading;
+import dtu.compute.RoborallyClient.model.Heading;
 
 public class Laser extends FieldAction {
     private Heading heading;

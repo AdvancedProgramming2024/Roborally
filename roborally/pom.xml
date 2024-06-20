@@ -143,7 +143,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>dtu.compute.roborally.RoboRallyClient</mainClass>
+                            <mainClass>dtu.compute.RoborallyClient.RoboRallyClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

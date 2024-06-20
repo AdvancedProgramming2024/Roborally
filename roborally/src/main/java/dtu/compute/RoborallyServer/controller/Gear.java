@@ -1,6 +1,6 @@
 package dtu.compute.RoborallyServer.controller;
 
-import dtu.compute.roborally.model.Heading;
+import dtu.compute.RoborallyClient.model.Heading;
 import lombok.Getter;
 import lombok.Setter;
 

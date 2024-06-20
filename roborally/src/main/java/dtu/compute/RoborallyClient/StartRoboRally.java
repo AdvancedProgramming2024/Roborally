@@ -3,7 +3,7 @@
  *  course "Project in Software Development (02362)" held at
  *  DTU Compute at the Technical University of Denmark.
  *
- *  Copyright (C) 2019, 2020: Ekkart Kindler, ekki@dtu.dk
+ *  Copyright (C) 2019, 2020,2021: Ekkart Kindler, ekki@dtu.dk
  *
  *  This software is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,27 +19,21 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package dtu.compute.RoborallyServer.controller;
-
-import dtu.compute.RoborallyClient.model.Heading;
-import lombok.Getter;
-import lombok.Setter;
+package dtu.compute.RoborallyClient;
 
 /**
- * ...
+ * This is a class for starting up the RoboRally application. This is a
+ * workaround for a strange quirk in the Open JavaFX project launcher,
+ * which prevents starting a JavaFX appliqscation in IntelliJ directly:
+ *
+ *   https://stackoverflow.com/questions/52569724/javafx-11-create-a-jar-file-with-gradle/52571719#52571719
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
-@Getter
-@Setter
-public class ConveyorBelt extends FieldAction {
+public class StartRoboRally {
 
-    private Heading heading;
-    private Heading turn = null;
-
-    private Heading cross = null;
-    private Heading tea = null;
-    private int belt = 1;
+    public static void main(String[] args) {
+        RoboRallyClient.main(args);
+    }
 
 }
