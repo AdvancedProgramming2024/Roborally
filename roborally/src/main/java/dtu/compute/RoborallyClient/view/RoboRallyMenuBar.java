@@ -59,7 +59,7 @@ public class RoboRallyMenuBar extends MenuBar {
 //        });
 //        controlMenu.getItems().add(stopGame);
 
-        saveGame = new MenuItem("Save and exit");
+        saveGame = new MenuItem("Save Game");
         //No save scumming
         saveGame.setOnAction( e -> this.appController.saveGame());
         controlMenu.getItems().add(saveGame);

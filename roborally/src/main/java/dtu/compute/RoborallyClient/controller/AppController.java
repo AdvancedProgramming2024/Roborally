@@ -484,7 +484,7 @@ public class AppController implements Observer {
 
             GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
             LoadSave.writeToFile(gameState, finalName);
-            exit();
+            //exit(); To exit or not to exit, that is the question
 
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
