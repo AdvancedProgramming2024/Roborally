@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dtu.compute.RoborallyClient.fileaccess.model.GameTemplate;
+import dtu.compute.RoborallyServer.controller.FieldAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -49,7 +50,7 @@ public class LoadSave {
 
         // In simple cases, we can create a Gson object with new Gson():
         GsonBuilder simpleBuilder = new GsonBuilder().
-                registerTypeAdapter(GameTemplate.class, new Adapter<GameTemplate>());
+                registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>());
         Gson gson = simpleBuilder.create();
 
         JsonReader reader = null;
@@ -77,7 +78,7 @@ public class LoadSave {
 
     public static void writeToFile(Object template, String filename) {
         GsonBuilder simpleBuilder = new GsonBuilder().
-                registerTypeAdapter(GameTemplate.class, new Adapter<GameTemplate>()).
+                registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                 setPrettyPrinting();
         Gson gson = simpleBuilder.create();
 
