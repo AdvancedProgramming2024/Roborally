@@ -293,7 +293,6 @@ public class AppController implements Observer {
             info.addProperty("playerName", roboRally.getPlayerName());
 
             Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.gamePath(roboRally.getLobbyId())), info);
-            System.out.println((response.getItem().getAsJsonObject().getAsString()));
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
