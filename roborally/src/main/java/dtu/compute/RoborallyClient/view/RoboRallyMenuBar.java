@@ -40,9 +40,7 @@ public class RoboRallyMenuBar extends MenuBar {
 
     private MenuItem saveGame;
 
-   // private MenuItem stopGame;
 
-    private MenuItem exitApp;
 
     /**
      * Creates a menu bar and adds the menu items to it and sets the actions for the menu items that returns in the appController.
@@ -61,17 +59,12 @@ public class RoboRallyMenuBar extends MenuBar {
 //        });
 //        controlMenu.getItems().add(stopGame);
 
-        saveGame = new MenuItem("Save Game");
+        saveGame = new MenuItem("Save and exit");
+        //No save scumming
         saveGame.setOnAction( e -> this.appController.saveGame());
         controlMenu.getItems().add(saveGame);
 
-        exitApp = new MenuItem("Exit");
-        exitApp.setOnAction( e -> {
-            // TODO: FIX THIS
-            /*appController.leaveLobby();
-            appController.getRoboRally().suspendPolling();*/
-        });
-        controlMenu.getItems().add(exitApp);
+
 
         controlMenu.setOnShown(e -> this.updateBounds());
     }

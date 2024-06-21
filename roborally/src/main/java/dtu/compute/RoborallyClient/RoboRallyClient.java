@@ -431,6 +431,7 @@ public class RoboRallyClient extends Application {
         setPlayerName(null);
         setLobbyId(null);
         scene.setRoot(menuPane);
+        stage.setMaximized(false);
         stage.show();
     }
 

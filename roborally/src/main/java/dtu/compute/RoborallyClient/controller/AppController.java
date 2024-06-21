@@ -293,6 +293,7 @@ public class AppController implements Observer {
             info.addProperty("playerName", roboRally.getPlayerName());
 
             Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.gamePath(roboRally.getLobbyId())), info);
+            System.out.println((response.getItem().getAsJsonObject().getAsString()));
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
@@ -484,6 +485,7 @@ public class AppController implements Observer {
 
             GameTemplate gameState = gson.fromJson(response.getItem().getAsJsonObject().get("gameState").getAsString(), GameTemplate.class);
             LoadSave.writeToFile(gameState, finalName);
+            exit();
 
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
