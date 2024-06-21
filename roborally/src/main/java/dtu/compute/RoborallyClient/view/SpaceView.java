@@ -286,6 +286,10 @@ public class SpaceView extends StackPane {
             }
             fieldView.setImage(spaceImage);
         }
+        if (space.startField) {
+            spaceImage = new Image("images/startField.png");
+            fieldView.setImage(spaceImage);
+        }
         this.getChildren().add(fieldView);
 
         if (getPushPanel() != null) {

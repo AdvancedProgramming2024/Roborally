@@ -41,6 +41,7 @@ public class SpaceTemplate {
     public int x;
     public int y;
     public boolean isPit;
+    public boolean startField;
     public int player;
 
 }
