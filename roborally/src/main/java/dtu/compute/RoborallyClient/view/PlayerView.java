@@ -222,7 +222,7 @@ public class PlayerView extends Tab {
             }
 
             // Disable button if it is another player's turn
-            if (currentPlayerName.equals(appController.getRoboRally().getPlayerName())) {
+            if (currentPlayerName.equals(appController.getClient().getPlayerName())) {
                 skipUpgradeButton.setDisable(false);
                 skipUpgradeButton.setStyle("-fx-base: lightgreen");
             } else {
@@ -259,7 +259,7 @@ public class PlayerView extends Tab {
             }
         } else {
             finishButton.setDisable(true);
-            if (gameState.currentPlayer == player.id && appController.getRoboRally().getPlayerName().equals(player.name)) {
+            if (gameState.currentPlayer == player.id && appController.getClient().getPlayerName().equals(player.name)) {
                 if (!programPane.getChildren().contains(playerInteractionPanel)) {
                     programPane.getChildren().remove(buttonPanel);
                     programPane.add(playerInteractionPanel, NO_REGISTERS, 0);

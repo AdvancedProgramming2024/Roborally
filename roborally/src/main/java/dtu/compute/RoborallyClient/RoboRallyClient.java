@@ -193,68 +193,10 @@ public class RoboRallyClient extends Application {
      */
     public void startPolling() {
         executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(this::pollServer, 0, 500, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(appController::pollServer, 0, 500, TimeUnit.MILLISECONDS);
     }
 
-
-    private void pollServer() {
-        System.out.println("Polling server");
-        if (lobbyId == null) {
-            return;
-        }
-        try {
-            poll = true;
-            Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameStatePath(lobbyId)+"/"+getPlayerName()));
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Error: " + response.getStatusCode());
-                return;
-            }
-            JsonObject gameStateJson = response.getItem().getAsJsonObject();
-            GsonBuilder simpleBuilder = new GsonBuilder().
-                    registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
-                    setPrettyPrinting().setLenient();
-            Gson gson = simpleBuilder.create();
-            GameTemplate gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
-            if (gameState == null || boardView == null) return;
-            if (!gameState.timeStamp.equals(lastUpdate)) {
-                this.gameState = gameState;
-                Platform.runLater(() -> updateBoardView(this.gameState));
-                lastUpdate = gameState.timeStamp;
-            }
-            /*if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();*/
-
-            JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
-            if (lasers.size() == 0) SpaceView.destroyLasers();
-            gameState = this.gameState;
-            for (JsonElement laser : lasers) {
-                JsonObject laserObj = laser.getAsJsonObject();
-                JsonArray LOS = laserObj.get("LOS").getAsJsonArray();
-                int heading = laserObj.get("heading").getAsInt();
-
-                List<SpaceTemplate> spaces = new ArrayList<>();
-                for (JsonElement los : LOS) {
-                    JsonObject spaceObject = los.getAsJsonObject();
-                    int x = spaceObject.get("x").getAsInt();
-                    int y = spaceObject.get("y").getAsInt();
-
-                    spaces.add(gameState.board.spaces.get(x * gameState.board.height + y));
-                }
-                while (boardView.getSpaces()[gameState.board.height-1][gameState.board.width-1].gameState != gameState) {
-                    Thread.sleep(100);
-                }
-                Platform.runLater(() -> SpaceView.drawLaser(spaces, Heading.values()[heading]));
-            }
-            if (gameState.winnerName != null) {
-                suspendPolling();
-                Platform.runLater(this::displayWinner);
-            }
-        } catch (IOException | InterruptedException e) {
-            System.out.println("Error in polling server: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void displayWinner() {
+    public void displayWinner() {
         Alert winnerAlert = new Alert(Alert.AlertType.INFORMATION);
         winnerAlert.setTitle("A player has won the game!");
         winnerAlert.setHeaderText("Congratulations to " + gameState.winnerName + "!\nThey have won the game!");

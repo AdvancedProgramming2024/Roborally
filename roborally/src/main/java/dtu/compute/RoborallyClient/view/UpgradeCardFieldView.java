@@ -129,7 +129,7 @@ public class UpgradeCardFieldView extends GridPane {
                     }
                 } else {
                     if ((source.placement == Placement.PERMANENT ? source.player.permanent : source.player.temporary)[source.index] == -1) return;
-                    if (source.player.name.equals(appController.getRoboRally().getPlayerName()) &&
+                    if (source.player.name.equals(appController.getClient().getPlayerName()) &&
                             (source.gameState.playPhase == Phase.UPGRADE.ordinal() || source.gameState.playPhase == Phase.PROGRAMMING.ordinal())) {
                         appController.toggleUpgrade(index, placement);
                     }
@@ -187,7 +187,7 @@ public class UpgradeCardFieldView extends GridPane {
             }
         }
         if (placement != Placement.SHOP) {
-            if (!player.name.equals(appController.getRoboRally().getPlayerName())) {
+            if (!player.name.equals(appController.getClient().getPlayerName())) {
                 discardButton.setDisable(false);
                 discardButton.setVisible(false);
             }

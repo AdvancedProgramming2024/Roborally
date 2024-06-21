@@ -48,7 +48,7 @@ public class PlayersView extends TabPane {
         for (int i = 0; i < gameState.players.size();  i++) {
             playerViews[i] = new PlayerView(appController, gameState, gameState.players.get(i));
             this.getTabs().add(playerViews[i]);
-            if (gameState.players.get(i).name.equals(appController.getRoboRally().getPlayerName())) ownIndex = i;
+            if (gameState.players.get(i).name.equals(appController.getClient().getPlayerName())) ownIndex = i;
         }
         this.getSelectionModel().select(ownIndex);
     }

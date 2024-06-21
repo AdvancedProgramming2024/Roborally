@@ -21,9 +21,10 @@
  */
 package dtu.compute.RoborallyClient.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import dtu.compute.RoborallyClient.fileaccess.model.SpaceTemplate;
+import dtu.compute.RoborallyClient.model.Heading;
+import dtu.compute.RoborallyClient.view.SpaceView;
 import dtu.compute.RoborallyServer.controller.FieldAction;
 import dtu.compute.designpatterns.observer.Observer;
 import dtu.compute.designpatterns.observer.Subject;
@@ -63,18 +64,75 @@ public class AppController implements Observer {
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
 
     @Getter
-    final private RoboRallyClient roboRally;
+    final private RoboRallyClient client;
     private volatile Thread waitForPlayers;
     private volatile Thread waitForGame;
     private final Gson gson;
 
-    public AppController(@NotNull RoboRallyClient roboRally) {
-        this.roboRally = roboRally;
+    public AppController(@NotNull RoboRallyClient client) {
+        this.client = client;
 
         GsonBuilder simpleBuilder = new GsonBuilder().
                 registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                 setPrettyPrinting();
         gson = simpleBuilder.create();
+    }
+
+    public void pollServer() {
+        System.out.println("Polling server");
+        if (client.getLobbyId() == null) {
+            return;
+        }
+        try {
+            client.setPoll(true);
+            Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameStatePath(client.getLobbyId())+"/"+client.getPlayerName()));
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Error: " + response.getStatusCode());
+                return;
+            }
+            JsonObject gameStateJson = response.getItem().getAsJsonObject();
+            GsonBuilder simpleBuilder = new GsonBuilder().
+                    registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
+                    setPrettyPrinting().setLenient();
+            Gson gson = simpleBuilder.create();
+            GameTemplate gameState = gson.fromJson(gameStateJson.get("gameState").getAsString(), GameTemplate.class);
+            if (gameState == null || client.getBoardView() == null) return;
+            if (!gameState.timeStamp.equals(client.getLastUpdate())) {
+                client.setGameState(gameState);
+                Platform.runLater(() -> client.updateBoardView(client.getGameState()));
+                client.setLastUpdate(gameState.timeStamp);
+            }
+            /*if (!(gameState.playPhase == Phase.ACTIVATION.ordinal() || gameState.playPhase == Phase.UPGRADE.ordinal())) suspendPolling();*/
+
+            JsonArray lasers = gameStateJson.get("lasers").getAsJsonArray();
+            if (lasers.size() == 0) SpaceView.destroyLasers();
+            gameState = client.getGameState();
+            for (JsonElement laser : lasers) {
+                JsonObject laserObj = laser.getAsJsonObject();
+                JsonArray LOS = laserObj.get("LOS").getAsJsonArray();
+                int heading = laserObj.get("heading").getAsInt();
+
+                List<SpaceTemplate> spaces = new ArrayList<>();
+                for (JsonElement los : LOS) {
+                    JsonObject spaceObject = los.getAsJsonObject();
+                    int x = spaceObject.get("x").getAsInt();
+                    int y = spaceObject.get("y").getAsInt();
+
+                    spaces.add(gameState.board.spaces.get(x * gameState.board.height + y));
+                }
+                while (client.getBoardView().getSpaces()[gameState.board.height-1][gameState.board.width-1].gameState != gameState) {
+                    Thread.sleep(100);
+                }
+                Platform.runLater(() -> SpaceView.drawLaser(spaces, Heading.values()[heading]));
+            }
+            if (gameState.winnerName != null) {
+                client.suspendPolling();
+                Platform.runLater(client::displayWinner);
+            }
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Error in polling server: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -108,9 +166,9 @@ public class AppController implements Observer {
                 alert.showAndWait();
                 return;
             }
-            roboRally.setLobbyId(lobbyResponse.getItem());
-            roboRally.setPlayerName(name.get());
-            roboRally.createLobbyView();
+            client.setLobbyId(lobbyResponse.getItem());
+            client.setPlayerName(name.get());
+            client.createLobbyView();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -122,7 +180,7 @@ public class AppController implements Observer {
     public void showLobbies() {
         try {
             Response<String> lobbies = RequestCenter.getRequest(ResourceLocation.makeUri(ResourceLocation.lobbies));
-            getRoboRally().createJoinView(lobbies);
+            getClient().createJoinView(lobbies);
         } catch (IOException | InterruptedException ex) {
             throw new RuntimeException(ex);
         }
@@ -178,9 +236,9 @@ public class AppController implements Observer {
                 alert.showAndWait();
                 return;
             }
-            roboRally.setLobbyId(id);
-            roboRally.setPlayerName(name.get());
-            roboRally.createLobbyView();
+            client.setLobbyId(id);
+            client.setPlayerName(name.get());
+            client.createLobbyView();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -190,10 +248,10 @@ public class AppController implements Observer {
     }
 
     public void leaveLobby() {
-        if (getRoboRally().getLobbyId() == null) return;
+        if (getClient().getLobbyId() == null) return;
         try {
-            Map<String, Object> playerName = Map.of("playerName", roboRally.getPlayerName());
-            Response<String> response = RequestCenter.postRequest(ResourceLocation.makeUri(ResourceLocation.leaveLobbyPath(roboRally.getLobbyId())), playerName);
+            Map<String, Object> playerName = Map.of("playerName", client.getPlayerName());
+            Response<String> response = RequestCenter.postRequest(ResourceLocation.makeUri(ResourceLocation.leaveLobbyPath(client.getLobbyId())), playerName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
@@ -204,15 +262,15 @@ public class AppController implements Observer {
             throw new RuntimeException(e);
         }
         stopWaiting();
-        roboRally.returnToMenu();
+        client.returnToMenu();
     }
 
     private void waitForPlayers() {
         Thread thisThread = Thread.currentThread();
         while (waitForPlayers == thisThread) {
             try {
-                Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.lobbyStatePath(roboRally.getLobbyId())));
-                roboRally.updateLobbyView(response.getItem());
+                Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.lobbyStatePath(client.getLobbyId())));
+                client.updateLobbyView(response.getItem());
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -226,7 +284,7 @@ public class AppController implements Observer {
             try {
                 Thread.sleep(2000);
                 Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(
-                        ResourceLocation.gameStatePath(roboRally.getLobbyId())+"/"+roboRally.getPlayerName()));
+                        ResourceLocation.gameStatePath(client.getLobbyId())+"/"+ client.getPlayerName()));
                 if (!response.getStatusCode().is2xxSuccessful()) {
                     continue;
                 }
@@ -276,11 +334,11 @@ public class AppController implements Observer {
 
     public void startGame(GameTemplate gameState) {
         stopWaiting();
-        if (roboRally.getBoardView() == null) roboRally.createBoardView(gameState);
+        if (client.getBoardView() == null) client.createBoardView(gameState);
     }
 
     public void createGame() {
-        ChoiceDialog<String> mapDialog = new ChoiceDialog<>("dizzy_highway", "defaultboard", "dizzy_highway", "high_octane");
+        ChoiceDialog<String> mapDialog = new ChoiceDialog<>("dizzy_highway", "dizzy_highway", "high_octane");
         mapDialog.setTitle("Map selection");
         mapDialog.setHeaderText("Select map to play on");
         Optional<String> mapName = mapDialog.showAndWait();
@@ -290,9 +348,9 @@ public class AppController implements Observer {
         try {
             JsonObject info = new JsonObject();
             info.addProperty("mapName", mapName.get());
-            info.addProperty("playerName", roboRally.getPlayerName());
+            info.addProperty("playerName", client.getPlayerName());
 
-            Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.gamePath(roboRally.getLobbyId())), info);
+            Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.gamePath(client.getLobbyId())), info);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
@@ -324,9 +382,9 @@ public class AppController implements Observer {
         info.addProperty("targetIndex", targetIndex);
         info.addProperty("sourceIsProgram", sourceIsProgrammingCard);
         info.addProperty("targetIsProgram", targetIsProgrammingCard);
-        info.addProperty("playerName", roboRally.getPlayerName());
+        info.addProperty("playerName", client.getPlayerName());
         try {
-            Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.playerCardMovementPath(roboRally.getLobbyId(), player.id)), info);
+            Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.playerCardMovementPath(client.getLobbyId(), player.id)), info);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
@@ -340,21 +398,21 @@ public class AppController implements Observer {
             throw new RuntimeException(e);
         }
 
-        roboRally.updateBoardView(gameState);
+        client.updateBoardView(gameState);
         return true;
     }
 
     public boolean sendReadySignal() {
         try {
-            GameTemplate gameState = roboRally.getGameState();
+            GameTemplate gameState = client.getGameState();
             int playerId = -1;
             for (int i = 0; i < gameState.players.size(); i++) {
-                if (gameState.players.get(i).name.equals(roboRally.getPlayerName())) {
+                if (gameState.players.get(i).name.equals(client.getPlayerName())) {
                     playerId = i;
                     break;
                 }
             }
-            Response<String> response = RequestCenter.getRequest(ResourceLocation.makeUri(ResourceLocation.playerReadyPath(roboRally.getLobbyId(), playerId)));
+            Response<String> response = RequestCenter.getRequest(ResourceLocation.makeUri(ResourceLocation.playerReadyPath(client.getLobbyId(), playerId)));
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
@@ -369,17 +427,17 @@ public class AppController implements Observer {
     }
 
     public void sendChoice(Command command) {
-        GameTemplate gameState = roboRally.getGameState();
+        GameTemplate gameState = client.getGameState();
         int playerId = -1;
         for (int i = 0; i < gameState.players.size(); i++) {
-            if (gameState.players.get(i).name.equals(roboRally.getPlayerName())) {
+            if (gameState.players.get(i).name.equals(client.getPlayerName())) {
                 playerId = i;
                 break;
             }
         }
         try {
             Map<String, Object> args = Map.of("command", command.ordinal());
-            Response<String> response = RequestCenter.postRequest(ResourceLocation.makeUri(ResourceLocation.playerChoicePath(roboRally.getLobbyId(), playerId)), args);
+            Response<String> response = RequestCenter.postRequest(ResourceLocation.makeUri(ResourceLocation.playerChoicePath(client.getLobbyId(), playerId)), args);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
@@ -395,10 +453,10 @@ public class AppController implements Observer {
         JsonObject info = new JsonObject();
         info.addProperty("shopIndex", shopIndex);
 
-        String lobbyId = getRoboRally().getLobbyId();
+        String lobbyId = getClient().getLobbyId();
         int playerId = -1;
-        for (PlayerTemplate player : getRoboRally().getGameState().players) {
-            if (player.name.equals(getRoboRally().getPlayerName())) {
+        for (PlayerTemplate player : getClient().getGameState().players) {
+            if (player.name.equals(getClient().getPlayerName())) {
                 playerId = player.id;
                 break;
             }
@@ -420,10 +478,10 @@ public class AppController implements Observer {
     }
 
     public void discardUpgrade(int index, UpgradeCardFieldView.Placement placement) {
-        String lobbyId = getRoboRally().getLobbyId();
+        String lobbyId = getClient().getLobbyId();
         int playerId = -1;
-        for (PlayerTemplate player : getRoboRally().getGameState().players) {
-            if (player.name.equals(getRoboRally().getPlayerName())) {
+        for (PlayerTemplate player : getClient().getGameState().players) {
+            if (player.name.equals(getClient().getPlayerName())) {
                 playerId = player.id;
                 break;
             }
@@ -445,10 +503,10 @@ public class AppController implements Observer {
     }
 
     public void toggleUpgrade(int index, UpgradeCardFieldView.Placement placement) {
-        String lobbyId = getRoboRally().getLobbyId();
+        String lobbyId = getClient().getLobbyId();
         int playerId = -1;
-        for (PlayerTemplate player : getRoboRally().getGameState().players) {
-            if (player.name.equals(getRoboRally().getPlayerName())) {
+        for (PlayerTemplate player : getClient().getGameState().players) {
+            if (player.name.equals(getClient().getPlayerName())) {
                 playerId = player.id;
                 break;
             }
@@ -473,7 +531,7 @@ public class AppController implements Observer {
         String fileName = inputBox(true);
         if (fileName == null) return;
         try {
-            Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameSavePath(roboRally.getLobbyId())));
+            Response<JsonObject> response = RequestCenter.getRequestJson(ResourceLocation.makeUri(ResourceLocation.gameSavePath(client.getLobbyId())));
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
@@ -505,8 +563,8 @@ public class AppController implements Observer {
         try {
             JsonObject info = new JsonObject();
             info.addProperty("gameState", gson.toJson(gameState));
-            info.addProperty("playerName", roboRally.getPlayerName());
-            Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.gameLoadPath(roboRally.getLobbyId())), info);
+            info.addProperty("playerName", client.getPlayerName());
+            Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.gameLoadPath(client.getLobbyId())), info);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
