@@ -1,15 +1,14 @@
-HOW TO DOWNLOAD AND PLAY THIS ROBORALLY GAME
+Step-by-step guide to downloading and playing the game
 
-STEP 1:
-CLICK THE GITHUB REPOSITORY LINK AND DOWNLOAD THE PROJECT
+By importing the projects:
+1. Download the client from https://github.com/AdvancedProgramming2024/RoborallyClient
+2. Download the server from https://github.com/AdvancedProgramming2024/RoborallyServer
+3. Import both projects into IntelliJ IDEA
+4. Allow multiple instances of the client to run by editing the run configuration in IntelliJ IDEA
+5. Run the server
+6. Run as many clients as you want
 
-STEP 2:
-OPEN THE DIRECTORY WHERE YOU SAVED THE PROJECT AND THEN OPEN THE PROJECT IN YOUR FAVORITE CODE EDITOR(VSC),
-FIND THE STARTROBORALLY FILE AND PRESS THE RUN BUTTON.
-
-THE FILE CAN BE FOUND HERE IN THE DIRECTORY.
-C:\PathToRoboFolder\RoboRally\roborally\src\main\java\dk\dtu\compute\se\pisd\roborally
-
-
-STEP 3:
-PLAY THE GAME, ALTERNATIVELY HAVE FUN WILE DOING SO
+By downloading the JAR files:
+1. Download the server JAR file from https://github.com/AdvancedProgramming2024/RoborallyServer
+2. Download the client JAR file from https://github.com/AdvancedProgramming2024/RoborallyClient
+3. Run jar files using Java
