@@ -36,16 +36,11 @@ public enum Upgrade {
     DOUBLE_BARREL_LASER("Double Barrel Laser", 2, true),
     FIREWALL("Firewall", 3, true),
     PRESSOR_BEAM("Pressor Beam", 3, true),
-    HOVER_UNIT("Hover unit", 1, true),
-    RAIL_GUN("Rail Gun", 2, true),
-    MEMORY_STICK("Memory Stick", 3, true),
     RAMMING_GEAR("Ramming Gear", 2, true),
-    MINI_HOWITZER("Mini Howitzer", 2, true),
     REAR_LASER("Rear Laser", 2, true),
     SCRAMBLER("Scrambler", 3, true),
     TRACTOR_BEAM("Tractor Beam", 3, true),
     TROJAN_NEEDLER("Trojan Needler", 3, true),
-    TELEPORTER("Teleporter", 3, true),
     VIRUS_MODULE("Virus Module", 2, true),
 
     //Temporary Upgrades

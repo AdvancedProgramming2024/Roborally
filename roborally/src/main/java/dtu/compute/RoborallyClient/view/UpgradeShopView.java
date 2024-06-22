@@ -56,7 +56,7 @@ public class UpgradeShopView extends VBox {
         cardsPane.setVgap(20.0);
         cardsPane.setHgap(2.0);
         cardsPane.setAlignment(Pos.CENTER);
-        cardViews = new UpgradeCardFieldView[5];
+        cardViews = new UpgradeCardFieldView[gameState.players.size()];
 
         for (int i = 0; i < gameState.upgradeShop.size(); i++) {
             cardViews[i] = new UpgradeCardFieldView(appController, gameState, null, gameState.upgradeShop.get(i), i, UpgradeCardFieldView.Placement.SHOP);
