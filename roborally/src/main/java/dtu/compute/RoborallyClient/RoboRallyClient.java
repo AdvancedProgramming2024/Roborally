@@ -37,6 +37,7 @@ import dtu.compute.RoborallyClient.view.RoboRallyMenuBar;
 import dtu.compute.RoborallyClient.view.SpaceView;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -137,6 +138,7 @@ public class RoboRallyClient extends Application {
         //style for the lobby
         lobbyPane.setAlignment(Pos.CENTER);
         lobbyPane.setVgap(15);
+        lobbyPane.setPadding(new Insets(10));
 
         joinPane.setAlignment(Pos.TOP_LEFT);
         joinPane.setVgap(10);
