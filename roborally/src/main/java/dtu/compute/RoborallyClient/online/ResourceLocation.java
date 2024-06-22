@@ -68,8 +68,8 @@ public class ResourceLocation {
     public static final String leaveLobby = lobby + "/leave";
     public static final String lobbyState = lobby + "/state";
     public static final String gameState = game + "/state";
-    public static final String gameLoad = game + "/Load";
-    public static final String gameSave = game + "/saveFile";
+    public static final String gameLoad = game + "/load";
+    public static final String gameSave = game + "/save";
     public static final String players = game + "/players";
     public static final String player = players + "/{playerId}";
     public static final String playerCardMovement = player + "/cardMovement";
