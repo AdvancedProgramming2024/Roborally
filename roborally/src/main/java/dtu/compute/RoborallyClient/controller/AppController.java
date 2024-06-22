@@ -523,7 +523,7 @@ public class AppController implements Observer {
             JsonObject info = new JsonObject();
             info.addProperty("index", index);
             info.addProperty("isPermanent", placement == UpgradeCardFieldView.Placement.PERMANENT);
-            Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.toggleUpgradePath(lobbyId, playerId)), info);
+            Response<JsonObject> response = RequestCenter.postRequestJson(ResourceLocation.makeUri(ResourceLocation.activateUpgradePath(lobbyId, playerId)), info);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 Alert responseAlert = new Alert(Alert.AlertType.ERROR);
                 responseAlert.setTitle("Error");

@@ -172,19 +172,21 @@ public class UpgradeCardFieldView extends GridPane {
             labelText.append(Upgrade.values()[card].isPermanent ? "Permanent" : "Temporary");
             label.setText(labelText.toString());
             if (placement != Placement.SHOP) {
-                boolean active = placement == Placement.PERMANENT ? player.permanentActive[index] : player.temporaryActive[index];
-                activeLabel.setText(active ? "Active" : "Inactive");
-                activeLabel.setStyle(active ? "-fx-text-fill: green;" : "-fx-text-fill: red;");
                 discardButton.setDisable(gameState.playPhase != Phase.UPGRADE.ordinal());
                 discardButton.setVisible(gameState.playPhase == Phase.UPGRADE.ordinal());
+            }
+            if (placement == Placement.PERMANENT) {
+                boolean active = player.permanentActive[index];
+                activeLabel.setText(active ? "Active" : "Inactive");
+                activeLabel.setStyle(active ? "-fx-text-fill: green;" : "-fx-text-fill: red;");
             }
         } else {
             label.setText("");
             if (placement != Placement.SHOP) {
-                activeLabel.setText("");
                 discardButton.setDisable(false);
                 discardButton.setVisible(false);
             }
+            if (placement == Placement.PERMANENT) activeLabel.setText("");
         }
         if (placement != Placement.SHOP) {
             if (!player.name.equals(appController.getClient().getPlayerName())) {
