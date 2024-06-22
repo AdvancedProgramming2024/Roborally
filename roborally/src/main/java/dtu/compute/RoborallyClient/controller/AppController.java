@@ -195,8 +195,16 @@ public class AppController implements Observer {
                 alert.showAndWait();
                 return;
             }
+            Response<String> lobbyFull = RequestCenter.getRequest(ResourceLocation.makeUri(ResourceLocation.joinLobbyPath(id)));
+            if (!lobbyFull.getStatusCode().is2xxSuccessful()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(lobbyFull.getItem());
+                alert.showAndWait();
+                return;
+            }
             Response<String> lobbyResponse = RequestCenter.getRequest(ResourceLocation.makeUri(ResourceLocation.lobbyPath(id)));
-            if (!lobbyResponse.getStatusCode().is2xxSuccessful()) {
+            if (!lobbyResponse.getStatusCode().is2xxSuccessful() || !lobbyFull.getStatusCode().is2xxSuccessful()) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText(lobbyResponse.getItem());
