@@ -32,7 +32,6 @@ public enum Upgrade {
     //Permanent Upgrades
     CORRUPTION_WAVE("Corruption Wave", 4, true),
     BLUE_SCREEN_OF_DEATH("Blue Screen of Death", 4, true),
-    DEFLECTOR_SHIELD("Deflector Shield", 2, true),
     DOUBLE_BARREL_LASER("Double Barrel Laser", 2, true),
     FIREWALL("Firewall", 3, true),
     PRESSOR_BEAM("Pressor Beam", 3, true),
