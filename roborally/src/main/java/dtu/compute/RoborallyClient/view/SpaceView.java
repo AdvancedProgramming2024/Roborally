@@ -328,9 +328,7 @@ public class SpaceView extends StackPane {
         Image spaceImage = new Image("images/energyField.png");
         spaceImageView.setImage(spaceImage);
         spaceImageView.setViewOrder(1);
-        if (energyCubeField.getEnergyCubes() == 0) {
-            return;
-        }
+
         Image energyCubeImage = new Image("images/energyCube.png");
         ImageView energyCubeImageView = new ImageView();
         energyCubeImageView.setImage(energyCubeImage);
@@ -338,6 +336,9 @@ public class SpaceView extends StackPane {
         energyCubeImageView.setFitWidth(SPACE_SIZE/1.2);
         this.eneryCubeImageView = energyCubeImageView;
         this.getChildren().add(energyCubeImageView);
+        if (energyCubeField.getEnergyCubes() == 0) {
+            energyCubeImageView.setVisible(false);
+        }
     }
 
     /**
