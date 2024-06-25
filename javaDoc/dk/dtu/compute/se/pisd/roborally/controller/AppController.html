@@ -86,7 +86,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class AppController" class="title">Class AppController</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">dk.dtu.compute.se.pisd.roborally.controller.AppController</div>
+<div class="inheritance">controller.roborally.dtu.compute.AppController</div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
@@ -113,7 +113,7 @@ implements <a href="../../designpatterns/observer/Observer.html" title="interfac
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(dk.dtu.compute.se.pisd.roborally.RoboRally)" class="member-name-link">AppController</a><wbr>(<a href="../RoboRally.html" title="class in dk.dtu.compute.se.pisd.roborally">RoboRally</a>&nbsp;roboRally)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(roborally.dtu.compute.RoboRallyClient)" class="member-name-link">AppController</a><wbr>(<a href="../RoboRally.html" title="class in dk.dtu.compute.se.pisd.roborally">RoboRally</a>&nbsp;roboRally)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -151,7 +151,7 @@ implements <a href="../../designpatterns/observer/Observer.html" title="interfac
  the game or to cancel stopping the game.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(dk.dtu.compute.se.pisd.designpatterns.observer.Subject)" class="member-name-link">update</a><wbr>(<a href="../../designpatterns/observer/Subject.html" title="class in dk.dtu.compute.se.pisd.designpatterns.observer">Subject</a>&nbsp;subject)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(observer.designpatterns.dtu.compute.Subject)" class="member-name-link">update</a><wbr>(<a href="../../designpatterns/observer/Subject.html" title="class in dk.dtu.compute.se.pisd.designpatterns.observer">Subject</a>&nbsp;subject)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The observer's update method, which is called, when the subject
  changes.</div>
@@ -174,7 +174,7 @@ implements <a href="../../designpatterns/observer/Observer.html" title="interfac
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(dk.dtu.compute.se.pisd.roborally.RoboRally)">
+<section class="detail" id="&lt;init&gt;(roborally.dtu.compute.RoboRallyClient)">
 <h3>AppController</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AppController</span><wbr><span class="parameters">(@NotNull
  <a href="../RoboRally.html" title="class in dk.dtu.compute.se.pisd.roborally">RoboRally</a>&nbsp;roboRally)</span></div>
@@ -234,17 +234,17 @@ implements <a href="../../designpatterns/observer/Observer.html" title="interfac
 </section>
 </li>
 <li>
-<section class="detail" id="update(dk.dtu.compute.se.pisd.designpatterns.observer.Subject)">
+<section class="detail" id="update(observer.designpatterns.dtu.compute.Subject)">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(<a href="../../designpatterns/observer/Subject.html" title="class in dk.dtu.compute.se.pisd.designpatterns.observer">Subject</a>&nbsp;subject)</span></div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../designpatterns/observer/Observer.html#update(dk.dtu.compute.se.pisd.designpatterns.observer.Subject)">Observer</a></code></span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../designpatterns/observer/Observer.html#update(observer.designpatterns.dtu.compute.Subject)">Observer</a></code></span></div>
 <div class="block">The observer's update method, which is called, when the subject
  changes. The subject is provided as a parameter in order to
  use the same observer object as an observer for many different
  subjects.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../../designpatterns/observer/Observer.html#update(dk.dtu.compute.se.pisd.designpatterns.observer.Subject)">update</a></code>&nbsp;in interface&nbsp;<code><a href="../../designpatterns/observer/Observer.html" title="interface in dk.dtu.compute.se.pisd.designpatterns.observer">Observer</a></code></dd>
+<dd><code><a href="../../designpatterns/observer/Observer.html#update(observer.designpatterns.dtu.compute.Subject)">update</a></code>&nbsp;in interface&nbsp;<code><a href="../../designpatterns/observer/Observer.html" title="interface in dk.dtu.compute.se.pisd.designpatterns.observer">Observer</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>subject</code> - the subject which changed</dd>
 </dl>

@@ -86,8 +86,8 @@ loadScripts(document, 'script');</script>
 <h1 title="Class Player" class="title">Class Player</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance"><a href="../../designpatterns/observer/Subject.html" title="class in dk.dtu.compute.se.pisd.designpatterns.observer">dk.dtu.compute.se.pisd.designpatterns.observer.Subject</a>
-<div class="inheritance">dk.dtu.compute.se.pisd.roborally.model.Player</div>
+<div class="inheritance"><a href="../../designpatterns/observer/Subject.html" title="class in dk.dtu.compute.se.pisd.designpatterns.observer">observer.designpatterns.dtu.compute.Subject</a>
+<div class="inheritance">model.roborally.dtu.compute.Player</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
@@ -134,7 +134,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(dk.dtu.compute.se.pisd.roborally.model.Board,java.lang.String,java.lang.String,int)" class="member-name-link">Player</a><wbr>(<a href="Board.html" title="class in dk.dtu.compute.se.pisd.roborally.model">Board</a>&nbsp;board,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(model.roborally.dtu.compute.Board,java.lang.String,java.lang.String,int)" class="member-name-link">Player</a><wbr>(<a href="Board.html" title="class in dk.dtu.compute.se.pisd.roborally.model">Board</a>&nbsp;board,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;color,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  int&nbsp;id)</code></div>
@@ -154,7 +154,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addCommandCard(dk.dtu.compute.se.pisd.roborally.model.CommandCard)" class="member-name-link">addCommandCard</a><wbr>(<a href="CommandCard.html" title="class in dk.dtu.compute.se.pisd.roborally.model">CommandCard</a>&nbsp;card)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addCommandCard(model.roborally.dtu.compute.CommandCard)" class="member-name-link">addCommandCard</a><wbr>(<a href="CommandCard.html" title="class in dk.dtu.compute.se.pisd.roborally.model">CommandCard</a>&nbsp;card)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addEnergyCubes(int)" class="member-name-link">addEnergyCubes</a><wbr>(int&nbsp;energyCubes)</code></div>
@@ -162,7 +162,7 @@ loadScripts(document, 'script');</script>
 <div class="block">adds a wished number of energy cubes to the player's energy bank.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#discardCommandCard(dk.dtu.compute.se.pisd.roborally.model.CommandCard)" class="member-name-link">discardCommandCard</a><wbr>(<a href="CommandCard.html" title="class in dk.dtu.compute.se.pisd.roborally.model">CommandCard</a>&nbsp;card)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#discardCommandCard(model.roborally.dtu.compute.CommandCard)" class="member-name-link">discardCommandCard</a><wbr>(<a href="CommandCard.html" title="class in dk.dtu.compute.se.pisd.roborally.model">CommandCard</a>&nbsp;card)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CommandCard.html" title="class in dk.dtu.compute.se.pisd.roborally.model">CommandCard</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#drawCommandCard()" class="member-name-link">drawCommandCard</a>()</code></div>
@@ -216,7 +216,7 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reachCheckpoint()" class="member-name-link">reachCheckpoint</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reboot(dk.dtu.compute.se.pisd.roborally.controller.GameController)" class="member-name-link">reboot</a><wbr>(<a href="../controller/GameController.html" title="class in dk.dtu.compute.se.pisd.roborally.controller">GameController</a>&nbsp;gameController)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reboot(controller.roborally.dtu.compute.GameController)" class="member-name-link">reboot</a><wbr>(<a href="../controller/GameController.html" title="class in dk.dtu.compute.se.pisd.roborally.controller">GameController</a>&nbsp;gameController)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reboots the player and adds spam cards</div>
 </div>
@@ -226,7 +226,7 @@ loadScripts(document, 'script');</script>
 <div class="block">removes a wished number of energy cubes from the player's energy bank.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeFromDiscardPile(dk.dtu.compute.se.pisd.roborally.model.Command)" class="member-name-link">removeFromDiscardPile</a><wbr>(<a href="Command.html" title="enum class in dk.dtu.compute.se.pisd.roborally.model">Command</a>&nbsp;command)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeFromDiscardPile(model.roborally.dtu.compute.Command)" class="member-name-link">removeFromDiscardPile</a><wbr>(<a href="Command.html" title="enum class in dk.dtu.compute.se.pisd.roborally.model">Command</a>&nbsp;command)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCheckpoints(int)" class="member-name-link">setCheckpoints</a><wbr>(int&nbsp;checkpoints)</code></div>
@@ -243,7 +243,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Sets the amount of energy cubes the player has in their energy bank to a wished amount.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHeading(dk.dtu.compute.se.pisd.roborally.model.Heading)" class="member-name-link">setHeading</a><wbr>(<a href="Heading.html" title="enum class in dk.dtu.compute.se.pisd.roborally.model">Heading</a>&nbsp;heading)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHeading(model.roborally.dtu.compute.Heading)" class="member-name-link">setHeading</a><wbr>(<a href="Heading.html" title="enum class in dk.dtu.compute.se.pisd.roborally.model">Heading</a>&nbsp;heading)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setName(java.lang.String)" class="member-name-link">setName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
@@ -252,7 +252,7 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRebooting(boolean)" class="member-name-link">setRebooting</a><wbr>(boolean&nbsp;rebooting)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSpace(dk.dtu.compute.se.pisd.roborally.model.Space)" class="member-name-link">setSpace</a><wbr>(<a href="Space.html" title="class in dk.dtu.compute.se.pisd.roborally.model">Space</a>&nbsp;space)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSpace(model.roborally.dtu.compute.Space)" class="member-name-link">setSpace</a><wbr>(<a href="Space.html" title="class in dk.dtu.compute.se.pisd.roborally.model">Space</a>&nbsp;space)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shuffleDrawPile()" class="member-name-link">shuffleDrawPile</a>()</code></div>
@@ -264,8 +264,8 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-dk.dtu.compute.se.pisd.designpatterns.observer.Subject">Methods inherited from class&nbsp;dk.dtu.compute.se.pisd.designpatterns.observer.<a href="../../designpatterns/observer/Subject.html" title="class in dk.dtu.compute.se.pisd.designpatterns.observer">Subject</a></h3>
-<code><a href="../../designpatterns/observer/Subject.html#attach(dk.dtu.compute.se.pisd.designpatterns.observer.Observer)">attach</a>, <a href="../../designpatterns/observer/Subject.html#detach(dk.dtu.compute.se.pisd.designpatterns.observer.Observer)">detach</a>, <a href="../../designpatterns/observer/Subject.html#notifyChange()">notifyChange</a></code></div>
+<h3 id="methods-inherited-from-class-observer.designpatterns.dtu.compute.Subject">Methods inherited from class&nbsp;dk.dtu.compute.se.pisd.designpatterns.observer.<a href="../../designpatterns/observer/Subject.html" title="class in dk.dtu.compute.se.pisd.designpatterns.observer">Subject</a></h3>
+<code><a href="../../designpatterns/observer/Subject.html#attach(observer.designpatterns.dtu.compute.Observer)">attach</a>, <a href="../../designpatterns/observer/Subject.html#detach(observer.designpatterns.dtu.compute.Observer)">detach</a>, <a href="../../designpatterns/observer/Subject.html#notifyChange()">notifyChange</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -288,7 +288,7 @@ loadScripts(document, 'script');</script>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="../../../../../../../constant-values.html#dk.dtu.compute.se.pisd.roborally.model.Player.NO_REGISTERS">Constant Field Values</a></li>
+<li><a href="../../../../../../../constant-values.html#model.roborally.dtu.compute.Player.NO_REGISTERS">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -302,7 +302,7 @@ loadScripts(document, 'script');</script>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="../../../../../../../constant-values.html#dk.dtu.compute.se.pisd.roborally.model.Player.NO_CARDS">Constant Field Values</a></li>
+<li><a href="../../../../../../../constant-values.html#model.roborally.dtu.compute.Player.NO_CARDS">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -329,7 +329,7 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(dk.dtu.compute.se.pisd.roborally.model.Board,java.lang.String,java.lang.String,int)">
+<section class="detail" id="&lt;init&gt;(model.roborally.dtu.compute.Board,java.lang.String,java.lang.String,int)">
 <h3>Player</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Player</span><wbr><span class="parameters">(@NotNull
  <a href="Board.html" title="class in dk.dtu.compute.se.pisd.roborally.model">Board</a>&nbsp;board,
@@ -366,13 +366,13 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="addCommandCard(dk.dtu.compute.se.pisd.roborally.model.CommandCard)">
+<section class="detail" id="addCommandCard(model.roborally.dtu.compute.CommandCard)">
 <h3>addCommandCard</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addCommandCard</span><wbr><span class="parameters">(<a href="CommandCard.html" title="class in dk.dtu.compute.se.pisd.roborally.model">CommandCard</a>&nbsp;card)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="discardCommandCard(dk.dtu.compute.se.pisd.roborally.model.CommandCard)">
+<section class="detail" id="discardCommandCard(model.roborally.dtu.compute.CommandCard)">
 <h3>discardCommandCard</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">discardCommandCard</span><wbr><span class="parameters">(<a href="CommandCard.html" title="class in dk.dtu.compute.se.pisd.roborally.model">CommandCard</a>&nbsp;card)</span></div>
 </section>
@@ -390,7 +390,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="removeFromDiscardPile(dk.dtu.compute.se.pisd.roborally.model.Command)">
+<section class="detail" id="removeFromDiscardPile(model.roborally.dtu.compute.Command)">
 <h3>removeFromDiscardPile</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removeFromDiscardPile</span><wbr><span class="parameters">(<a href="Command.html" title="enum class in dk.dtu.compute.se.pisd.roborally.model">Command</a>&nbsp;command)</span></div>
 </section>
@@ -475,7 +475,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="setSpace(dk.dtu.compute.se.pisd.roborally.model.Space)">
+<section class="detail" id="setSpace(model.roborally.dtu.compute.Space)">
 <h3>setSpace</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSpace</span><wbr><span class="parameters">(<a href="Space.html" title="class in dk.dtu.compute.se.pisd.roborally.model">Space</a>&nbsp;space)</span></div>
 </section>
@@ -487,14 +487,14 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="setHeading(dk.dtu.compute.se.pisd.roborally.model.Heading)">
+<section class="detail" id="setHeading(model.roborally.dtu.compute.Heading)">
 <h3>setHeading</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setHeading</span><wbr><span class="parameters">(@NotNull
  <a href="Heading.html" title="enum class in dk.dtu.compute.se.pisd.roborally.model">Heading</a>&nbsp;heading)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="reboot(dk.dtu.compute.se.pisd.roborally.controller.GameController)">
+<section class="detail" id="reboot(controller.roborally.dtu.compute.GameController)">
 <h3>reboot</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">reboot</span><wbr><span class="parameters">(<a href="../controller/GameController.html" title="class in dk.dtu.compute.se.pisd.roborally.controller">GameController</a>&nbsp;gameController)</span></div>
 <div class="block">Reboots the player and adds spam cards</div>

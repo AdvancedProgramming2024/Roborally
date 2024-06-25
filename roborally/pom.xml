@@ -101,6 +101,11 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -138,7 +143,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>dk.dtu.compute.se.pisd.roborally.RoboRally</mainClass>
+                            <mainClass>dtu.compute.RoborallyClient.RoboRallyClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -168,7 +173,7 @@
                 <version>3.1.1</version>
                 <configuration>
                     <show>public</show>
-                    <overview>src/main/java/dk/dtu/compute/se/pisd/overview.html</overview>
+                    <overview>src/main/java/dtu/compute/overview.html</overview>
                 </configuration>
             </plugin>
             <plugin>
