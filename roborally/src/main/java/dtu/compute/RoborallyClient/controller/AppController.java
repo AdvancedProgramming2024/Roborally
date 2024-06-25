@@ -25,7 +25,7 @@ import com.google.gson.*;
 import dtu.compute.RoborallyClient.fileaccess.model.SpaceTemplate;
 import dtu.compute.RoborallyClient.model.Heading;
 import dtu.compute.RoborallyClient.view.SpaceView;
-import dtu.compute.RoborallyServer.controller.FieldAction;
+import dtu.compute.RoborallyClient.fields.FieldAction;
 import dtu.compute.designpatterns.observer.Observer;
 import dtu.compute.designpatterns.observer.Subject;
 

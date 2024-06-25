@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dtu.compute.RoborallyClient.fileaccess.model.GameTemplate;
-import dtu.compute.RoborallyServer.controller.FieldAction;
+import dtu.compute.RoborallyClient.fields.FieldAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;

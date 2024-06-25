@@ -72,6 +72,9 @@ public class Adapter<E> implements JsonSerializer<E>, JsonDeserializer<E>{
         String className = prim.getAsString();
 
         Class<?> klass;
+        if (className.contains("RoborallyServer.controller")) {
+            className = className.replace("RoborallyServer.controller", "RoborallyClient.fields");
+        }
         try {
             klass = Class.forName(className);
         } catch (ClassNotFoundException e) {

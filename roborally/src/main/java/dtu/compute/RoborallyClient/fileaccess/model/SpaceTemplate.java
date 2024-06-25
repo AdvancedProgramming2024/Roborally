@@ -21,7 +21,7 @@
  */
 package dtu.compute.RoborallyClient.fileaccess.model;
 
-import dtu.compute.RoborallyServer.controller.FieldAction;
+import dtu.compute.RoborallyClient.fields.FieldAction;
 import dtu.compute.RoborallyClient.model.Heading;
 
 import java.util.ArrayList;

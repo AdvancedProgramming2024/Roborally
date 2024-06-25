@@ -1,4 +1,4 @@
-package dtu.compute.RoborallyServer.controller;
+package dtu.compute.RoborallyClient.fields;
 
 import lombok.Getter;
 import lombok.Setter;

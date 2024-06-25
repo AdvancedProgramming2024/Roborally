@@ -21,7 +21,7 @@
  */
 package dtu.compute.RoborallyClient.view;
 
-import dtu.compute.RoborallyServer.controller.*;
+import dtu.compute.RoborallyClient.fields.*;
 import dtu.compute.RoborallyClient.fileaccess.model.GameTemplate;
 import dtu.compute.RoborallyClient.fileaccess.model.PlayerTemplate;
 import dtu.compute.RoborallyClient.fileaccess.model.SpaceTemplate;
